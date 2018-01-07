@@ -21,32 +21,33 @@ XAsset 为 Unity 项目提供了一套"简便"的资源打包加载环境，借�
 以下是使用 XAsset 资源管理 API 进行资源加载和卸载的范例：
 
 ```c#
-IEnumerator LoadAsset()
+IEnumerator LoadAsset ()
 {
-  	string assetPath = "Assets/SampleAssets/MyCube.prefab"; 
-    /// 同步模式用路径加载资源
+	string assetPath = "Assets/SampleAssets/MyCube.prefab"; 
+	/// 同步模式用路径加载资源
 	var asset = Assets.Load<GameObject> (assetPath);
 	if (asset != null && asset.asset != null) {
-    	var go = GameObject.Instantiate (asset.asset);
+		var go = GameObject.Instantiate (asset.asset);
 		GameObject.Destroy (go, 1);
 	}
 	/// 卸载
 	asset.Unload ();
 	asset = null; 
-    /// 异步模式加载
-    var assetAsync = Assets.LoadAsync<GameObject> (assetPath);
+
+	/// 异步模式加载
+	var assetAsync = Assets.LoadAsync<GameObject> (assetPath);
 	if (assetAsync != null) {
-        yield return assetAsync;
-      	if (assetAsync.asset != null) {
-        	var go = GameObject.Instantiate (assetAsync.asset);
-            GameObject.Destroy (go, 1);
-        } else {
-            Debug.LogError(assetAsync.error);
-        } 
-    	assetAsync.Unload();
-      	assetAsync = null;
+		yield return assetAsync;
+		if (assetAsync.asset != null) {
+			var go = GameObject.Instantiate (assetAsync.asset);
+			GameObject.Destroy (go, 1);
+		} else {
+			Debug.LogError (assetAsync.error);
+		} 
+		assetAsync.Unload ();
+		assetAsync = null;
 	}
-} 
+}
 ```
 
 ##### 核心文件 #####
@@ -144,5 +145,3 @@ IEnumerator LoadAsset()
 ##### 技术支持 #####
 
 QQ群：693203087
-
-![qrcode](./qrcode.jpeg)
