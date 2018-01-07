@@ -55,19 +55,19 @@ IEnumerator LoadAsset ()
 
   提供了资源管理相关 API，让用户不需要关注 AssetBundle。主要提供了一下接口：
 
-  1. Initialize 
+  - Initialize 
 
      初始化
 
-  2. Load 
+  - Load 
 
      同步加载，阻塞主线程
 
-  3. LoadAsync 
+  - LoadAsync 
 
      异步加载，不阻塞主线程
 
-  4. Unload 
+  - Unload 
 
      卸载资源，也可以参考上面的演示范例通过调用返回的 Asset 对象的 Unload 卸载资源
 
@@ -83,19 +83,19 @@ IEnumerator LoadAsset ()
 
    编辑器 “Assets” 菜单的定义，主要包含以下功能：
 
-  1. "Assets/Copy Asset Path" 
+  - "Assets/Copy Asset Path" 
 
      复制资源的在工程中的相对路径
 
-  2. "Assets/XAsset/Bundle Mode" 
+  - "Assets/XAsset/Bundle Mode" 
 
      编辑器下用来 激活（勾选）或关闭（反选） Bundle Mode
 
-  3. "Assets/XAsset/Build AssetBundles"
+  - "Assets/XAsset/Build AssetBundles"
 
      构建 AssetBundles
 
-  4. "Assets/XAsset/Build Player"
+  - "Assets/XAsset/Build Player"
 
      构建 程序包
 
