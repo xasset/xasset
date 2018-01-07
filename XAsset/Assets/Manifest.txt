@@ -1,0 +1,21 @@
+manifest:
+	Assets/Manifest.txt
+
+assets/sampleassets/mycube:
+	Assets/SampleAssets/MyMaterial.mat
+	Assets/SampleAssets/UnityLogo.png
+	Assets/SampleAssets/MyCube.prefab
+
+assets/sampleassets/tanks/prefabs/background:
+	Assets/SampleAssets/Tanks/Materials/YellowDark.mat
+	Assets/SampleAssets/Tanks/Materials/Green.mat
+	Assets/SampleAssets/Tanks/Models/Dunes01.fbx
+	Assets/SampleAssets/Tanks/Models/Tree.fbx
+	Assets/SampleAssets/Tanks/Models/Column01.FBX
+	Assets/SampleAssets/Tanks/Prefabs/Background.prefab
+	Assets/SampleAssets/Tanks/Materials/Brown.mat
+	Assets/SampleAssets/Tanks/Models/Column02.FBX
+	Assets/SampleAssets/Tanks/Models/Terrain.fbx
+	Assets/SampleAssets/Tanks/Models/Cactus.fbx
+	Assets/SampleAssets/Tanks/Materials/YellowLight.mat
+
