@@ -54,10 +54,6 @@ namespace XAsset
 		{  
 			if (--references < 0) {
 				E ("refCount < 0");
-			}
-			for (int i = 0, I = dependencies.Count; i < I; i++) {
-				var item = dependencies [i];
-				item.Unload ();
 			} 
 		}
 
@@ -89,8 +85,12 @@ namespace XAsset
 		public void Dispose ()
 		{
 			I ("Unload " + name); 
-			dependencies.Clear();
 			OnDispose (); 
+			for (int i = 0, I = dependencies.Count; i < I; i++) {
+				var item = dependencies [i];
+				item.Unload ();
+			} 
+			dependencies.Clear();
 		}  
 	}
 
