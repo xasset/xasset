@@ -89,6 +89,7 @@ namespace XAsset
 		public void Dispose ()
 		{
 			I ("Unload " + name); 
+			dependencies.Clear();
 			OnDispose (); 
 		}  
 	}
