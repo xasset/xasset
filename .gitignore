@@ -33,6 +33,6 @@ sysinfo.txt
 *.apk
 *.unitypackage
 *.DS_Store
-/Library
-/Temp
-/UnityPackageManager
+XAsset/Library
+XAsset/Temp
+XAsset/UnityPackageManager
