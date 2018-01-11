@@ -51,10 +51,16 @@ namespace XAsset.Editor
                 item.Build();
             }
 
-
-            //TODO: build atlas 
 #if ENABLE_ATLAS
-            Dictionary<string, string> bundles = new Dictionary<string, string>();
+			BuildAtlas(); 
+#endif
+            EditorUtility.ClearProgressBar();
+
+            return builds;
+        }
+
+        private static void BuildAtlas()
+        {
             foreach (var item in builds)
             {
                 var assets = item.assetNames;
@@ -66,15 +72,27 @@ namespace XAsset.Editor
                         var ti = importer as TextureImporter;
                         if (ti.textureType == TextureImporterType.Sprite)
                         {
-                            
+                            var tex = AssetDatabase.LoadAssetAtPath<Texture>(asset);
+                            if (tex.texelSize.x >= 1024 || tex.texelSize.y >= 1024)
+                            {
+                                continue;
+                            }
+
+                            var tag = item.assetBundleName.Replace("/", "_");
+                            if (! tag.Equals(ti.spritePackingTag))
+                            {
+                                var settings = ti.GetPlatformTextureSettings(Utility.GetPlatformName());
+                                settings.format = ti.GetAutomaticFormat(Utility.GetPlatformName());
+                                settings.overridden = true;
+                                ti.SetPlatformTextureSettings(settings);
+                                ti.spritePackingTag = tag;
+                                ti.SaveAndReimport();
+                            }
                         }
                     }
                 }
+ 
             }
-#endif
-            EditorUtility.ClearProgressBar();
-
-            return builds;
         }
 
         private static void SaveRules(string rulesini)
@@ -157,7 +175,7 @@ namespace XAsset.Editor
                     }
                     if (assetPath.EndsWith(".shader", StringComparison.CurrentCulture))
                     {
-                        List<string> list = new List<string>();
+                        List<string> list = null;
                         if (!bundles.TryGetValue("shaders", out list))
                         {
                             bundles.Add("shaders", list);
@@ -172,10 +190,11 @@ namespace XAsset.Editor
                     {
                         if (item.Value.Count > 1)
                         {
-                            var name = "shared/" + BuildAssetBundleNameWithAssetPath(Path.GetDirectoryName(assetPath)); 
-                            List<string> list = new List<string>();
+                            var name = "shared/" + BuildAssetBundleNameWithAssetPath(Path.GetDirectoryName(assetPath));
+                            List<string> list = null;
                             if (!bundles.TryGetValue(name, out list))
                             {
+                                list = new List<string>();
                                 bundles.Add(name, list);
                             }
                             if (!list.Contains(assetPath))
@@ -207,7 +226,7 @@ namespace XAsset.Editor
                 if (assetPath.Contains(".prefab") || assetPath.Equals(item) || packedAssets.Contains(assetPath) || assetPath.EndsWith(".cs", StringComparison.CurrentCulture) || assetPath.EndsWith(".shader", StringComparison.CurrentCulture))
                 {
                     continue;
-                } 
+                }
                 if (allDependencies[assetPath].Count == 1)
                 {
                     assetNames.Add(assetPath);
@@ -280,7 +299,7 @@ namespace XAsset.Editor
 
         public abstract void Build();
 
-        public abstract string GetAssetBundleName(string assetPath); 
+        public abstract string GetAssetBundleName(string assetPath);
     }
 
     public class BuildAssetsWithAssetBundleName : BuildRule

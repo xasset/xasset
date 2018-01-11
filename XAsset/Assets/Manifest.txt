@@ -1,9 +1,14 @@
 manifest:
 	Assets/Manifest.txt
 
+sharedassets_0:
+	Assets/SampleAssets/UnityLogo.png
+
+assets/sampleassets/logo:
+	Assets/SampleAssets/Logo.prefab
+
 assets/sampleassets/mycube:
 	Assets/SampleAssets/MyMaterial.mat
-	Assets/SampleAssets/UnityLogo.png
 	Assets/SampleAssets/MyCube.prefab
 
 assets/sampleassets/tanks/prefabs/background:
@@ -18,4 +23,7 @@ assets/sampleassets/tanks/prefabs/background:
 	Assets/SampleAssets/Tanks/Models/Cactus.fbx
 	Assets/SampleAssets/Tanks/Materials/YellowLight.mat
 	Assets/SampleAssets/Tanks/Prefabs/Background.prefab
+
+sprites:
+	Assets/SampleAssets/UnityLogo2.png
 

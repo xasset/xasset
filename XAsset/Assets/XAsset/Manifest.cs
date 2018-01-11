@@ -159,6 +159,7 @@ namespace XAsset
             {
                 Save(path, builds);
             }
+
             Debug.Log("[Manifest] Build " + assets.Count + " assets with " + bundles.Count + " bundels.");
         }
 #endif
