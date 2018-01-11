@@ -1,215 +1,412 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace XAsset
+namespace XAsset.Editor
 {
-	public abstract class BuildRule
-	{
-		protected static List<string> packedAssets = new List<string> ();
-		protected static List<AssetBundleBuild> builds = new List<AssetBundleBuild> (); 
-		static List<BuildRule> rules = new List<BuildRule> ();
+    public abstract class BuildRule
+    {
+        protected static List<string> packedAssets = new List<string>();
+        protected static List<AssetBundleBuild> builds = new List<AssetBundleBuild>();
+        static List<BuildRule> rules = new List<BuildRule>();
+        static Dictionary<string, List<string>> allDependencies = new Dictionary<string, List<string>>();
 
-		static BuildRule()
-		{
-			rules.Add (new BuildAssetsWithFilename("Assets/SampleAssets", "*.prefab", SearchOption.AllDirectories));
-		}
+        static BuildRule()
+        {
 
-		static List<string> GetFilesWithoutDirectories (string prefabPath, string searchPattern, SearchOption searchOption)
-		{
-			var files = System.IO.Directory.GetFiles (prefabPath, searchPattern, searchOption);
-			List<string> items = new List<string> ();
-			foreach (var item in files) {
-				var assetPath = item.Replace ('\\', '/');
-				if (!System.IO.Directory.Exists (assetPath)) {
-					items.Add (assetPath);
-				}
-			}
-			return items;
-		} 
-		protected static List<string> GetFilesWithoutPacked (string searchPath, string searchPattern, SearchOption searchOption)
-		{
-			var files = GetFilesWithoutDirectories (searchPath, searchPattern, searchOption);
-			var filesCount = files.Count;
-			var removeAll = files.RemoveAll ((string obj) =>  {
-				return packedAssets.Contains (obj);
-			});
-			Debug.Log (string.Format ("RemoveAll {0} size: {1}", removeAll, filesCount));
-			return files;
-		}  
-		protected static string BuildAssetBundleNameWithAssetPath (string assetPath)
-		{ 
-			return System.IO.Path.Combine (System.IO.Path.GetDirectoryName (assetPath), System.IO.Path.GetFileNameWithoutExtension (assetPath)).Replace ('\\', '/').ToLower ();
-		}
+        }
 
-		public string searchPath;
-		public string searchPattern;
-		public SearchOption searchOption = SearchOption.AllDirectories; 
+        public static List<AssetBundleBuild> GetBuilds(string manifestPath)
+        {
+            packedAssets.Clear();
+            builds.Clear();
 
-		public BuildRule (string path, string pattern, SearchOption option)
-		{
-			searchPath = path;
-			searchPattern = pattern;
-			searchOption = option;  
-		}
+            AssetBundleBuild build = new AssetBundleBuild();
+            build.assetBundleName = "manifest";
+            build.assetNames = new string[] { manifestPath };
+            builds.Add(build);
 
-		public abstract void Build (); 
+            const string rulesini = "Assets/Rules.ini";
+            if (File.Exists(rulesini))
+            {
+                LoadRules(rulesini);
+            }
+            else
+            {
+                rules.Add(new BuildAssetsWithFilename("Assets/SampleAssets", "*.prefab", SearchOption.AllDirectories));
+                SaveRules(rulesini);
+            }
 
-		public static List<AssetBundleBuild> GetBuilds(string manifestPath)
-		{
-			packedAssets.Clear ();
-			builds.Clear ();  
+            foreach (var item in rules)
+            {
+                CollectDependencies(GetFilesWithoutDirectories(item.searchPath, item.searchPattern, item.searchOption));
+            }
 
-			AssetBundleBuild build = new AssetBundleBuild ();
-			build.assetBundleName = "manifest";
-			build.assetNames = new string[] { manifestPath };
-			builds.Add (build);
+            BuildDependenciesAssets();
 
-			foreach (var item in rules) {
-				item.Build ();
-			}
+            foreach (var item in rules)
+            {
+                item.Build();
+            }
 
-			EditorUtility.ClearProgressBar ();
 
-			return builds;
-		}
-	}
+            //TODO: build atlas 
+#if ENABLE_ATLAS
+            Dictionary<string, string> bundles = new Dictionary<string, string>();
+            foreach (var item in builds)
+            {
+                var assets = item.assetNames;
+                foreach (var asset in assets)
+                {
+                    var importer = AssetImporter.GetAtPath(asset);
+                    if (importer is TextureImporter)
+                    {
+                        var ti = importer as TextureImporter;
+                        if (ti.textureType == TextureImporterType.Sprite)
+                        {
+                            
+                        }
+                    }
+                }
+            }
+#endif
+            EditorUtility.ClearProgressBar();
 
-	public class BuildAssetsWithAssetBundleName : BuildRule
-	{
-		string bundle;
+            return builds;
+        }
 
-		public BuildAssetsWithAssetBundleName (string path, string pattern, SearchOption option, string assetBundleName) : base (path, pattern, option)
-		{
-			bundle = assetBundleName;
-		}
+        private static void SaveRules(string rulesini)
+        {
+            using (var s = new StreamWriter(rulesini))
+            {
+                foreach (var item in rules)
+                {
+                    s.WriteLine("[{0}]", item.GetType().Name);
+                    s.WriteLine("searchPath=" + item.searchPath);
+                    s.WriteLine("searchPattern=" + item.searchPattern);
+                    s.WriteLine("searchOption=" + item.searchOption);
+                    s.WriteLine("bundleName=" + item.bundleName);
+                    s.WriteLine();
+                }
+                s.Flush();
+                s.Close();
+            }
+        }
 
-		public override void Build ()
-		{
-			var files = GetFilesWithoutPacked (searchPath, searchPattern, searchOption);
-			AssetBundleBuild build = new AssetBundleBuild ();
-			build.assetBundleName = bundle;
-			build.assetNames = files.ToArray ();
-			builds.Add (build); 
-			packedAssets.AddRange (files);
-		}
-	}
+        private static void LoadRules(string rulesini)
+        {
+            using (var s = new StreamReader(rulesini))
+            {
+                string line = null;
+                while ((line = s.ReadLine()) != null)
+                {
+                    if (line == string.Empty || line.StartsWith("#", StringComparison.CurrentCulture) || line.StartsWith("//", StringComparison.CurrentCulture))
+                    {
+                        continue;
+                    }
+                    if (line.Length > 2 && line[0] == '[' && line[line.Length - 1] == ']')
+                    {
+                        var name = line.Substring(1, line.Length - 2);
+                        var searchPath = s.ReadLine().Split('=')[1];
+                        var searchPattern = s.ReadLine().Split('=')[1];
+                        var searchOption = s.ReadLine().Split('=')[1];
+                        var bundleName = s.ReadLine().Split('=')[1];
+                        var type = typeof(BuildRule).Assembly.GetType("XAsset.Editor." + name);
+                        if (type != null)
+                        {
+                            var rule = Activator.CreateInstance(type) as BuildRule;
+                            rule.searchPath = searchPath;
+                            rule.searchPattern = searchPattern;
+                            rule.searchOption = (SearchOption)Enum.Parse(typeof(SearchOption), searchOption);
+                            rule.bundleName = bundleName;
+                            rules.Add(rule);
+                        }
+                    }
+                }
+            }
+        }
 
-	public class BuildAssetsWithDirectroyName : BuildRule
-	{
-		public BuildAssetsWithDirectroyName (string path, string pattern, SearchOption option) : base (path, pattern, option)
-		{
-		}
+        static List<string> GetFilesWithoutDirectories(string prefabPath, string searchPattern, SearchOption searchOption)
+        {
+            var files = Directory.GetFiles(prefabPath, searchPattern, searchOption);
+            List<string> items = new List<string>();
+            foreach (var item in files)
+            {
+                var assetPath = item.Replace('\\', '/');
+                if (!Directory.Exists(assetPath))
+                {
+                    items.Add(assetPath);
+                }
+            }
+            return items;
+        }
 
-		public override void Build ()
-		{
-			var files = GetFilesWithoutPacked (searchPath, searchPattern, searchOption); 
-			Dictionary<string, List<string>> imagePaths = new Dictionary<string, List<string>> ();
-			for (int i = 0; i < files.Count; i++) {
-				var item = files [i];
-				if (EditorUtility.DisplayCancelableProgressBar (string.Format ("Collecting... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count)) {
-					break;
-				}
-				var path = System.IO.Path.GetDirectoryName (item);
-				if (!imagePaths.ContainsKey (path)) {
-					imagePaths [path] = new List<string> ();
-				}
-				imagePaths [path].Add (item);
-			}
+        protected static void BuildDependenciesAssets()
+        {
+            Dictionary<string, List<string>> bundles = new Dictionary<string, List<string>>();
+            foreach (var item in allDependencies)
+            {
+                var assetPath = item.Key;
+                if (!assetPath.EndsWith(".cs", StringComparison.CurrentCulture))
+                {
+                    if (packedAssets.Contains(assetPath))
+                    {
+                        continue;
+                    }
+                    if (assetPath.EndsWith(".shader", StringComparison.CurrentCulture))
+                    {
+                        List<string> list = new List<string>();
+                        if (!bundles.TryGetValue("shaders", out list))
+                        {
+                            bundles.Add("shaders", list);
+                        }
+                        if (!list.Contains(assetPath))
+                        {
+                            list.Add(assetPath);
+                            packedAssets.Add(assetPath);
+                        }
+                    }
+                    else
+                    {
+                        if (item.Value.Count > 1)
+                        {
+                            var name = "shared/" + BuildAssetBundleNameWithAssetPath(Path.GetDirectoryName(assetPath)); 
+                            List<string> list = new List<string>();
+                            if (!bundles.TryGetValue(name, out list))
+                            {
+                                bundles.Add(name, list);
+                            }
+                            if (!list.Contains(assetPath))
+                            {
+                                list.Add(assetPath);
+                                packedAssets.Add(assetPath);
+                            }
+                        }
+                    }
+                }
+            }
+            int i = 0;
+            foreach (var item in bundles)
+            {
+                AssetBundleBuild build = new AssetBundleBuild();
+                build.assetBundleName = "sharedassets_" + i;
+                build.assetNames = item.Value.ToArray();
+                builds.Add(build);
+                i++;
+            }
+        }
 
-			int count = 0;
-			foreach (var item in imagePaths) {
-				AssetBundleBuild build = new AssetBundleBuild ();
-				build.assetBundleName = BuildAssetBundleNameWithAssetPath (item.Key);
-				build.assetNames = item.Value.ToArray ();
-				builds.Add (build);
-				if (EditorUtility.DisplayCancelableProgressBar (string.Format ("Packing... [{0}/{1}]", count, imagePaths.Count), build.assetBundleName, count * 1f / imagePaths.Count)) {
-					break;
-				}
-				count++;
-			}
-		}
-	}
+        protected static List<string> GetDependenciesWithoutShared(string item)
+        {
+            var assets = AssetDatabase.GetDependencies(item);
+            List<string> assetNames = new List<string>();
+            foreach (var assetPath in assets)
+            {
+                if (assetPath.Contains(".prefab") || assetPath.Equals(item) || packedAssets.Contains(assetPath) || assetPath.EndsWith(".cs", StringComparison.CurrentCulture) || assetPath.EndsWith(".shader", StringComparison.CurrentCulture))
+                {
+                    continue;
+                } 
+                if (allDependencies[assetPath].Count == 1)
+                {
+                    assetNames.Add(assetPath);
+                }
+            }
+            return assetNames;
+        }
 
-	public class BuildAssetsWithFilename : BuildRule
-	{
-		public BuildAssetsWithFilename (string path, string pattern, SearchOption option) : base (path, pattern, option)
-		{
-		}
+        protected static void CollectDependencies(List<string> files)
+        {
+            for (int i = 0; i < files.Count; i++)
+            {
+                var item = files[i];
+                var dependencies = AssetDatabase.GetDependencies(item);
+                if (EditorUtility.DisplayCancelableProgressBar(string.Format("Collecting... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count))
+                {
+                    break;
+                }
 
-		public override void Build ()
-		{
-			var files = GetFilesWithoutPacked (searchPath, searchPattern, searchOption); 
+                foreach (var assetPath in dependencies)
+                {
+                    if (!allDependencies.ContainsKey(assetPath))
+                    {
+                        allDependencies[assetPath] = new List<string>();
+                    }
 
-			Dictionary<string, List<string>> counts = new Dictionary<string, List<string>> (); 
-			for (int i = 0; i < files.Count; i++) {
-				var item = files [i];
-				var dependencies = AssetDatabase.GetDependencies (item);
-				if (EditorUtility.DisplayCancelableProgressBar (string.Format ("Collecting... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count)) {
-					break;
-				} 
-				foreach (var assetPath in dependencies) {  
-					if (!counts.ContainsKey (assetPath)) {
-						counts [assetPath] = new List<string> ();
-					}
-					counts [assetPath].Add (item);
-				}
-			}
+                    if (!allDependencies[assetPath].Contains(item))
+                    {
+                        allDependencies[assetPath].Add(item);
+                    }
+                }
+            }
+        }
 
-			for (int i = 0; i < files.Count; i++) {
-				var item = files [i];
-				if (EditorUtility.DisplayCancelableProgressBar (string.Format ("Packing... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count)) {
-					break;
-				}
-				AssetBundleBuild build = new AssetBundleBuild (); 
-				build.assetBundleName = BuildAssetBundleNameWithAssetPath (item);
-				var assets = AssetDatabase.GetDependencies (item);
-				List<string> assetNames = new List<string> ();
-				foreach (var assetPath in assets) {
-					if (assetPath.EndsWith (".cs") || assetPath.EndsWith (".shader")) {
-						continue;
-					}
-					if (packedAssets.Contains (assetPath)) {
-						continue;
-					} 
-					if (counts [assetPath].Count == 1) {
-						assetNames.Add (assetPath);
-					}
-				}
-				build.assetNames = assetNames.ToArray ();
-				packedAssets.AddRange (assetNames);
-				builds.Add (build);
-			}
+        protected static List<string> GetFilesWithoutPacked(string searchPath, string searchPattern, SearchOption searchOption)
+        {
+            var files = GetFilesWithoutDirectories(searchPath, searchPattern, searchOption);
+            var filesCount = files.Count;
+            var removeAll = files.RemoveAll((string obj) =>
+            {
+                return packedAssets.Contains(obj);
+            });
+            Debug.Log(string.Format("RemoveAll {0} size: {1}", removeAll, filesCount));
 
-			foreach (var item in counts) {
-				var assetPath = item.Key;
-				if (!assetPath.EndsWith (".cs")) {
-					if (packedAssets.Contains (assetPath)) {
-						continue;
-					} 
+            return files;
+        }
 
-					if (assetPath.EndsWith (".shader")) {
-						AssetBundleBuild build = new AssetBundleBuild ();
-						build.assetBundleName = "shaders";
-						build.assetNames = new string[] {
-							assetPath
-						};
-						builds.Add (build);
-						packedAssets.Add (assetPath);
-					} else {
-						if (item.Value.Count > 1) {
-							AssetBundleBuild build = new AssetBundleBuild ();
-							build.assetBundleName = "public/" + BuildAssetBundleNameWithAssetPath (assetPath);
-							build.assetNames = new string[] { assetPath };
-							builds.Add (build);
-							packedAssets.Add (assetPath); 
-						}
-					}
-				}
-			}
-		}
-	}
-  
+        protected static string BuildAssetBundleNameWithAssetPath(string assetPath)
+        {
+            return Path.Combine(Path.GetDirectoryName(assetPath), Path.GetFileNameWithoutExtension(assetPath)).Replace('\\', '/').ToLower();
+        }
+
+        public string searchPath;
+        public string searchPattern;
+        public SearchOption searchOption = SearchOption.AllDirectories;
+        public string bundleName;
+
+
+        protected BuildRule()
+        {
+
+        }
+
+        protected BuildRule(string path, string pattern, SearchOption option)
+        {
+            searchPath = path;
+            searchPattern = pattern;
+            searchOption = option;
+        }
+
+        public abstract void Build();
+
+        public abstract string GetAssetBundleName(string assetPath); 
+    }
+
+    public class BuildAssetsWithAssetBundleName : BuildRule
+    {
+        public BuildAssetsWithAssetBundleName()
+        {
+
+        }
+
+        public override string GetAssetBundleName(string assetPath)
+        {
+            return bundleName;
+        }
+
+        public BuildAssetsWithAssetBundleName(string path, string pattern, SearchOption option, string assetBundleName) : base(path, pattern, option)
+        {
+            bundleName = assetBundleName;
+        }
+
+        public override void Build()
+        {
+            var files = GetFilesWithoutPacked(searchPath, searchPattern, searchOption);
+            List<string> list = new List<string>();
+            foreach (var item in files)
+            {
+                list.AddRange(GetDependenciesWithoutShared(item));
+            }
+            files.AddRange(list);
+            AssetBundleBuild build = new AssetBundleBuild();
+            build.assetBundleName = bundleName;
+            build.assetNames = files.ToArray();
+            builds.Add(build);
+            packedAssets.AddRange(files);
+        }
+    }
+
+    public class BuildAssetsWithDirectroyName : BuildRule
+    {
+        public BuildAssetsWithDirectroyName()
+        {
+
+        }
+
+        public BuildAssetsWithDirectroyName(string path, string pattern, SearchOption option) : base(path, pattern, option)
+        {
+        }
+
+        public override string GetAssetBundleName(string assetPath)
+        {
+            return BuildAssetBundleNameWithAssetPath(Path.GetDirectoryName(assetPath));
+        }
+
+        public override void Build()
+        {
+            var files = GetFilesWithoutPacked(searchPath, searchPattern, searchOption);
+
+            Dictionary<string, List<string>> bundles = new Dictionary<string, List<string>>();
+            for (int i = 0; i < files.Count; i++)
+            {
+                var item = files[i];
+                if (EditorUtility.DisplayCancelableProgressBar(string.Format("Collecting... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count))
+                {
+                    break;
+                }
+                var path = Path.GetDirectoryName(item);
+                if (!bundles.ContainsKey(path))
+                {
+                    bundles[path] = new List<string>();
+                }
+                bundles[path].Add(item);
+                bundles[path].AddRange(GetDependenciesWithoutShared(item));
+            }
+
+            int count = 0;
+            foreach (var item in bundles)
+            {
+                AssetBundleBuild build = new AssetBundleBuild();
+                build.assetBundleName = BuildAssetBundleNameWithAssetPath(item.Key);
+                build.assetNames = item.Value.ToArray();
+                packedAssets.AddRange(build.assetNames);
+                builds.Add(build);
+                if (EditorUtility.DisplayCancelableProgressBar(string.Format("Packing... [{0}/{1}]", count, bundles.Count), build.assetBundleName, count * 1f / bundles.Count))
+                {
+                    break;
+                }
+                count++;
+            }
+        }
+    }
+
+    public class BuildAssetsWithFilename : BuildRule
+    {
+        public BuildAssetsWithFilename()
+        {
+
+        }
+
+        public override string GetAssetBundleName(string assetPath)
+        {
+            return BuildAssetBundleNameWithAssetPath(assetPath);
+        }
+
+        public BuildAssetsWithFilename(string path, string pattern, SearchOption option) : base(path, pattern, option)
+        {
+        }
+
+        public override void Build()
+        {
+            var files = GetFilesWithoutPacked(searchPath, searchPattern, searchOption);
+
+            for (int i = 0; i < files.Count; i++)
+            {
+                var item = files[i];
+                if (EditorUtility.DisplayCancelableProgressBar(string.Format("Packing... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count))
+                {
+                    break;
+                }
+                AssetBundleBuild build = new AssetBundleBuild();
+                build.assetBundleName = BuildAssetBundleNameWithAssetPath(item);
+                var assetNames = GetDependenciesWithoutShared(item);
+                assetNames.Add(item);
+                build.assetNames = assetNames.ToArray();
+                packedAssets.AddRange(assetNames);
+                builds.Add(build);
+            }
+        }
+    }
+
 }

@@ -1,15 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
-using System.IO; 
-using System.Linq;
-using UnityEngine.UI;
+using UnityEngine;
 
 
-namespace XAsset
-{  
-	public class AssetsMenuItem
+namespace XAsset.Editor
+{
+    public class AssetsMenuItem
 	{
 		[MenuItem ("Assets/Copy Asset Path")]
 		static void CopyAssetPath ()

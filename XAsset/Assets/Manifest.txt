@@ -12,10 +12,10 @@ assets/sampleassets/tanks/prefabs/background:
 	Assets/SampleAssets/Tanks/Models/Dunes01.fbx
 	Assets/SampleAssets/Tanks/Models/Tree.fbx
 	Assets/SampleAssets/Tanks/Models/Column01.FBX
-	Assets/SampleAssets/Tanks/Prefabs/Background.prefab
 	Assets/SampleAssets/Tanks/Materials/Brown.mat
 	Assets/SampleAssets/Tanks/Models/Column02.FBX
 	Assets/SampleAssets/Tanks/Models/Terrain.fbx
 	Assets/SampleAssets/Tanks/Models/Cactus.fbx
 	Assets/SampleAssets/Tanks/Materials/YellowLight.mat
+	Assets/SampleAssets/Tanks/Prefabs/Background.prefab
 

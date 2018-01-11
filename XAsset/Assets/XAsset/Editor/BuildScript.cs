@@ -1,12 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace XAsset
-{ 
-	public class BuildScript : Utility
+namespace XAsset.Editor
+{
+    public class BuildScript : Utility
 	{
 		[InitializeOnLoadMethod]
 		public static void Clear ()
@@ -132,8 +131,9 @@ namespace XAsset
 			//                case BuildTarget.WebPlayer:
 			//                case BuildTarget.WebPlayerStreamed:
 			case BuildTarget.WebGL:
+                return "/web"; 
 			case BuildTarget.iOS:
-				return "";
+				return "/iOS";
 			// Add more build targets for your own.
 			default:
 				Debug.Log ("Target not implemented.");
