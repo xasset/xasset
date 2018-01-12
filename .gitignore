@@ -33,13 +33,7 @@ sysinfo.txt
 *.apk
 *.unitypackage
 *.DS_Store
-XAsset/Library
-XAsset/Temp
-XAsset/UnityPackageManager
-XAsset/.vscode/settings.json
+Library
+Temp
+UnityPackageManager
 *.mdb
-XAsset/obj/Debug/Assembly-CSharp.dll
-XAsset/obj/Debug/Assembly-CSharp.csproj.FilesWrittenAbsolute.txt
-XAsset/obj/Debug/Assembly-CSharp-Editor.dll
-XAsset/obj/Debug/Assembly-CSharp-Editor.csproj.FilesWrittenAbsolute.txt
-.DS_Store
