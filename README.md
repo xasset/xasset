@@ -115,8 +115,6 @@ IEnumerator LoadAsset ()
   - BuildAssetsWithFilename
     将搜索到的所有资源按每个资源的文件名进行打包，每个文件一个包。
 
-    > 注：此规则内部会对每个资源收集依赖，如果依赖的资源没有被其他资源所引用，那么依赖的资源将和自己一起打包，如果依赖的资源有被其他资源所引用，那个依赖的资源会被单独打包。
-
 - XAsset/Bundles.cs 
 
   封装了 AssetBundle 的依赖和变种的加载和释放的接口实现。
@@ -142,7 +140,7 @@ IEnumerator LoadAsset ()
 
 ##### FAQ
 
-后续再逐步补充
+1. 如何用XAsset进行较理想的Unity项目资源打包方案？ [>>> 点击查看](./如何用XAsset进行较理想的Unity项目资源打包方案.md)
 
 ##### 技术支持 #####
 

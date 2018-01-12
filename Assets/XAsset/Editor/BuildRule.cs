@@ -28,7 +28,7 @@ namespace XAsset.Editor
             build.assetNames = new string[] { manifestPath };
             builds.Add(build);
 
-            const string rulesini = "Assets/Rules.ini";
+            const string rulesini = "Assets/Rules.txt";
             if (File.Exists(rulesini))
             {
                 LoadRules(rulesini);

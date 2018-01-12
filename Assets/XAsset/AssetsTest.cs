@@ -17,7 +17,7 @@ public class AssetsTest : MonoBehaviour
 
     IEnumerator Load()
     {
-        string assetPath = "Assets/SampleAssets/MyCube.prefab";
+        string assetPath = "Assets/SampleAssets/Logo.prefab";
         Debug.Log("------------------ Assets.Load ------------------");
         for (int i = 0; i < 2; i++)
         {
