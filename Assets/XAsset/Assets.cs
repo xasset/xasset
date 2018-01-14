@@ -72,12 +72,22 @@ namespace XAsset
 
         public static Asset Load<T>(string path) where T : Object
         {
-            return LoadInternal(path, typeof(T), false);
+            return Load(path, typeof(T));
+        }
+
+        public static Asset Load (string path, System.Type type)
+        {
+            return LoadInternal(path, type, false);
         }
 
         public static Asset LoadAsync<T>(string path)
         {
-            return LoadInternal(path, typeof(T), true);
+            return LoadAsync(path, typeof(T));
+        }
+
+        public static Asset LoadAsync (string path, System.Type type)
+        {
+            return LoadInternal(path, type, true);
         }
 
         public static void Unload(Asset asset)
