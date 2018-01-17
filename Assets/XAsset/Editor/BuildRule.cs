@@ -377,7 +377,7 @@ namespace XAsset.Editor
             foreach (var item in bundles)
             {
                 AssetBundleBuild build = new AssetBundleBuild();
-                build.assetBundleName = BuildAssetBundleNameWithAssetPath(item.Key);
+                build.assetBundleName = BuildAssetBundleNameWithAssetPath(item.Key) + "_" + item.Value.Count;
                 build.assetNames = item.Value.ToArray();
                 packedAssets.AddRange(build.assetNames);
                 builds.Add(build);
