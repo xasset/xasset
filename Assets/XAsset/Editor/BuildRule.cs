@@ -59,7 +59,7 @@ namespace XAsset.Editor
             return builds;
         }
 
-        private static void BuildAtlas()
+        static void BuildAtlas()
         {
             foreach (var item in builds)
             {
@@ -95,7 +95,7 @@ namespace XAsset.Editor
             }
         }
 
-        private static void SaveRules(string rulesini)
+        static void SaveRules(string rulesini)
         {
             using (var s = new StreamWriter(rulesini))
             {
@@ -113,7 +113,7 @@ namespace XAsset.Editor
             }
         }
 
-        private static void LoadRules(string rulesini)
+        static void LoadRules(string rulesini)
         {
             using (var s = new StreamReader(rulesini))
             {

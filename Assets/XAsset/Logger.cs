@@ -45,6 +45,7 @@ namespace XAsset
                     Debug.LogError(string.Format("[{0}] {1}", tag, message));
                     break;
                 default:
+                    Debug.Log(string.Format("[{0}] {1}", tag, message)); 
                     break;
             }
         }

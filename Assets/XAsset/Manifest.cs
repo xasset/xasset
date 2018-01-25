@@ -10,8 +10,8 @@ namespace XAsset
 {
     public class Manifest
     {
-        static Dictionary<string, int> amap = new Dictionary<string, int>();
-        static Dictionary<string, List<int>> bmap = new Dictionary<string, List<int>>();
+        static readonly Dictionary<string, int> amap = new Dictionary<string, int>();
+        static readonly Dictionary<string, List<int>> bmap = new Dictionary<string, List<int>>();
 
         public string[] allAssets { get; private set; }
 

@@ -5,7 +5,7 @@ namespace XAsset
 {
     public delegate string OverrideDataPathDelegate(string bundleName);
 
-    public sealed class Bundles
+    public static class Bundles
     {
         public static string[] activeVariants { get; private set; }
         public static string dataPath { get; private set; }
@@ -57,7 +57,7 @@ namespace XAsset
             bundle.Unload();
         }
 
-        private static Bundle LoadInternal(string assetBundleName, bool isLoadingAssetBundleManifest, bool asyncRequest)
+        static Bundle LoadInternal(string assetBundleName, bool isLoadingAssetBundleManifest, bool asyncRequest)
         {
             if (!isLoadingAssetBundleManifest)
             {
@@ -85,7 +85,7 @@ namespace XAsset
             return bundle;
         }
 
-        private static string RemapVariantName(string assetBundleName)
+        static string RemapVariantName(string assetBundleName)
         {
             string[] bundlesWithVariant = manifest.GetAllAssetBundlesWithVariant();
 
@@ -126,13 +126,10 @@ namespace XAsset
             {
                 return bundlesWithVariant[bestFitIndex];
             }
-            else
-            {
-                return assetBundleName;
-            }
+            return assetBundleName;
         }
 
-        private static List<Bundle> bundles = new List<Bundle>();
+        readonly static List<Bundle> bundles = new List<Bundle>();
 
         internal static void Update()
         {

@@ -13,7 +13,7 @@ namespace XAsset
         public virtual AssetBundle assetBundle { get { return _assetBundle; } }
         public string name { get; protected set; }
         protected List<Bundle> dependencies = new List<Bundle>();
-        AssetBundle _assetBundle = null;
+        AssetBundle _assetBundle;
 
         internal Bundle(string bundleName, bool loadDependencies)
         {

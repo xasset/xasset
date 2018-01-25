@@ -5,7 +5,7 @@ using UnityEditor;
 
 namespace XAsset
 {
-    public class Utility
+    public static class Utility
     {
         public const string AssetBundlesOutputPath = "AssetBundles";
 
@@ -29,7 +29,7 @@ namespace XAsset
 #endif
         }
 
-        private static string GetPlatformForAssetBundles(RuntimePlatform platform)
+        static string GetPlatformForAssetBundles(RuntimePlatform platform)
         {
             switch (platform)
             {
@@ -39,7 +39,7 @@ namespace XAsset
                     return "iOS";
 #if UNITY_TVOS
 				case RuntimePlatform.tvOS:
-				return "tvOS";
+				    return "tvOS";
 #endif
                 case RuntimePlatform.WebGLPlayer:
                     return "WebGL";
@@ -58,15 +58,15 @@ namespace XAsset
         }
 
 #if UNITY_EDITOR
-        private static string GetPlatformForAssetBundles(BuildTarget target)
+        static string GetPlatformForAssetBundles(BuildTarget target)
         {
             switch (target)
             {
                 case BuildTarget.Android:
                     return "Android";
 #if UNITY_TVOS
-		case BuildTarget.tvOS:
-		return "tvOS";
+		        case BuildTarget.tvOS:
+		            return "tvOS";
 #endif
                 case BuildTarget.iOS:
                     return "iOS";

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace XAsset.Editor
 {
-    public class AssetsMenuItem
+    public static class AssetsMenuItem
 	{
 		[MenuItem ("Assets/Copy Asset Path")]
 		static void CopyAssetPath ()

@@ -91,7 +91,7 @@ namespace XAsset
 
     public class BundleAsset : Asset
     {
-        protected Bundle request = null;
+        protected Bundle request;
 
         internal BundleAsset(string path, System.Type type) : base(path, type)
         {
@@ -134,7 +134,7 @@ namespace XAsset
             request = Bundles.LoadAsync(Assets.GetBundleName(assetPath));
         }
 
-        int loadState = 0;
+        int loadState;
 
         public override bool isDone
         {
@@ -149,35 +149,29 @@ namespace XAsset
                 {
                     return true;
                 }
+                if (loadState == 1)
+                {
+                    if (abRequest.isDone)
+                    {
+                        asset = abRequest.asset;
+                        loadState = 2;
+                        return true;
+                    }
+                }
                 else
                 {
-                    if (loadState == 1)
+                    if (request.isDone)
                     {
-                        if (abRequest.isDone)
+                        abRequest = request.LoadAssetAsync(System.IO.Path.GetFileName(assetPath), assetType);
+                        if (abRequest == null)
                         {
-                            asset = abRequest.asset;
                             loadState = 2;
                             return true;
                         }
+                        loadState = 1;
                     }
-                    else
-                    {
-                        if (request.isDone)
-                        {
-                            abRequest = request.LoadAssetAsync(System.IO.Path.GetFileName(assetPath), assetType);
-                            if (abRequest == null)
-                            {
-                                loadState = 2;
-                                return true;
-                            }
-                            else
-                            {
-                                loadState = 1;
-                            }
-                        }
-                    }
-                    return false;
                 }
+                return false;
             }
         }
 
@@ -194,17 +188,11 @@ namespace XAsset
                 {
                     return 1;
                 }
-                else
+                if (loadState == 1)
                 {
-                    if (loadState == 1)
-                    {
-                        return (abRequest.progress + request.progress) * 0.5f;
-                    }
-                    else
-                    {
-                        return abRequest.progress * 0.5f;
-                    }
+                    return (abRequest.progress + request.progress) * 0.5f;
                 }
+                return abRequest.progress * 0.5f;
             }
         }
     }

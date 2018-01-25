@@ -9,7 +9,7 @@ namespace XAsset
 {
     public sealed class Assets : MonoBehaviour
     {
-        private static Assets instance = null;
+        static Assets instance;
 
 #if UNITY_EDITOR
         static int activeBundleMode = -1;
@@ -41,7 +41,7 @@ namespace XAsset
         }
 #endif
 
-        private static Manifest manifest = new Manifest();
+        static Manifest manifest = new Manifest();
         public static string[] allAssetNames { get { return manifest.allAssets; } }
         public static string[] allBundleNames { get { return manifest.allBundles; } }
         public static string GetBundleName(string assetPath) { return manifest.GetBundleName(assetPath); }
@@ -61,10 +61,7 @@ namespace XAsset
             {
                 return InitializeBundle();
             }
-            else
-            {
-                return true;
-            }
+            return true;
 #else
 			return InitializeBundle();
 #endif
@@ -75,7 +72,7 @@ namespace XAsset
             return Load(path, typeof(T));
         }
 
-        public static Asset Load (string path, System.Type type)
+        public static Asset Load(string path, System.Type type)
         {
             return LoadInternal(path, type, false);
         }
@@ -85,7 +82,7 @@ namespace XAsset
             return LoadAsync(path, typeof(T));
         }
 
-        public static Asset LoadAsync (string path, System.Type type)
+        public static Asset LoadAsync(string path, System.Type type)
         {
             return LoadInternal(path, type, true);
         }
@@ -95,7 +92,7 @@ namespace XAsset
             asset.Unload();
         }
 
-        private static bool InitializeBundle()
+        static bool InitializeBundle()
         {
             string relativePath = Path.Combine(Utility.AssetBundlesOutputPath, Utility.GetPlatformName());
             var url =
@@ -123,26 +120,19 @@ namespace XAsset
                     }
                     return true;
                 }
-                else
-                {
-                    throw new FileNotFoundException("assets manifest not exist.");
-                }
+                throw new FileNotFoundException("assets manifest not exist.");
             }
-            else
-            {
-                throw new FileNotFoundException("bundle manifest not exist.");
-            }
+            throw new FileNotFoundException("bundle manifest not exist.");
         }
 
-        private static Asset CreateAssetRuntime(string path, System.Type type, bool asyncMode)
+        static Asset CreateAssetRuntime(string path, System.Type type, bool asyncMode)
         {
             if (asyncMode)
                 return new BundleAssetAsync(path, type);
-            else
-                return new BundleAsset(path, type);
+            return new BundleAsset(path, type);
         }
 
-        private static Asset LoadInternal(string path, System.Type type, bool asyncMode)
+        static Asset LoadInternal(string path, System.Type type, bool asyncMode)
         {
             Asset asset = assets.Find(obj => { return obj.assetPath == path; });
             if (asset == null)
@@ -165,9 +155,9 @@ namespace XAsset
             return asset;
         }
 
-        private static readonly List<Asset> assets = new List<Asset>();
+        static readonly List<Asset> assets = new List<Asset>();
 
-        private void Update()
+        void Update()
         {
             for (int i = 0; i < assets.Count; i++)
             {
