@@ -158,6 +158,8 @@ namespace XAsset
             if (forceRebuild || dirty || !File.Exists(path))
             {
                 Save(path, builds);
+                AssetDatabase.ImportAsset (path, ImportAssetOptions.ForceUpdate);
+                AssetDatabase.Refresh();
             }
 
             Debug.Log("[Manifest] Build " + assets.Count + " assets with " + bundles.Count + " bundels.");
