@@ -37,3 +37,4 @@ Library
 Temp
 UnityPackageManager
 *.mdb
+*.meta
