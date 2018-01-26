@@ -178,6 +178,7 @@ namespace XAsset.Editor
                         List<string> list = null;
                         if (!bundles.TryGetValue("shaders", out list))
                         {
+                            list = new List<string>();
                             bundles.Add("shaders", list);
                         }
                         if (!list.Contains(assetPath))

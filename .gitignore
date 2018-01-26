@@ -38,3 +38,6 @@ Temp
 UnityPackageManager
 *.mdb
 *.meta
+Assets/XAsset/gendll.sh
+XAsset.dll
+XAssetEditor.dll
