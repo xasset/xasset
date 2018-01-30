@@ -209,14 +209,12 @@ namespace XAsset.Editor
                     }
                 }
             }
-            int i = 0;
             foreach (var item in bundles)
             {
                 AssetBundleBuild build = new AssetBundleBuild();
-                build.assetBundleName = "sharedassets_" + i;
+                build.assetBundleName = item.Key;
                 build.assetNames = item.Value.ToArray();
                 builds.Add(build);
-                i++;
             }
         }
 
