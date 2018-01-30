@@ -117,6 +117,8 @@ namespace XAsset.Editor
         {
             using (var s = new StreamReader(rulesini))
             {
+                rules.Clear();
+
                 string line = null;
                 while ((line = s.ReadLine()) != null)
                 {
