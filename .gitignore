@@ -35,6 +35,7 @@ sysinfo.txt
 *.DS_Store
 Library
 Temp
+AssetBundles
 UnityPackageManager
 *.mdb
 *.meta
