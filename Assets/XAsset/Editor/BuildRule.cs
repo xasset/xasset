@@ -429,4 +429,37 @@ namespace XAsset.Editor
         }
     }
 
+
+    public class BuildAssetsWithScenes : BuildRule
+    {
+        public BuildAssetsWithScenes()
+        {
+
+        }
+
+        public BuildAssetsWithScenes(string path, string pattern, SearchOption option) : base(path, pattern, option)
+        {
+
+        }
+
+        public override void Build()
+        {
+            var files = GetFilesWithoutPacked(searchPath, searchPattern, searchOption);
+
+            for (int i = 0; i < files.Count; i++)
+            {
+                var item = files[i];
+                if (EditorUtility.DisplayCancelableProgressBar(string.Format("Packing... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count))
+                {
+                    break;
+                }
+                AssetBundleBuild build = new AssetBundleBuild();
+                build.assetBundleName = BuildAssetBundleNameWithAssetPath(item); 
+                build.assetNames = new [] { item };
+                packedAssets.AddRange(build.assetNames);
+                builds.Add(build);
+            }
+        }
+    }
+
 }
