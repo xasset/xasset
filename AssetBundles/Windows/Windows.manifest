@@ -1,0 +1,14 @@
+ManifestFileVersion: 0
+CRC: 2047188285
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: manifest
+      Dependencies: {}
+    Info_1:
+      Name: shared/assets/sampleassets
+      Dependencies: {}
+    Info_2:
+      Name: assets/sampleassets/logo
+      Dependencies:
+        Dependency_0: shared/assets/sampleassets

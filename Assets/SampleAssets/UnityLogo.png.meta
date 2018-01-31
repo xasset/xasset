@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: d125950922ca6a24aa35e76810943b75
-timeCreated: 1515685378
+timeCreated: 1517387871
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
@@ -101,12 +101,21 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 1
+  - buildTarget: Windows
+    maxTextureSize: 256
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
   spriteSheet:
     serializedVersion: 2
     sprites: []
     outline: []
     physicsShape: []
-  spritePackingTag: sharedassets_0
+  spritePackingTag: 
   userData: 
   assetBundleName: 
   assetBundleVariant: 

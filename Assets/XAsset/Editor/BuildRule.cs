@@ -430,8 +430,17 @@ namespace XAsset.Editor
     }
 
 
-    public class BuildAssetsWithScenes : BuildRule
+	public class BuildAssetsWithScenes : BuildRule
     {
+		#region implemented abstract members of BuildRule
+
+		public override string GetAssetBundleName (string assetPath)
+		{
+			throw new NotImplementedException ();
+		}
+
+		#endregion
+
         public BuildAssetsWithScenes()
         {
 

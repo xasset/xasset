@@ -53,5 +53,6 @@ public class AssetsTest : MonoBehaviour
                 yield return new WaitForEndOfFrame();
             }
         }
+		yield return Resources.UnloadUnusedAssets ();
     }
 }

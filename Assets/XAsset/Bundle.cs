@@ -18,10 +18,20 @@ namespace XAsset
         internal Bundle(string bundleName, bool loadDependencies)
         {
             I("Load " + bundleName);
-            name = bundleName;
-#pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
+            name = bundleName; 
             OnInit(loadDependencies);
-#pragma warning restore RECS0021 // Warns about calls to virtual member functions occuring in the constructor
+            if (loadDependencies)
+            {
+                var items = Bundles.manifest.GetAllDependencies(name);
+                if (items != null && items.Length > 0)
+                {
+                    for (int i = 0, I = items.Length; i < I; i++)
+                    {
+                        var item = items[i];
+                        dependencies.Add(Bundles.Load(item));
+                    }
+                }
+            }
         }
 
         public T LoadAsset<T>(string assetName) where T : UnityEngine.Object
@@ -70,19 +80,7 @@ namespace XAsset
             if (_assetBundle == null)
             {
                 error = name + " LoadFromFile failed.";
-            }
-            if (loadDependencies)
-            {
-                var items = Bundles.manifest.GetAllDependencies(name);
-                if (items != null && items.Length > 0)
-                {
-                    for (int i = 0, I = items.Length; i < I; i++)
-                    {
-                        var item = items[i];
-                        dependencies.Add(Bundles.Load(item));
-                    }
-                }
-            }
+            } 
         }
 
         protected virtual void OnDispose()
