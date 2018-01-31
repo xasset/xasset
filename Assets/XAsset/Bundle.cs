@@ -28,7 +28,7 @@ namespace XAsset
                     for (int i = 0, I = items.Length; i < I; i++)
                     {
                         var item = items[i];
-                        dependencies.Add(Bundles.Load(item));
+                        dependencies.Add(this is BundleAsync ? Bundles.LoadAsync(item) : Bundles.Load(item)); 
                     }
                 }
             }
