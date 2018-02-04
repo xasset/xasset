@@ -10,13 +10,13 @@ namespace XAsset.Editor
         [InitializeOnLoadMethod]
         public static void Clear()
         {
-            EditorUtility.ClearProgressBar();
+            UnityEditor.EditorUtility.ClearProgressBar();
         }
 
         static public string CreateAssetBundleDirectory()
         {
             // Choose the output path according to the build target.
-            string outputPath = Path.Combine(Utility.AssetBundlesOutputPath, Utility.GetPlatformName());
+            string outputPath = Path.Combine(EditorUtility.AssetBundlesOutputPath, EditorUtility.GetPlatformName());
             if (!Directory.Exists(outputPath))
                 Directory.CreateDirectory(outputPath);
 
@@ -58,7 +58,7 @@ namespace XAsset.Editor
 
         public static void BuildPlayerWithoutAssetBundles()
         {
-            var outputPath = EditorUtility.SaveFolderPanel("Choose Location of the Built Game", "", "");
+            var outputPath = UnityEditor.EditorUtility.SaveFolderPanel("Choose Location of the Built Game", "", "");
             if (outputPath.Length == 0)
                 return;
 
@@ -89,7 +89,7 @@ namespace XAsset.Editor
 
         public static void BuildStandalonePlayer()
         {
-            var outputPath = EditorUtility.SaveFolderPanel("Choose Location of the Built Game", "", "");
+            var outputPath = UnityEditor.EditorUtility.SaveFolderPanel("Choose Location of the Built Game", "", "");
             if (outputPath.Length == 0)
                 return;
 
@@ -104,7 +104,7 @@ namespace XAsset.Editor
             if (targetName == null)
                 return;
 
-            CopyAssetBundlesTo(Path.Combine(Application.streamingAssetsPath, Utility.AssetBundlesOutputPath));
+            CopyAssetBundlesTo(Path.Combine(Application.streamingAssetsPath, EditorUtility.AssetBundlesOutputPath));
             AssetDatabase.Refresh();
 
 #if UNITY_5_4 || UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0
@@ -132,7 +132,7 @@ namespace XAsset.Editor
             {
                 return "/" + name + PlayerSettings.Android.bundleVersionCode + ".exe";
             }
-            if (target == BuildTarget.StandaloneOSXIntel || target == BuildTarget.StandaloneOSXIntel64 || target == BuildTarget.StandaloneOSXUniversal)
+            if (target == BuildTarget.StandaloneOSX)
             {
                 return "/" + name + ".app";
             }
@@ -156,10 +156,10 @@ namespace XAsset.Editor
             {
                 Directory.CreateDirectory(outputPath);
             }
-            string outputFolder = Utility.GetPlatformName();
+            string outputFolder = EditorUtility.GetPlatformName();
 
             // Setup the source folder for assetbundles.
-            var source = Path.Combine(Path.Combine(System.Environment.CurrentDirectory, Utility.AssetBundlesOutputPath), outputFolder);
+            var source = Path.Combine(Path.Combine(System.Environment.CurrentDirectory, EditorUtility.AssetBundlesOutputPath), outputFolder);
             if (!System.IO.Directory.Exists(source))
                 Debug.Log("No assetBundle output folder, try to build the assetBundles first.");
 
@@ -185,9 +185,87 @@ namespace XAsset.Editor
 
         static string GetAssetBundleManifestFilePath()
         {
-            var relativeAssetBundlesOutputPathForPlatform = Path.Combine(Utility.AssetBundlesOutputPath, Utility.GetPlatformName());
-            return Path.Combine(relativeAssetBundlesOutputPathForPlatform, Utility.GetPlatformName()) + ".manifest";
+            var relativeAssetBundlesOutputPathForPlatform = Path.Combine(EditorUtility.AssetBundlesOutputPath, EditorUtility.GetPlatformName());
+            return Path.Combine(relativeAssetBundlesOutputPathForPlatform, EditorUtility.GetPlatformName()) + ".manifest";
         }
 
+        static void SaveManifest(string path, List<AssetBundleBuild> builds)
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+            using (var writer = new StreamWriter(path))
+            {
+                foreach (var item in builds)
+                {
+                    writer.WriteLine(item.assetBundleName + ":");
+                    foreach (var asset in item.assetNames)
+                    {
+                        writer.WriteLine(string.Format("\t{0}", asset));
+                    }
+                    writer.WriteLine();
+                }
+                writer.Flush();
+                writer.Close();
+            }
+        }
+
+        public static void BuildManifest(string path, List<AssetBundleBuild> builds, bool forceRebuild = false)
+        {
+
+            Manifest manifest = new Manifest();
+
+            if (File.Exists(path))
+            {
+                using (var reader = new StreamReader(path))
+                {
+                    manifest.Load(reader);
+                    reader.Close();
+                }
+            }
+
+            Dictionary<string, string> newpaths = new Dictionary<string, string>();
+            List<string> bundles = new List<string>();
+            List<string> assets = new List<string>();
+            bool dirty = false;
+            if (builds.Count > 0)
+            {
+                foreach (var item in builds)
+                {
+                    bundles.Add(item.assetBundleName);
+                    foreach (var assetPath in item.assetNames)
+                    {
+                        newpaths[assetPath] = item.assetBundleName;
+                        assets.Add(assetPath + ":" + (bundles.Count - 1));
+                    }
+                }
+            }
+
+            if (newpaths.Count == manifest.allAssets.Length)
+            {
+                foreach (var item in newpaths)
+                {
+                    if (!manifest.ContainsAsset(item.Key) || !manifest.GetBundleName(item.Key).Equals(newpaths[item.Key]))
+                    {
+                        dirty = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                dirty = true;
+            }
+
+            if (forceRebuild || dirty || !File.Exists(path))
+            {
+                SaveManifest(path, builds);
+                AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+                AssetDatabase.Refresh();
+            }
+
+            Debug.Log("[BuildScript] BuildManifest with " + assets.Count + " assets and " + bundles.Count + " bundels.");
+        }
     }
 }

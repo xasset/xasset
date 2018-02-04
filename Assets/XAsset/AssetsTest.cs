@@ -3,9 +3,7 @@ using UnityEngine;
 using XAsset;
 
 public class AssetsTest : MonoBehaviour
-{
-
-    // Use this for initialization
+{ 
     void Start()
     {
         if (!Assets.Initialize())
@@ -23,13 +21,12 @@ public class AssetsTest : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
             var asset = Assets.Load<GameObject>(assetPath);
-            if (asset != null && asset.asset != null)
+            if (asset.asset != null)
             {
-                var go = Object.Instantiate(asset.asset);
-                Object.Destroy(go, 1);
-            }
-            asset.Unload();
-            asset = null;
+                var go = Instantiate(asset.asset) as GameObject;
+                ReleaseAssetOnDestroy.Register(go, asset);
+                DestroyImmediate(go);
+            } 
         }
         yield return new WaitForEndOfFrame();
         Debug.Log("------------------ Assets.LoadAsync ------------------");
@@ -43,16 +40,13 @@ public class AssetsTest : MonoBehaviour
                 var prefab = asset.asset;
                 if (prefab != null)
                 {
-                    var go = Object.Instantiate(prefab);
-                    Object.Destroy(go, 1);
-                    go = null;
-                    prefab = null;
-                }
-                asset.Unload();
-                asset = null;
+                    var go = Instantiate(prefab) as GameObject;
+                    ReleaseAssetOnDestroy.Register(go, asset);
+                    DestroyImmediate(go);
+                    go = null; 
+                } 
                 yield return new WaitForEndOfFrame();
             }
-        }
-		yield return Resources.UnloadUnusedAssets ();
+        } 
     }
 }

@@ -24,13 +24,13 @@ namespace XAsset.Editor
 		[MenuItem (kRuntimeMode)]
 		public static void ToggleRuntimeMode ()
 		{
-			Assets.ActiveBundleMode = !Assets.ActiveBundleMode;  
+            EditorUtility.ActiveBundleMode = !EditorUtility.ActiveBundleMode;  
 		}
 
 		[MenuItem (kRuntimeMode, true)]
 		public static bool ToggleRuntimeModeValidate ()
 		{
-			Menu.SetChecked (kRuntimeMode, Assets.ActiveBundleMode);
+            Menu.SetChecked (kRuntimeMode, EditorUtility.ActiveBundleMode);
 			return true;
 		} 
 
@@ -43,7 +43,7 @@ namespace XAsset.Editor
 				return;
 			}     
 			List<AssetBundleBuild> builds = BuildRule.GetBuilds (assetsManifesttxt);
-			Assets.BuildManifest (assetsManifesttxt, builds);
+            BuildScript.BuildManifest (assetsManifesttxt, builds);
 		}  
 
 		[MenuItem ("Assets/XAsset/Build AssetBundles")]  
@@ -53,7 +53,7 @@ namespace XAsset.Editor
 				return;
 			}       
 			List<AssetBundleBuild> builds = BuildRule.GetBuilds (assetsManifesttxt);
-			Assets.BuildManifest (assetsManifesttxt, builds);
+            BuildScript.BuildManifest (assetsManifesttxt, builds);
 			BuildScript.BuildAssetBundles (builds);
 		}  
 
@@ -63,7 +63,7 @@ namespace XAsset.Editor
 			if (EditorApplication.isCompiling) {
 				return;
 			}        
-			BuildScript.CopyAssetBundlesTo (Path.Combine (Application.streamingAssetsPath, Utility.AssetBundlesOutputPath));
+			BuildScript.CopyAssetBundlesTo (Path.Combine (Application.streamingAssetsPath, EditorUtility.AssetBundlesOutputPath));
 		}  
 
 		[MenuItem ("Assets/XAsset/Build Player")]  

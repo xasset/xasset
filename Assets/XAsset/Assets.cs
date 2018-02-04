@@ -1,45 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace XAsset
 {
     public sealed class Assets : MonoBehaviour
     {
-        static Assets instance;
-
-#if UNITY_EDITOR
-        static int activeBundleMode = -1;
-
-        const string kActiveBundleMode = "ActiveBundleMode";
-
-        public static bool ActiveBundleMode
-        {
-            get
-            {
-                if (activeBundleMode == -1)
-                    activeBundleMode = UnityEditor.EditorPrefs.GetBool(kActiveBundleMode, true) ? 1 : 0;
-                return activeBundleMode != 0;
-            }
-            set
-            {
-                int newValue = value ? 1 : 0;
-                if (newValue != activeBundleMode)
-                {
-                    activeBundleMode = newValue;
-                    UnityEditor.EditorPrefs.SetBool(kActiveBundleMode, value);
-                }
-            }
-        }
-
-        public static void BuildManifest(string path, List<AssetBundleBuild> builds, bool forceRebuild = false)
-        {
-            manifest.Build(path, builds, forceRebuild);
-        }
-#endif
+        static Assets instance; 
 
         static Manifest manifest = new Manifest();
         public static string[] allAssetNames { get { return manifest.allAssets; } }
@@ -57,7 +24,7 @@ namespace XAsset
             }
 
 #if UNITY_EDITOR
-            if (ActiveBundleMode)
+            if (Utility.ActiveBundleMode)
             {
                 return InitializeBundle();
             }
@@ -89,7 +56,7 @@ namespace XAsset
 
         public static void Unload(Asset asset)
         {
-            asset.Unload();
+            asset.Release();
         }
 
         static bool InitializeBundle()
@@ -114,7 +81,7 @@ namespace XAsset
                             manifest.Load(reader);
                             reader.Close();
                         }
-                        bundle.Unload();
+                        bundle.Release();
                         Resources.UnloadAsset(asset);
                         asset = null;
                     }
@@ -138,7 +105,7 @@ namespace XAsset
             if (asset == null)
             {
 #if UNITY_EDITOR
-                if (Assets.ActiveBundleMode)
+                if (Utility.ActiveBundleMode)
                 {
                     asset = CreateAssetRuntime(path, type, asyncMode);
                 }
@@ -149,26 +116,47 @@ namespace XAsset
 #else
 				asset = CreateAssetRuntime (path, type, asyncMode);
 #endif
+                asset.Load();
                 assets.Add(asset);
             }
-            asset.Load();
+            asset.Retain(); 
             return asset;
         }
 
         static readonly List<Asset> assets = new List<Asset>();
 
+
+        System.Collections.IEnumerator gc = null;
+        System.Collections.IEnumerator GC()
+        {
+            yield return 0;
+            yield return Resources.UnloadUnusedAssets();
+        }
+
         void Update()
         {
+            bool removed = false;
             for (int i = 0; i < assets.Count; i++)
             {
                 var asset = assets[i];
-                if (asset.isDone && asset.references <= 0)
+                if (! asset.Update() && asset.references <= 0)
                 {
-                    asset.Dispose();
+                    asset.Unload();
                     asset = null;
                     assets.RemoveAt(i);
                     i--;
+                    removed = true;
                 }
+            }
+
+            if (removed)
+            {
+                if (gc != null)
+                {
+                    StopCoroutine(gc); 
+                }
+                gc = GC();
+                StartCoroutine(gc);
             }
 
             Bundles.Update();

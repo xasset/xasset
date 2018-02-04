@@ -153,3 +153,9 @@ IEnumerator LoadAsset ()
 ##### 技术支持 #####
 
 QQ群：693203087
+
+##### 更新日志
+20180204 - fjy
+1. 增加 ReleaseAssetOnDestroy 组件可以用来自动回收场景对象的资源，用法参考 AssetsTest
+2. 增加 Assets 资源回收逻辑，修改之前预制件中静态引用的贴图，在销毁并卸载预制件后，在Profiler 中没有正常回收的问题
+3. 优化编码，尽可能把编辑器相关逻辑和 Runtime 逻辑分开，方便后续构建 dll，gendll.sh 可以用来在 mac 下生成 xasset 的 dll

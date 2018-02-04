@@ -15,11 +15,15 @@ namespace XAsset
         protected List<Bundle> dependencies = new List<Bundle>();
         AssetBundle _assetBundle;
 
-        internal Bundle(string bundleName, bool loadDependencies)
+        internal Bundle(string bundleName)
         {
-            I("Load " + bundleName);
             name = bundleName; 
-            OnInit(loadDependencies);
+        }
+
+        internal void Load(bool loadDependencies)
+        {
+            I("Load " + name); 
+            OnLoad(loadDependencies);
             if (loadDependencies)
             {
                 var items = Bundles.manifest.GetAllDependencies(name);
@@ -28,13 +32,25 @@ namespace XAsset
                     for (int i = 0, I = items.Length; i < I; i++)
                     {
                         var item = items[i];
-                        dependencies.Add(this is BundleAsync ? Bundles.LoadAsync(item) : Bundles.Load(item)); 
+                        dependencies.Add(this is BundleAsync ? Bundles.LoadAsync(item) : Bundles.Load(item));
                     }
                 }
             }
         }
 
-        public T LoadAsset<T>(string assetName) where T : UnityEngine.Object
+        internal void Unload()
+        {
+            I("Unload " + name);
+            OnUnload();
+            for (int i = 0, I = dependencies.Count; i < I; i++)
+            {
+                var item = dependencies[i];
+                item.Release();
+            }
+            dependencies.Clear();
+        }
+
+        public T LoadAsset<T>(string assetName) where T : Object
         {
             if (error != null)
             {
@@ -43,7 +59,7 @@ namespace XAsset
             return assetBundle.LoadAsset(assetName, typeof(T)) as T;
         }
 
-        public UnityEngine.Object LoadAsset(string assetName, System.Type assetType)
+        public Object LoadAsset(string assetName, System.Type assetType)
         {
             if (error != null)
             {
@@ -61,12 +77,12 @@ namespace XAsset
             return assetBundle.LoadAssetAsync(assetName, assetType);
         }
 
-        public void Load()
+        public void Retain()
         {
             references++;
         }
 
-        public void Unload()
+        public void Release()
         {
             if (--references < 0)
             {
@@ -74,7 +90,7 @@ namespace XAsset
             }
         }
 
-        protected virtual void OnInit(bool loadDependencies)
+        protected virtual void OnLoad(bool loadDependencies)
         {
             _assetBundle = AssetBundle.LoadFromFile(Bundles.GetDataPath(name) + name);
             if (_assetBundle == null)
@@ -83,26 +99,14 @@ namespace XAsset
             } 
         }
 
-        protected virtual void OnDispose()
+        protected virtual void OnUnload()
         {
             if (_assetBundle != null)
             {
-                _assetBundle.Unload(false);
+                _assetBundle.Unload(true);
                 _assetBundle = null;
             }
-        }
-
-        public void Dispose()
-        {
-            I("Unload " + name);
-            OnDispose();
-            for (int i = 0, I = dependencies.Count; i < I; i++)
-            {
-                var item = dependencies[i];
-                item.Unload();
-            }
-            dependencies.Clear();
-        }
+        }  
     }
 
     public class BundleAsync : Bundle, IEnumerator
@@ -212,7 +216,7 @@ namespace XAsset
 
         AssetBundleCreateRequest _request;
 
-        protected override void OnInit(bool loadDependencies)
+        protected override void OnLoad(bool loadDependencies)
         {
             _request = AssetBundle.LoadFromFileAsync(Bundles.GetDataPath(name) + name);
             if (_request == null)
@@ -221,19 +225,19 @@ namespace XAsset
             }
         }
 
-        protected override void OnDispose()
+        protected override void OnUnload()
         {
             if (_request != null)
             {
                 if (_request.assetBundle != null)
                 {
-                    _request.assetBundle.Unload(false);
+                    _request.assetBundle.Unload(true);
                 }
                 _request = null;
             }
         }
 
-        internal BundleAsync(string assetBundleName, bool loadDependencies) : base(assetBundleName, loadDependencies)
+        internal BundleAsync(string assetBundleName) : base(assetBundleName)
         {
 
         }

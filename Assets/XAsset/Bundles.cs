@@ -54,7 +54,7 @@ namespace XAsset
 
         public static void Unload(Bundle bundle)
         {
-            bundle.Unload();
+            bundle.Release();
         }
 
         static Bundle LoadInternal(string assetBundleName, bool isLoadingAssetBundleManifest, bool asyncRequest)
@@ -73,15 +73,16 @@ namespace XAsset
             {
                 if (asyncRequest)
                 {
-                    bundle = new BundleAsync(assetBundleName, !isLoadingAssetBundleManifest);
+                    bundle = new BundleAsync(assetBundleName);
                 }
                 else
                 {
-                    bundle = new Bundle(assetBundleName, !isLoadingAssetBundleManifest);
+                    bundle = new Bundle(assetBundleName);
                 }
+                bundle.Load(!isLoadingAssetBundleManifest);
                 bundles.Add(bundle);
             }
-            bundle.Load();
+            bundle.Retain();
             return bundle;
         }
 
@@ -138,7 +139,7 @@ namespace XAsset
                 var bundle = bundles[i];
                 if (bundle.isDone && bundle.references <= 0)
                 {
-                    bundle.Dispose();
+                    bundle.Unload();
                     bundle = null;
                     bundles.RemoveAt(i);
                     i--;

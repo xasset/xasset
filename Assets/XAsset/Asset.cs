@@ -36,31 +36,23 @@ namespace XAsset
 
         public virtual float progress { get { return 1; } }
 
+        public System.Action<Asset> completed { get; set; }
+
         public Object asset { get; protected set; }
 
         internal Asset(string path, System.Type type)
         {
             assetPath = path;
             assetType = type;
+        }
+
+        internal void Load()
+        {
             I("Load " + assetPath);
-#pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
-            OnInit();
-#pragma warning restore RECS0021 // Warns about calls to virtual member functions occuring in the constructor
+            OnLoad();
         }
 
-        protected virtual void OnInit()
-        {
-#if UNITY_EDITOR
-            asset = UnityEditor.AssetDatabase.LoadAssetAtPath(assetPath, assetType);
-#endif
-        }
-
-        protected virtual void OnDispose()
-        {
-
-        }
-
-        internal void Dispose()
+        internal void Unload()
         {
             I("Unload " + assetPath);
             if (asset != null)
@@ -71,16 +63,43 @@ namespace XAsset
                 }
                 asset = null;
             }
-            OnDispose();
+            OnUnload();
             assetPath = null;
         }
 
-        public void Load()
+        protected virtual void OnLoad()
         {
+#if UNITY_EDITOR
+            asset = UnityEditor.AssetDatabase.LoadAssetAtPath(assetPath, assetType);
+#endif
+        }
+
+        internal bool Update()
+        {
+            if (isDone)
+            {
+                if (completed != null)
+                {
+                    completed.Invoke(this);
+                    completed = null;
+                }
+                return false;
+            }
+            return true;
+        } 
+
+        protected virtual void OnUnload()
+        {
+
+        }
+
+        public void Retain()
+        {
+            Update(); 
             references++;
         }
 
-        public void Unload()
+        public void Release()
         {
             if (--references < 0)
             {
@@ -97,17 +116,17 @@ namespace XAsset
         {
         }
 
-        protected override void OnInit()
+        protected override void OnLoad()
         {
             request = Bundles.Load(Assets.GetBundleName(assetPath));
             asset = request.LoadAsset(Assets.GetAssetName(assetPath), assetType);
         }
 
-        protected override void OnDispose()
+        protected override void OnUnload()
         {
             if (request != null)
             {
-                request.Unload();
+                request.Release();
             }
             request = null;
         }
@@ -122,16 +141,16 @@ namespace XAsset
 
         }
 
-        protected override void OnDispose()
-        {
-            base.OnDispose();
-            abRequest = null;
-            loadState = 0;
-        }
-
-        protected override void OnInit()
+        protected override void OnLoad()
         {
             request = Bundles.LoadAsync(Assets.GetBundleName(assetPath));
+        }
+
+        protected override void OnUnload()
+        {
+            base.OnUnload();
+            abRequest = null;
+            loadState = 0;
         }
 
         int loadState;
@@ -149,6 +168,7 @@ namespace XAsset
                 {
                     return true;
                 }
+
                 if (loadState == 1)
                 {
                     if (abRequest.isDone)
@@ -188,10 +208,12 @@ namespace XAsset
                 {
                     return 1;
                 }
+
                 if (loadState == 1)
                 {
                     return (abRequest.progress + request.progress) * 0.5f;
                 }
+
                 return abRequest.progress * 0.5f;
             }
         }

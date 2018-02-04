@@ -54,7 +54,7 @@ namespace XAsset.Editor
 #if ENABLE_ATLAS
 			BuildAtlas(); 
 #endif
-            EditorUtility.ClearProgressBar();
+            UnityEditor.EditorUtility.ClearProgressBar();
 
             return builds;
         }
@@ -81,8 +81,8 @@ namespace XAsset.Editor
                             var tag = item.assetBundleName.Replace("/", "_");
                             if (! tag.Equals(ti.spritePackingTag))
                             {
-                                var settings = ti.GetPlatformTextureSettings(Utility.GetPlatformName());
-                                settings.format = ti.GetAutomaticFormat(Utility.GetPlatformName());
+                                var settings = ti.GetPlatformTextureSettings(EditorUtility.GetPlatformName());
+                                settings.format = ti.GetAutomaticFormat(EditorUtility.GetPlatformName());
                                 settings.overridden = true;
                                 ti.SetPlatformTextureSettings(settings);
                                 ti.spritePackingTag = tag;
@@ -242,7 +242,7 @@ namespace XAsset.Editor
             {
                 var item = files[i];
                 var dependencies = AssetDatabase.GetDependencies(item);
-                if (EditorUtility.DisplayCancelableProgressBar(string.Format("Collecting... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count))
+                if (UnityEditor.EditorUtility.DisplayCancelableProgressBar(string.Format("Collecting... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count))
                 {
                     break;
                 }
@@ -361,7 +361,7 @@ namespace XAsset.Editor
             for (int i = 0; i < files.Count; i++)
             {
                 var item = files[i];
-                if (EditorUtility.DisplayCancelableProgressBar(string.Format("Collecting... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count))
+                if (UnityEditor.EditorUtility.DisplayCancelableProgressBar(string.Format("Collecting... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count))
                 {
                     break;
                 }
@@ -382,7 +382,7 @@ namespace XAsset.Editor
                 build.assetNames = item.Value.ToArray();
                 packedAssets.AddRange(build.assetNames);
                 builds.Add(build);
-                if (EditorUtility.DisplayCancelableProgressBar(string.Format("Packing... [{0}/{1}]", count, bundles.Count), build.assetBundleName, count * 1f / bundles.Count))
+                if (UnityEditor.EditorUtility.DisplayCancelableProgressBar(string.Format("Packing... [{0}/{1}]", count, bundles.Count), build.assetBundleName, count * 1f / bundles.Count))
                 {
                     break;
                 }
@@ -414,7 +414,7 @@ namespace XAsset.Editor
             for (int i = 0; i < files.Count; i++)
             {
                 var item = files[i];
-                if (EditorUtility.DisplayCancelableProgressBar(string.Format("Packing... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count))
+                if (UnityEditor.EditorUtility.DisplayCancelableProgressBar(string.Format("Packing... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count))
                 {
                     break;
                 }
@@ -429,14 +429,13 @@ namespace XAsset.Editor
         }
     }
 
-
 	public class BuildAssetsWithScenes : BuildRule
     {
 		#region implemented abstract members of BuildRule
 
 		public override string GetAssetBundleName (string assetPath)
 		{
-			throw new NotImplementedException ();
+            return BuildAssetBundleNameWithAssetPath(assetPath);
 		}
 
 		#endregion
@@ -458,7 +457,7 @@ namespace XAsset.Editor
             for (int i = 0; i < files.Count; i++)
             {
                 var item = files[i];
-                if (EditorUtility.DisplayCancelableProgressBar(string.Format("Packing... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count))
+                if (UnityEditor.EditorUtility.DisplayCancelableProgressBar(string.Format("Packing... [{0}/{1}]", i, files.Count), item, i * 1f / files.Count))
                 {
                     break;
                 }
