@@ -79,8 +79,8 @@ namespace XAsset
                 {
                     bundle = new Bundle(assetBundleName);
                 }
-                bundle.Load(!isLoadingAssetBundleManifest);
                 bundles.Add(bundle);
+                bundle.Load(!isLoadingAssetBundleManifest);
             }
             bundle.Retain();
             return bundle;
