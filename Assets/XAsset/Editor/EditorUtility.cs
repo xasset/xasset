@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEngine;
 
 namespace XAsset.Editor
 {
@@ -7,6 +8,12 @@ namespace XAsset.Editor
         static int activeBundleMode = -1;
 
         const string kActiveBundleMode = "ActiveBundleMode";
+
+        [InitializeOnLoadMethod]
+        static void Init()
+        { 
+			Debug.Log("Init->activeBundleMode: " + ActiveBundleMode);
+        }
 
         public static bool ActiveBundleMode
         {
@@ -57,7 +64,7 @@ namespace XAsset.Editor
             {
                 return "Windows";
             }
-            if (target == BuildTarget.StandaloneOSX)
+			if (target == BuildTarget.StandaloneOSXUniversal)
             {
                 return "OSX";
             }

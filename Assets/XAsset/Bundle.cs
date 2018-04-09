@@ -29,7 +29,7 @@ namespace XAsset
                 var items = Bundles.manifest.GetAllDependencies(name);
                 if (items != null && items.Length > 0)
                 {
-                    for (int i = 0, I = items.Length; i < I; i++)
+					for (int i = 0, max = items.Length; i < max; i++)
                     {
                         var item = items[i];
                         dependencies.Add(this is BundleAsync ? Bundles.LoadAsync(item) : Bundles.Load(item));
@@ -42,7 +42,7 @@ namespace XAsset
         {
             I("Unload " + name);
             OnUnload();
-            for (int i = 0, I = dependencies.Count; i < I; i++)
+			for (int i = 0, max = dependencies.Count; i < max; i++)
             {
                 var item = dependencies[i];
                 item.Release();
