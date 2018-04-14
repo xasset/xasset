@@ -30,7 +30,7 @@ namespace XAsset
             {
                 return "WebGL";
             }
-            if (platform == RuntimePlatform.WindowsPlayer)
+            if (platform == RuntimePlatform.WindowsPlayer || platform == RuntimePlatform.WindowsEditor)
             {
                 return "Windows";
             }
