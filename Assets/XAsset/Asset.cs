@@ -40,12 +40,12 @@ namespace XAsset
 
 	public void AddCompletedLisenter(System.Action<Asset> lisenter)
 	{
-		completed += lisenter;
+	    completed += lisenter;
 	}
 
 	public void RemoveCompletedLisenter(System.Action<Asset> lisenter)
 	{
-		completed -= lisenter;
+	    completed -= lisenter;
 	}
         
         public Object asset { get; protected set; }
