@@ -36,17 +36,17 @@ namespace XAsset
 
         public virtual float progress { get { return 1; } }
 
-		private System.Action<Asset> completed;
+	private System.Action<Asset> completed;
 
-		public void AddCompletedLisenter(System.Action<Asset> lisenter)
-		{
-			completed += lisenter;
-		}
+	public void AddCompletedLisenter(System.Action<Asset> lisenter)
+	{
+		completed += lisenter;
+	}
 
-		public void RemoveCompletedLisenter(System.Action<Asset> lisenter)
-		{
-			completed -= lisenter;
-		}
+	public void RemoveCompletedLisenter(System.Action<Asset> lisenter)
+	{
+		completed -= lisenter;
+	}
         
         public Object asset { get; protected set; }
 
