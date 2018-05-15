@@ -11,43 +11,29 @@ namespace XAsset
         public virtual float progress { get { return 1; } }
         public virtual bool isDone { get { return true; } }
         public virtual AssetBundle assetBundle { get { return _assetBundle; } }
-        public string name { get; protected set; }
-        protected List<Bundle> dependencies = new List<Bundle>();
-        AssetBundle _assetBundle;
+		public readonly List<Bundle> dependencies = new List<Bundle>();
+        public string path { get; protected set; }
+		public string name { get; internal set; }
+		protected Hash128 version;
 
-        internal Bundle(string bundleName)
+        AssetBundle _assetBundle; 
+
+		internal Bundle(string url, Hash128 hash)
         {
-            name = bundleName; 
+			path = url; 
+			version = hash;
         }
 
-        internal void Load(bool loadDependencies)
+        internal void Load()
         {
-            I("Load " + name); 
-            OnLoad(loadDependencies);
-            if (loadDependencies)
-            {
-                var items = Bundles.manifest.GetAllDependencies(name);
-                if (items != null && items.Length > 0)
-                {
-					for (int i = 0, max = items.Length; i < max; i++)
-                    {
-                        var item = items[i];
-                        dependencies.Add(this is BundleAsync ? Bundles.LoadAsync(item) : Bundles.Load(item));
-                    }
-                }
-            }
+			I("Load " + path); 
+            OnLoad(); 
         }
 
         internal void Unload()
         {
-            I("Unload " + name);
-            OnUnload();
-			for (int i = 0, max = dependencies.Count; i < max; i++)
-            {
-                var item = dependencies[i];
-                item.Release();
-            }
-            dependencies.Clear();
+			I("Unload " + path);
+            OnUnload(); 
         }
 
         public T LoadAsset<T>(string assetName) where T : Object
@@ -90,12 +76,12 @@ namespace XAsset
             }
         }
 
-        protected virtual void OnLoad(bool loadDependencies)
+        protected virtual void OnLoad()
         {
-            _assetBundle = AssetBundle.LoadFromFile(Bundles.GetDataPath(name) + name);
+			_assetBundle = AssetBundle.LoadFromFile(path);
             if (_assetBundle == null)
             {
-                error = name + " LoadFromFile failed.";
+				error = path + " LoadFromFile failed.";
             } 
         }
 
@@ -216,12 +202,12 @@ namespace XAsset
 
         AssetBundleCreateRequest _request;
 
-        protected override void OnLoad(bool loadDependencies)
+        protected override void OnLoad()
         {
-            _request = AssetBundle.LoadFromFileAsync(Bundles.GetDataPath(name) + name);
+			_request = AssetBundle.LoadFromFileAsync(path);
             if (_request == null)
             {
-                error = name + " LoadFromFileAsync falied.";
+				error = path + " LoadFromFileAsync falied.";
             }
         }
 
@@ -237,9 +223,144 @@ namespace XAsset
             }
         }
 
-        internal BundleAsync(string assetBundleName) : base(assetBundleName)
+		internal BundleAsync(string url, Hash128 hash) : base(url, hash)
         {
 
         }
-    }
+    } 
+
+
+	public class BundleWWW : Bundle, IEnumerator
+	{
+		#region IEnumerator implementation
+
+		public bool MoveNext()
+		{
+			return !isDone;
+		}
+
+		public void Reset()
+		{
+		}
+
+		public object Current
+		{
+			get
+			{
+				return assetBundle;
+			}
+		}
+
+		#endregion
+
+		public override AssetBundle assetBundle
+		{
+			get
+			{
+				if (error != null)
+				{
+					return null;
+				}
+
+				if (dependencies.Count == 0)
+				{
+					return _request.assetBundle;
+				}
+
+				for (int i = 0, I = dependencies.Count; i < I; i++)
+				{
+					var item = dependencies[i];
+					if (item.assetBundle == null)
+					{
+						return null;
+					}
+				}
+
+				return _request.assetBundle;
+			}
+		}
+
+		public override float progress
+		{
+			get
+			{
+				if (error != null)
+				{
+					return 1;
+				}
+
+				if (dependencies.Count == 0)
+				{
+					return _request.progress;
+				}
+
+				float value = _request.progress;
+				for (int i = 0, I = dependencies.Count; i < I; i++)
+				{
+					var item = dependencies[i];
+					value += item.progress;
+				}
+				return value / (dependencies.Count + 1);
+			}
+		}
+
+		public override bool isDone
+		{
+			get
+			{
+				if (error != null)
+				{
+					return true;
+				}
+
+				if (dependencies.Count == 0)
+				{
+					return _request.isDone;
+				}
+
+				for (int i = 0, I = dependencies.Count; i < I; i++)
+				{
+					var item = dependencies[i];
+					if (item.error != null)
+					{
+						error = "Falied to load Dependencies " + item;
+						return true;
+					}
+					if (!item.isDone)
+					{
+						return false;
+					}
+				}
+				return _request.isDone;
+			}
+		}
+
+		WWW _request;
+
+		protected override void OnLoad()
+		{
+			_request = WWW.LoadFromCacheOrDownload(path, version);
+			if (_request == null)
+			{
+				error = path + " LoadFromFileAsync falied.";
+			}
+		}
+
+		protected override void OnUnload()
+		{
+			if (_request != null)
+			{
+				if (_request.assetBundle != null)
+				{
+					_request.assetBundle.Unload(true);
+				}
+				_request = null;
+			}
+		}
+
+		internal BundleWWW(string url, Hash128 hash) : base(url, hash)
+		{
+
+		}
+	} 
 }
