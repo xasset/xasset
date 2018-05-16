@@ -212,7 +212,7 @@ namespace XAsset.Editor
             foreach (var item in bundles)
             {
                 AssetBundleBuild build = new AssetBundleBuild();
-                build.assetBundleName = item.Key;
+				build.assetBundleName = item.Key + "_" + item.Value.Count;
                 build.assetNames = item.Value.ToArray();
                 builds.Add(build);
             }
