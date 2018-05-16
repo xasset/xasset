@@ -92,7 +92,6 @@ namespace XAsset
 
 			var hash = isLoadingAssetBundleManifest ? new Hash128(1, 0, 0, 0) : manifest.GetAssetBundleHash (assetBundleName); 
 			if (bundle == null) {
-				bundle.name = assetBundleName; 
 				if (url.StartsWith ("http://") ||
 					url.StartsWith ("https://") ||
 					url.StartsWith ("file://") ||
@@ -105,6 +104,7 @@ namespace XAsset
 						bundle = new Bundle (url, hash);
 					}
 				}  
+				bundle.name = assetBundleName; 
 				bundles.Add (bundle);
 				bundle.Load ();
 				if (!isLoadingAssetBundleManifest) {  
