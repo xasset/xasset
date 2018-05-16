@@ -63,7 +63,7 @@ namespace XAsset
 				item.Release ();
 			}
 			bundle.dependencies.Clear ();
-		} 
+		}
 
 		static void LoadDependencies (Bundle bundle, string assetBundleName, bool asyncRequest)
 		{
@@ -88,16 +88,15 @@ namespace XAsset
 			var url = Bundles.GetDataPath (assetBundleName) + assetBundleName; 
 			Bundle bundle = bundles.Find (obj => {
 				return obj.name == assetBundleName;
-			});  
+			});   
 
-			var hash = manifest.GetAssetBundleHash (assetBundleName);   
+			var hash = isLoadingAssetBundleManifest ? new Hash128(1, 0, 0, 0) : manifest.GetAssetBundleHash (assetBundleName); 
 			if (bundle == null) {
-				bundle.name = assetBundleName;
-
+				bundle.name = assetBundleName; 
 				if (url.StartsWith ("http://") ||
-				    url.StartsWith ("https://") ||
-				    url.StartsWith ("file://") ||
-				    url.StartsWith ("ftp://")) { 
+					url.StartsWith ("https://") ||
+					url.StartsWith ("file://") ||
+					url.StartsWith ("ftp://")) { 
 					bundle = new BundleWWW (url, hash);
 				} else {
 					if (asyncRequest) {
@@ -105,13 +104,13 @@ namespace XAsset
 					} else {
 						bundle = new Bundle (url, hash);
 					}
-				} 
+				}  
 				bundles.Add (bundle);
 				bundle.Load ();
-				if (!isLoadingAssetBundleManifest) { 
-					LoadDependencies (bundle, assetBundleName, asyncRequest);
-				} 
-			} 
+				if (!isLoadingAssetBundleManifest) {  
+					LoadDependencies (bundle, assetBundleName, asyncRequest); 
+				}
+			}  
 			bundle.Retain ();
 			return bundle;
 		}
@@ -156,7 +155,7 @@ namespace XAsset
 			return assetBundleName;
 		}
 
-		readonly internal static List<Bundle> bundles = new List<Bundle> (); 
+		readonly internal static List<Bundle> bundles = new List<Bundle> ();
 
 		internal static void Update ()
 		{
