@@ -89,7 +89,7 @@ namespace XAsset
         {
             if (_assetBundle != null)
             {
-                _assetBundle.Unload(true);
+                _assetBundle.Unload(false);
                 _assetBundle = null;
             }
         }  
@@ -217,7 +217,7 @@ namespace XAsset
             {
                 if (_request.assetBundle != null)
                 {
-                    _request.assetBundle.Unload(true);
+                    _request.assetBundle.Unload(false);
                 }
                 _request = null;
             }
@@ -352,7 +352,7 @@ namespace XAsset
 			{
 				if (_request.assetBundle != null)
 				{
-					_request.assetBundle.Unload(true);
+					_request.assetBundle.Unload(false);
 				}
 				_request = null;
 			}
