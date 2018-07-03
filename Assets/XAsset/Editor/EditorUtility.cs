@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace XAsset.Editor
 {
-    public static class EditorUtility
+    public class EditorUtility : Utility
     {
         static int activeBundleMode = -1;
 
@@ -35,42 +35,6 @@ namespace XAsset.Editor
             }
         } 
 
-        public const string AssetBundlesOutputPath = Utility.AssetBundlesOutputPath;
-
-        public static string GetPlatformName()
-        {
-            return GetPlatformForAssetBundles(EditorUserBuildSettings.activeBuildTarget);
-        }
-
-        static string GetPlatformForAssetBundles(BuildTarget target)
-        {
-            if (target == BuildTarget.Android)
-            {
-                return "Android";
-            }
-            if (target == BuildTarget.tvOS)
-            {
-                return "tvOS";
-            }
-            if (target == BuildTarget.iOS)
-            {
-                return "iOS";
-            }
-            if (target == BuildTarget.WebGL)
-            {
-                return "WebGL";
-            }
-            if (target == BuildTarget.StandaloneWindows || target == BuildTarget.StandaloneWindows64)
-            {
-                return "Windows";
-            }
-			if (target == BuildTarget.StandaloneOSXUniversal)
-            {
-                return "OSX";
-            }
-            // Add more build targets for your own.
-            // If you add more targets, don't forget to add the same platforms to GetPlatformForAssetBundles(RuntimePlatform) function.
-            return null;
-        }
+        public const string AssetBundlesOutputPath = Utility.AssetBundlesOutputPath; 
     }
 }
