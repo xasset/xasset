@@ -116,8 +116,8 @@ namespace XAsset
 #else
 				asset = CreateAssetRuntime (path, type, asyncMode);
 #endif
-                asset.Load();
                 assets.Add(asset);
+                asset.Load();
             }
             asset.Retain(); 
             return asset;
