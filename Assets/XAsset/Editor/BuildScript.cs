@@ -131,20 +131,22 @@ namespace XAsset.Editor
             if (target == BuildTarget.StandaloneWindows || target == BuildTarget.StandaloneWindows64)
             {
                 return "/" + name + PlayerSettings.Android.bundleVersionCode + ".exe";
-            }
-			//if (target == BuildTarget.StandaloneOSX)
-   //             return "/" + name + ".app";
-   //         }
-            if (target == BuildTarget.WebGL)
+            } 
+            if (target == BuildTarget.StandaloneOSX)
             {
-                return "/web";
-            }
+                return "/" + name + ".app";
+            } 
             if (target == BuildTarget.iOS)
             {
                 return "/iOS";
             }
             Debug.Log("Target not implemented.");
             return null;
+            //if (target == BuildTarget.WebGL)
+            //{
+            //    return "/web";
+            //}
+
         }
 
         static public void CopyAssetBundlesTo(string outputPath)

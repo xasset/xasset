@@ -8,7 +8,31 @@ namespace XAsset
     public class Utility
     {
         public const string AssetBundlesOutputPath = "AssetBundles";
-        public static bool ActiveBundleMode { get; set; }
+
+
+#if UNITY_EDITOR 
+        static int activeBundleMode = -1; 
+        const string kActiveBundleMode = "ActiveBundleMode";
+
+        public static bool ActiveBundleMode
+        {
+            get
+            {
+                if (activeBundleMode == -1)
+                    activeBundleMode = EditorPrefs.GetBool(kActiveBundleMode, true) ? 1 : 0;
+                return activeBundleMode != 0;
+            }
+            set
+            {
+                int newValue = value ? 1 : 0;
+                if (newValue != activeBundleMode)
+                {
+                    activeBundleMode = newValue;
+                    EditorPrefs.SetBool(kActiveBundleMode, value);
+                }
+            }
+        }  
+#endif
 
         public static string GetPlatformName()
         {
@@ -71,14 +95,14 @@ namespace XAsset
             {
                 return "Windows";
             }
-            //if (target == BuildTarget.StandaloneOSX)
-            //{
-            //    return "OSX";
-            //}
+            if (target == BuildTarget.StandaloneOSX)
+            {
+                return "OSX";
+            }
             // Add more build targets for your own.
             // If you add more targets, don't forget to add the same platforms to GetPlatformForAssetBundles(RuntimePlatform) function.
             return null;
         }
+    #endif 
     } 
-#endif
 }
