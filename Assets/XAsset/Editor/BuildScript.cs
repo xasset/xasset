@@ -242,7 +242,7 @@ namespace XAsset.Editor
                 }
             }
 
-            if (newpaths.Count == manifest.allAssets.Length)
+            if (manifest.allAssets != null && newpaths.Count == manifest.allAssets.Length)
             {
                 foreach (var item in newpaths)
                 {
