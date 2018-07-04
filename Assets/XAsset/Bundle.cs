@@ -60,6 +60,12 @@ namespace XAsset
             {
                 return null;
             }
+
+            if (assetBundle == null)
+            {
+                return null;
+            }
+
             return assetBundle.LoadAssetAsync(assetName, assetType);
         }
 
