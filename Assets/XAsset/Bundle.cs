@@ -125,49 +125,11 @@ namespace XAsset
                 if (error != null)
                 {
                     return null;
-                }
-
-                if (dependencies.Count == 0)
-                {
-                    return _request.assetBundle;
-                }
-
-                for (int i = 0, I = dependencies.Count; i < I; i++)
-                {
-                    var item = dependencies[i];
-                    if (item.assetBundle == null)
-                    {
-                        return null;
-                    }
-                }
+                } 
 
                 return _request.assetBundle;
             }
-        }
-
-        public override float progress
-        {
-            get
-            {
-                if (error != null)
-                {
-                    return 1;
-                }
-
-                if (dependencies.Count == 0)
-                {
-                    return _request.progress;
-                }
-
-                float value = _request.progress;
-                for (int i = 0, I = dependencies.Count; i < I; i++)
-                {
-                    var item = dependencies[i];
-                    value += item.progress;
-                }
-                return value / (dependencies.Count + 1);
-            }
-        }
+        } 
 
         public override bool isDone
         {
@@ -176,26 +138,7 @@ namespace XAsset
                 if (error != null)
                 {
                     return true;
-                }
-
-                if (dependencies.Count == 0)
-                {
-                    return _request.isDone;
-                }
-
-                for (int i = 0, I = dependencies.Count; i < I; i++)
-                {
-                    var item = dependencies[i];
-                    if (item.error != null)
-                    {
-                        error = "Falied to load Dependencies " + item;
-                        return true;
-                    }
-                    if (!item.isDone)
-                    {
-                        return false;
-                    }
-                }
+                } 
                 return _request.isDone;
             }
         }
@@ -217,7 +160,7 @@ namespace XAsset
             {
                 if (_request.assetBundle != null)
                 {
-                    _request.assetBundle.Unload(false);
+                    _request.assetBundle.Unload(false); 
                 }
                 _request = null;
             }
@@ -260,49 +203,10 @@ namespace XAsset
 				if (error != null)
 				{
 					return null;
-				}
-
-				if (dependencies.Count == 0)
-				{
-					return _request.assetBundle;
-				}
-
-				for (int i = 0, I = dependencies.Count; i < I; i++)
-				{
-					var item = dependencies[i];
-					if (item.assetBundle == null)
-					{
-						return null;
-					}
-				}
-
+				} 
 				return _request.assetBundle;
 			}
-		}
-
-		public override float progress
-		{
-			get
-			{
-				if (error != null)
-				{
-					return 1;
-				}
-
-				if (dependencies.Count == 0)
-				{
-					return _request.progress;
-				}
-
-				float value = _request.progress;
-				for (int i = 0, I = dependencies.Count; i < I; i++)
-				{
-					var item = dependencies[i];
-					value += item.progress;
-				}
-				return value / (dependencies.Count + 1);
-			}
-		}
+		} 
 
 		public override bool isDone
 		{
@@ -311,26 +215,7 @@ namespace XAsset
 				if (error != null)
 				{
 					return true;
-				}
-
-				if (dependencies.Count == 0)
-				{
-					return _request.isDone;
-				}
-
-				for (int i = 0, I = dependencies.Count; i < I; i++)
-				{
-					var item = dependencies[i];
-					if (item.error != null)
-					{
-						error = "Falied to load Dependencies " + item;
-						return true;
-					}
-					if (!item.isDone)
-					{
-						return false;
-					}
-				}
+				} 
 				return _request.isDone;
 			}
 		}

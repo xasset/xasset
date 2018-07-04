@@ -3,7 +3,9 @@ using UnityEngine;
 using XAsset;
 
 public class AssetsTest : MonoBehaviour
-{ 
+{
+    [SerializeField] string assetPath = "Assets/SampleAssets/Logo.prefab";
+
     void Start()
     {
         if (!Assets.Initialize())
@@ -15,38 +17,31 @@ public class AssetsTest : MonoBehaviour
 
     IEnumerator Load()
     {
-        string assetPath = "Assets/SampleAssets/Logo.prefab";
-        Debug.Log("------------------ Assets.Load ------------------");
-        for (int i = 0; i < 2; i++)
+        var asset = Assets.LoadAsync<GameObject>(assetPath);
+        if (asset != null)
         {
-            yield return new WaitForEndOfFrame();
-            var asset = Assets.Load<GameObject>(assetPath);
-            if (asset.asset != null)
+            yield return asset;
+            var prefab = asset.asset;
+            if (prefab != null)
             {
-                var go = Instantiate(asset.asset) as GameObject;
+                var go = Instantiate(prefab) as GameObject;
                 ReleaseAssetOnDestroy.Register(go, asset);
-                DestroyImmediate(go);
-            } 
-        }
-        yield return new WaitForEndOfFrame();
-        Debug.Log("------------------ Assets.LoadAsync ------------------");
-        for (int i = 0; i < 2; i++)
-        {
-            yield return new WaitForEndOfFrame();
-            var asset = Assets.LoadAsync<GameObject>(assetPath);
-            if (asset != null)
-            {
-                yield return asset;
-                var prefab = asset.asset;
-                if (prefab != null)
-                {
-                    var go = Instantiate(prefab) as GameObject;
-                    ReleaseAssetOnDestroy.Register(go, asset);
-                    DestroyImmediate(go);
-                    go = null; 
-                } 
-                yield return new WaitForEndOfFrame();
+                GameObject.Destroy(go, 10);
             }
-        } 
+        }
+
+        yield return new WaitForSeconds(11);
+
+        asset = Assets.Load<GameObject>(assetPath);
+        if (asset != null)
+        {
+            var prefab = asset.asset;
+            if (prefab != null)
+            {
+                var go = Instantiate(prefab) as GameObject;
+                ReleaseAssetOnDestroy.Register(go, asset);
+                GameObject.Destroy(go, 3);
+            }
+        }
     }
 }
