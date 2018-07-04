@@ -65,7 +65,7 @@ namespace XAsset
             {
                 return "Windows";
             }
-            if (platform == RuntimePlatform.OSXPlayer)
+            if (platform == RuntimePlatform.OSXPlayer || platform == RuntimePlatform.OSXEditor)
             {
                 return "OSX";
             }
@@ -95,7 +95,7 @@ namespace XAsset
             {
                 return "Windows";
             }
-            if (target == BuildTarget.StandaloneOSX)
+            if (target == BuildTarget.StandaloneOSXIntel || target ==  BuildTarget.StandaloneOSXIntel64 || target == BuildTarget.StandaloneOSXUniversal)
             {
                 return "OSX";
             }

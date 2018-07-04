@@ -132,7 +132,7 @@ namespace XAsset.Editor
             {
                 return "/" + name + PlayerSettings.Android.bundleVersionCode + ".exe";
             } 
-            if (target == BuildTarget.StandaloneOSX)
+            if (target == BuildTarget.StandaloneOSXIntel || target == BuildTarget.StandaloneOSXIntel64 || target == BuildTarget.StandaloneOSXUniversal)
             {
                 return "/" + name + ".app";
             } 
