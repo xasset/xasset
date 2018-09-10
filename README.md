@@ -53,7 +53,7 @@ IEnumerator LoadAsset ()
 为简化出包流程，XAsset 也还提供了一键输出程序包的命令，执行 "Assets/XAsset/Build Player" 可以很方便的一键输出 apk、app or exe 程序文件，文件名会根据 Unity 项目中 PlayerSettings 的 ProductName 和 BundleVersion 自动生成。
 
 
-##### 核心文件 #####
+#### 核心文件
 
 - XAsset/Assets.cs 
 
