@@ -1,29 +1,20 @@
 # XAsset 
 
-XAsset 为 Unity 项目提供了一套"简便"的资源管理环境，借助 XAsset，你可以很方便的对Unity项目中的 AssetBundle 资源进行打包，加载，释放和优化。
+XAsset 为 Unity 项目提供了一套简便的资源管理环境，借助 XAsset，你可以很轻易的在 Unity 项目中对 AssetBundle 资源进行 打包、更新、加载、和回收。
 
-GitHub: https://github.com/fengjiyuan/XAsset （PS: 如果觉得好用请Star一个）
+#### 主要特点
+* 自动化的资源依赖和生命周期管理：XAsset 内部会自动处理资源的依赖和变种加载逻辑，同时利用了基于引用计数的资源依赖加载策略，让同一份资源不会被重复加载亦不会轻易卸载，从而让资源管理变得更简单稳健，让大家不在对一大堆资源依赖和生命周期管理烦恼。
 
-##### 主要特点
+* 敏捷化的编辑器仿真资源加载模式：XAsset 的资源加载支持开发模式和 Bundle 模式，在开发模式下不用构建 AssetBundle 也能加载到想要的资源。同时，也可以通过启动 Bundle 模式，在编辑器下进行真实的 AssetBundle 资源加载测试，让开发效率更高。
 
-1. 对于资源加载
+* 简便化的运行时工程资源加载机制：XAsset 使用资源在工程的相对路径取得资源，可以让逻辑层不用关注 AssetBundle，同时提供了资源路径转换代理接口，让逻辑层可以通过实现该代理接口，就能通过同一个地址获取本地或 WebServer 上的资源，让使用成本更低。
 
-   * 逻辑层可以不用关注 AssetBundle，加载资源只需要提供资源的路径和类型，内部会自动处理资源的依赖和变种加载逻辑。内建了基于引用计数的缓存策略，确保同一份资源不会被重复加载亦不会轻易卸载。
-   * 进行资源优化调整 AssetBundle 的打包粒度时，通常只要资源路径不变就不会对逻辑层（进行资源加载和卸载的代码）造成影响，维护成本相对较少。
-   * 支持开发模式和 Bundle 模式，在编辑器环境中，开发模式下不用构建 AssetBundle 也能加载到想要的资源，可以加快开发效率。 同时，也可以通过启动 Bundle 模式，进行真实环境下的 AssetBundle 加载。
+* 批量化的可配置资源打包构建流程：XAsset 提供了一系列可配置规则的批量打包工具，在打包时会自动收集资源的依赖信息，把公共资源剥离出来单独打包，从而避免冗余。同时，只要开启 BUILD_ATLAS 宏，就会自动进行图集打包，具有一定参考价值。
 
-2. 对于资源打包
-
-   * XAsset 会自动把所有要打包的资源所依赖的公共资源剥离出来，先对公共资源进行打包然后再把非公共资源按当前规则进行独立打包，尽量避免同一资源在多个 AssetBundle 中冗余。同时，只要开启 BUILD_ATLAS 宏， XAsset 也会自动进行图集打包。
-   * XAsset 中预定义了一系列的 BuildRule，可以很方便的对 Unity 项目中的 Prefab、Texture、Material、TextAsset 等资源进行收集和打包，只需按需配置 BuildRule，然后执行 "Assets/XAsset/Build AssetBundles" 就可以按定义的规则列表进行一键资源打包。
-   * 为简化出包流程，XAsset 也还提供了一键输出程序包的命令，执行 "Assets/XAsset/Build Player" 可以很方便的一键输出 apk、app or exe 程序文件，文件名会根据 Unity 项目中 PlayerSettings 的 ProductName 和 BundleVersion 自动生成。
-
-
-**环境需求**
-
+#### 环境需求
 XAsset 基于 Unity2017.2.0 进行开发，不过也可以通过导出源码源码的方式在低版本的Unity项目中运行，但是由于 AssetBundle.LoadFromFile（Async） 在 Android 上需要 Unity5.4 才能正常运行，所以不能低于此版本，建议不要使用5.4.2，过来人经验5.6相对比较稳定。
 
-##### 使用范例 ##### 
+#### 使用范例 
 
 使用 XAsset 资源管理 API 进行资源加载和卸载
 
@@ -58,6 +49,9 @@ IEnumerator LoadAsset ()
 ```
 
 > ***注：XAsset 提供了同步/异步两种加载模式，但是为了功能能够正常运转，对于同一个资源的加载，请不要在异步加载没有完成前进行同步加载，否则同步加载的资源将得不到正常的返回。***
+
+为简化出包流程，XAsset 也还提供了一键输出程序包的命令，执行 "Assets/XAsset/Build Player" 可以很方便的一键输出 apk、app or exe 程序文件，文件名会根据 Unity 项目中 PlayerSettings 的 ProductName 和 BundleVersion 自动生成。
+
 
 ##### 核心文件 #####
 
@@ -134,7 +128,7 @@ IEnumerator LoadAsset ()
 
   配置文件，用来记录每个 AssetBundle 包含的所有文件。
 
-- XAsset/Editor/BuildScript .cs
+- XAsset/Editor/BuildScript.cs
 
   打包脚本，实现了一键出包的主要流程。
 
@@ -149,13 +143,8 @@ IEnumerator LoadAsset ()
 ##### 推荐阅读 #####
 1. [Assets, Resources and AssetBundles](https://unity3d.com/cn/learn/tutorials/s/best-practices ) 
 2. [如何用XAsset进行较理想的Unity项目资源打包方案？](./如何用XAsset进行较理想的Unity项目资源打包方案.md)
+3. [如何用XAsset进行资源更新](./如何用XAsset进行资源更新.md)
 
 ##### 技术支持 #####
 
 QQ群：693203087
-
-##### 更新日志
-20180204 - fjy
-1. 增加 ReleaseAssetOnDestroy 组件可以用来自动回收场景对象的资源，用法参考 AssetsTest
-2. 增加 Assets 资源回收逻辑，修改之前预制件中静态引用的贴图，在销毁并卸载预制件后，在Profiler 中没有正常回收的问题
-3. 优化编码，尽可能把编辑器相关逻辑和 Runtime 逻辑分开，方便后续构建 dll，gendll.sh 可以用来在 mac 下生成 xasset 的 dll
