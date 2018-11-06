@@ -13,7 +13,7 @@ namespace XAsset
 
         public static event OverrideDataPathDelegate overrideBaseDownloadingURL;
 
-        public static AssetBundleManifest manifest { get; private set; } 
+        public static AssetBundleManifest manifest { get; private set; }
 
         public static string GetDataPath(string bundleName)
         {
@@ -44,6 +44,43 @@ namespace XAsset
                 return false;
             }
             return true;
+        }
+
+        public static System.Collections.IEnumerator InitializeAsync(string path, System.Action<Bundle> onComplete)
+        {
+            activeVariants = new string[0];
+            dataPath = path;
+
+            var request = LoadInternal(Utility.GetPlatformName(), true, true);
+
+            yield return request;
+
+            if (request == null || request.error != null)
+            {
+                Debug.LogErrorFormat("xasset: {0}", request.error);
+                yield break;
+            }
+
+
+            manifest = request.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
+            if (manifest == null)
+            {
+                yield break;
+            }
+
+            var bundle = LoadAsync("manifest");
+
+            yield return bundle;
+
+            if (bundle == null || bundle.error != null)
+            {
+                yield break;
+            }
+
+            if (onComplete != null)
+            {
+                onComplete.Invoke(bundle);
+            }
         }
 
         public static Bundle Load(string assetBundleName)
@@ -126,8 +163,8 @@ namespace XAsset
                     {
                         LoadDependencies(bundle, assetBundleName, asyncRequest);
                     }
-                } 
-            } 
+                }
+            }
             bundle.Retain();
             return bundle;
         }

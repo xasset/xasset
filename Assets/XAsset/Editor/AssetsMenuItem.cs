@@ -64,6 +64,8 @@ namespace XAsset.Editor
 				return;
 			}        
 			BuildScript.CopyAssetBundlesTo (Path.Combine (Application.streamingAssetsPath, EditorUtility.AssetBundlesOutputPath));
+
+            AssetDatabase.Refresh();
 		}  
 
 		[MenuItem ("Assets/XAsset/Build Player")]  

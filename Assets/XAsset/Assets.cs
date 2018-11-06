@@ -14,7 +14,7 @@ namespace XAsset
         public static string GetBundleName(string assetPath) { return manifest.GetBundleName(assetPath); }
         public static string GetAssetName(string assetPath) { return manifest.GetAssetName(assetPath); }
 
-        public static bool Initialize()
+        private static void CheckInstance()
         {
             if (instance == null)
             {
@@ -22,6 +22,11 @@ namespace XAsset
                 DontDestroyOnLoad(go);
                 instance = go.AddComponent<Assets>();
             }
+        }
+
+        public static bool Initialize()
+        {
+            CheckInstance();
 
 #if UNITY_EDITOR
             if (Utility.ActiveBundleMode)
@@ -32,6 +37,13 @@ namespace XAsset
 #else
 			return InitializeBundle();
 #endif
+        }
+
+        public static void InitializeAsync(System.Action onComplete)
+        {
+            CheckInstance();
+
+            instance.InitializeBundleAsync(onComplete);
         }
 
         public static Asset Load<T>(string path) where T : Object
@@ -90,6 +102,41 @@ namespace XAsset
                 throw new FileNotFoundException("assets manifest not exist.");
             }
             throw new FileNotFoundException("bundle manifest not exist.");
+        }
+
+        void InitializeBundleAsync(System.Action onComplete)
+        {
+            string relativePath = Path.Combine(Utility.AssetBundlesOutputPath, Utility.GetPlatformName());
+            var url =
+#if UNITY_EDITOR
+                relativePath + "/";
+#else
+				Path.Combine(Application.streamingAssetsPath, relativePath) + "/"; 
+#endif
+
+            StartCoroutine(Bundles.InitializeAsync(url, bundle =>
+            {
+                if (bundle != null)
+                {
+                    var asset = bundle.LoadAsset<TextAsset>("Manifest.txt");
+                    if (asset != null)
+                    {
+                        using (var reader = new StringReader(asset.text))
+                        {
+                            manifest.Load(reader);
+                            reader.Close();
+                        }
+                        bundle.Release();
+                        Resources.UnloadAsset(asset);
+                        asset = null;
+                    }
+                }
+
+                if (onComplete != null)
+                {
+                    onComplete.Invoke();
+                }
+            }));
         }
 
         static Asset CreateAssetRuntime(string path, System.Type type, bool asyncMode)

@@ -8,11 +8,18 @@ public class AssetsTest : MonoBehaviour
 
     void Start()
     {
+#if UNITY_WEBGL
+        Assets.InitializeAsync(() =>
+        {
+            StartCoroutine(Load());
+        });
+#else
         if (!Assets.Initialize())
         {
             Debug.LogError("Assets.Initialize falied.");
         }
         StartCoroutine(Load());
+#endif
     }
 
     IEnumerator Load()
