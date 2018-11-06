@@ -221,8 +221,19 @@ namespace XAsset
 				if (error != null)
 				{
 					return true;
-				} 
-				return _request.isDone;
+				}
+
+                if (_request.error != null)
+                {
+                    return true;
+                }
+
+                if (_request.isDone && _request.assetBundle !=null)
+                {
+                    return true;
+                }
+
+                return false;
 			}
 		}
 
