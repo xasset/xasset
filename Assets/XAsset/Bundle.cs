@@ -196,6 +196,10 @@ namespace XAsset
 		{
 			get
 			{
+                if (!_request.isDone)
+                {
+                    return null;
+                }
 				return assetBundle;
 			}
 		}
