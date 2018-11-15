@@ -15,6 +15,11 @@ namespace XAsset
 
         public static AssetBundleManifest manifest { get; private set; }
 
+		public static string[] GetAllDependencies(string bundle)
+		{
+			return manifest.GetAllDependencies (bundle);
+		}
+
         public static string GetDataPath(string bundleName)
         {
             if (overrideBaseDownloadingURL != null)
