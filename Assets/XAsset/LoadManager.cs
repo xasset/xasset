@@ -12,13 +12,6 @@ namespace XAsset
 
 	public class LoadManager : MonoBehaviour
 	{
-		List<Loader> loaders = new List<Loader> ();
-
-		Dictionary<string, List<Loader>> cache = new Dictionary<string, List<Loader>> ();
-
-		int progress;
-		bool loading = false;
-
 		public bool Loading {
 			get {
 				return loading;
@@ -37,8 +30,6 @@ namespace XAsset
 			}
 		}
 
-		double frameTime = 1 / 30;
-
 		public double FrameTime {
 			get {
 				return frameTime;
@@ -48,45 +39,54 @@ namespace XAsset
 			}
 		}
 
-		const string kCurrentCacheName = "current";
-
-		Action onCompleted;
-		Action<float> onUpdateProgress;
-
+		public T GetCachedAsset<T> (string path) where T : UnityEngine.Object
+		{
+			UnityEngine.Object a;
+			if (!cachedAssets.TryGetValue (path, out a)) {
+				Debug.LogWarning ("asset not found:" + path);
+				return null;
+			}
+			return a as T;
+		}
 
 		public void Load (AssetLoadInfo[] assets, Loader[] customLoaders, Action<float>updateProgress, Action completed)
-		{
+		{ 
 			loaders.Clear (); 
 
-			List<string> bundles = new List<string> ();
-			for (int i = 0, I = assets.Length; i < I; i++) {
-				var bundleName = Assets.GetBundleName (assets [i].path);
-				var allDependencies = Bundles.GetAllDependencies (bundleName);
-				for (int j = 0, J = allDependencies.Length; j < J; j++) {
-					var item = allDependencies [j];
-					if (!bundles.Contains (item)) { 
-						bundles.Add (item); 
+			if (assets == null || assets.Length == 0) {
+				List<string> bundles = new List<string> ();
+				for (int i = 0, I = assets.Length; i < I; i++) {
+					var bundleName = Assets.GetBundleName (assets [i].path);
+					var allDependencies = Bundles.GetAllDependencies (bundleName);
+					for (int j = 0, J = allDependencies.Length; j < J; j++) {
+						var item = allDependencies [j];
+						if (!bundles.Contains (item)) { 
+							bundles.Add (item); 
+						}
 					}
-				}
-			}  
+				} 
+				loaders.AddRange (Array.ConvertAll<string, BundleLoader> (bundles.ToArray (), input => {
+					return new BundleLoader () {
+						bundleName = input
+					};
+				}));
+				bundles.Clear ();
+				bundles = null;  
 
-			loaders.AddRange (Array.ConvertAll<string, BundleLoader> (bundles.ToArray (), input => {
-				return new BundleLoader () {
-					bundleName = input
-				};
-			}));
+				loaders.AddRange (Array.ConvertAll<AssetLoadInfo, AssetLoader> (assets, delegate(AssetLoadInfo input) {
+					return new AssetLoader () {
+						assetPath = input.path,
+						assetType = input.type,
+						onLoad = OnLoad,
+						onUnload = OnUnload,
+					};
+				}));
+			}
 
-			loaders.AddRange (Array.ConvertAll<AssetLoadInfo, AssetLoader> (assets, delegate(AssetLoadInfo input) {
-				return new AssetLoader () {
-					assetPath = input.path,
-					assetType = input.type
-				};
-			}));
+			if (customLoaders != null && customLoaders.Length > 0) { 
+				loaders.AddRange (customLoaders);
+			} 
 
-			loaders.AddRange (customLoaders);
-
-			bundles.Clear ();
-			bundles = null; 
 			progress = 0;
 
 			onCompleted = completed;
@@ -97,14 +97,14 @@ namespace XAsset
 
 		public void Cache (string name)
 		{
-			cache.Add (name, new List<Loader> (loaders));
+			cachedLoaders.Add (name, new List<Loader> (loaders));
 		}
 
 		public void Uncache (string name)
 		{
 			List<Loader> list;
-			if (cache.TryGetValue (name, out list)) {
-				cache.Remove (name);
+			if (cachedLoaders.TryGetValue (name, out list)) {
+				cachedLoaders.Remove (name);
 				for (int i = 0, I = list.Count; i < I; i++) {
 					var item = list [i];
 					item.Unload ();
@@ -123,6 +123,16 @@ namespace XAsset
 			return progress >= loaders.Count;
 		}
 
+		void OnLoad (AssetLoader loader)
+		{
+			cachedAssets.Add (loader.assetPath, loader.asset.asset);
+		}
+
+		void OnUnload (AssetLoader loader)
+		{
+			cachedAssets.Remove (loader.assetPath);
+		}
+
 		void Complete ()
 		{
 			if (onCompleted != null) {
@@ -135,7 +145,7 @@ namespace XAsset
 		void UpdateProgress ()
 		{
 			if (progress >= 0 && progress < loaders.Count) {
-				loaders [progress].Load ();
+				loaders [progress].Load (); 
 				progress++; 
 			}
 			if (onUpdateProgress != null) {
@@ -158,5 +168,23 @@ namespace XAsset
 				}
 			}
 		}
+
+		const string kCurrentCacheName = "current";
+
+		double frameTime = 1 / 30;
+
+		int progress;
+
+		bool loading = false;
+
+		Action onCompleted;
+
+		Action<float> onUpdateProgress;
+
+		List<Loader> loaders = new List<Loader> ();
+
+		Dictionary<string, List<Loader>> cachedLoaders = new Dictionary<string, List<Loader>> ();
+
+		Dictionary<string, UnityEngine.Object> cachedAssets = new Dictionary<string, UnityEngine.Object> ();
 	}
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace XAsset
 {
 	public interface Loader
-	{
+	{ 
 		void Load ();
 
 		void Unload ();
@@ -17,12 +17,18 @@ namespace XAsset
 
 		public void Load ()
 		{
-			asset = Assets.Load (assetPath, assetType); 
+			asset = Assets.Load (assetPath, assetType);
+			if (onLoad != null) {
+				onLoad (this);
+			}
 		}
 
 		public void Unload ()
 		{
 			asset.Unload ();
+			if (onUnload != null) {
+				onUnload (this);
+			}
 		}
 
 		#endregion
@@ -30,6 +36,9 @@ namespace XAsset
 		public string assetPath;
 		public System.Type assetType;
 		public Asset asset;
+
+		public Action<AssetLoader> onLoad;
+		public Action<AssetLoader> onUnload;
 	}
 
 	public class BundleLoader : Loader
