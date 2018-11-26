@@ -62,15 +62,8 @@ namespace XAsset
 
         internal void Unload()
         {
-            I("Unload " + assetPath);
-            if (asset != null)
-            {
-                if (asset.GetType() != typeof(GameObject))
-                {
-                    Resources.UnloadAsset(asset);
-                }
-                asset = null;
-            }
+            I("Unload " + assetPath); 
+			asset = null;
             OnUnload();
             assetPath = null;
         }
