@@ -187,4 +187,5 @@ namespace XAsset
 
 		Dictionary<string, UnityEngine.Object> cachedAssets = new Dictionary<string, UnityEngine.Object> ();
 	}
+
 }

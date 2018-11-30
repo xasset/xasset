@@ -1,7 +1,7 @@
 manifest:
 	Assets/Manifest.txt
 
-shared/assets/sampleassets:
+shared/assets/sampleassets_1:
 	Assets/SampleAssets/UnityLogo.png
 
 assets/sampleassets/logo:

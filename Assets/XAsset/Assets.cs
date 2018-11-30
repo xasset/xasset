@@ -176,6 +176,7 @@ namespace XAsset
         System.Collections.IEnumerator gc = null;
         System.Collections.IEnumerator GC()
         {
+			System.GC.Collect ();
             yield return 0;
             yield return Resources.UnloadUnusedAssets();
         }
