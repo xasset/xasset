@@ -95,7 +95,12 @@ namespace XAsset
             {
                 return "Windows";
             }
-            if (target == BuildTarget.StandaloneOSXIntel || target ==  BuildTarget.StandaloneOSXIntel64 || target == BuildTarget.StandaloneOSXUniversal)
+            if
+#if UNITY_2017_3_OR_NEWER
+            (target == BuildTarget.StandaloneOSX)
+#else
+            (target == BuildTarget.StandaloneOSXIntel || target ==  BuildTarget.StandaloneOSXIntel64 || target == BuildTarget.StandaloneOSX)
+#endif
             {
                 return "OSX";
             }

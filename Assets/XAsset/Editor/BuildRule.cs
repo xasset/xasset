@@ -10,18 +10,15 @@ namespace XAsset.Editor
     {
         protected static List<string> packedAssets = new List<string>();
         protected static List<AssetBundleBuild> builds = new List<AssetBundleBuild>();
-        static List<BuildRule> rules = new List<BuildRule>();
-        static Dictionary<string, List<string>> allDependencies = new Dictionary<string, List<string>>();
-
-        static BuildRule()
-        {
-
-        }
+        private static List<BuildRule> rules = new List<BuildRule>();
+        private static Dictionary<string, List<string>> allDependencies = new Dictionary<string, List<string>>();
 
         public static List<AssetBundleBuild> GetBuilds(string manifestPath)
         {
             packedAssets.Clear();
             builds.Clear();
+            rules.Clear();
+            allDependencies.Clear();
 
             AssetBundleBuild build = new AssetBundleBuild();
             build.assetBundleName = "manifest";

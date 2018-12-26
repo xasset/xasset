@@ -131,8 +131,13 @@ namespace XAsset.Editor
             if (target == BuildTarget.StandaloneWindows || target == BuildTarget.StandaloneWindows64)
             {
                 return "/" + name + PlayerSettings.Android.bundleVersionCode + ".exe";
-            } 
-            if (target == BuildTarget.StandaloneOSXIntel || target == BuildTarget.StandaloneOSXIntel64 || target == BuildTarget.StandaloneOSXUniversal)
+            }
+            if
+#if UNITY_2017_3_OR_NEWER
+            (target == BuildTarget.StandaloneOSX)
+#else
+            (target == BuildTarget.StandaloneOSXIntel || target == BuildTarget.StandaloneOSXIntel64 || target == BuildTarget.StandaloneOSX)
+#endif
             {
                 return "/" + name + ".app";
             } 
