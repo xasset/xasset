@@ -36,14 +36,14 @@ namespace XAsset
 
         private System.Action<Asset> completed;
 
-        public void AddCompletedLisenter(System.Action<Asset> lisenter)
+        public void AddCompletedListener(System.Action<Asset> listener)
         {
-            completed += lisenter;
+            completed += listener;
         }
 
-        public void RemoveCompletedLisenter(System.Action<Asset> lisenter)
+        public void RemoveCompletedListener(System.Action<Asset> listener)
         {
-            completed -= lisenter;
+            completed -= listener;
         }
 
         public Object asset { get; protected set; }

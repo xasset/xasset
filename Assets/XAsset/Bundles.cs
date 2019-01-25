@@ -219,10 +219,10 @@ namespace XAsset
         }
 
         readonly internal static Dictionary<string, Bundle> bundles = new Dictionary<string, Bundle>();
+        readonly static List<Bundle> bundleToDestroy = new List<Bundle>();
 
         internal static void Update()
         {
-            List<Bundle> bundleToDestroy = new List<Bundle>();
             foreach (var item in bundles)
             {
                 if (item.Value.isDone && item.Value.references <= 0)
