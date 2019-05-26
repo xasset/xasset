@@ -1,150 +1,117 @@
-# XAsset 
+# xasset
+xasset 致力于为 Unity 项目提供了一套 精简稳健 的资源管理环境
 
-XAsset 为 Unity 项目提供了一套简便的资源管理环境，借助 XAsset，你可以很轻易的在 Unity 项目中对 AssetBundle 资源进行 打包、更新、加载、和回收。
+## 主要特点
+- 致力于用最少的代码实现最健全的功能，并通过 Delegate 把 Runtime 部分的业务和 Editor 部分的业务剥离，没有为了模式而模式或者为了设计而设计的累赘代码
+- 自动管理 AssetBundle 的依赖的加载和卸载，在 Editor 下提供了敏捷高效的开发模式，不构建 AssetBundle 也可以加载相关的资源，对应还提供了 Runtime 模式，走构建后的加载流程
+- 基于内建的引用计数机制确保资源不会重复加载和轻易卸载，并对提供了给资源设置关注对象的机制，在对象被销毁时，底层自动释放资源引用计数，当引用计数为 0 时，再自动卸载资源
+- 支持 Buildin 和 AssetBundle 中的场景，以及 WWW 和 AssetBundle 中的常规资源的加载和卸载，并都提供了同步和异步的加载模式，和基于离散文件的资源版本更新机制，以及一系列的批处理打包工具 
 
-#### 主要特点
-* 自动化的资源依赖和生命周期管理：XAsset 内部会自动处理资源的依赖和变种加载逻辑，同时利用了基于引用计数的资源依赖加载策略，让同一份资源不会被重复加载亦不会轻易卸载，从而让资源管理变得更简单稳健，让大家不在对一大堆资源依赖和生命周期管理烦恼。
+## 接口说明
+**Assets.Initialize** 
 
-* 敏捷化的编辑器仿真资源加载模式：XAsset 的资源加载支持开发模式和 Bundle 模式，在开发模式下不用构建 AssetBundle 也能加载到想要的资源。同时，也可以通过启动 Bundle 模式，在编辑器下进行真实的 AssetBundle 资源加载测试，让开发效率更高。
+系统唯一的初始化接口，为更好的兼容 WebGL，初始化内部采用异步实现，对业务层使用输入的 Callback 函数 OnSucces 和 OnError 进行状态返回
 
-* 简便化的运行时工程资源加载机制：XAsset 使用资源在工程的相对路径取得资源，可以让逻辑层不用关注 AssetBundle，同时提供了资源路径转换代理接口，让逻辑层可以通过实现该代理接口，就能通过同一个地址获取本地或 WebServer 上的资源，让使用成本更低。
+**Assets.LoadScene/Assets.UnloadScene**
 
-* 批量化的可配置资源打包构建流程：XAsset 提供了一系列可配置规则的批量打包工具，在打包时会自动收集资源的依赖信息，把公共资源剥离出来单独打包，从而避免冗余。同时，只要开启 ENABLE_ATLAS 宏，就会自动进行图集打包，具有一定参考价值。
+主要用来对 Buildin 和 AssetBundle 中的场景进行加载（同步/异步）和卸载。此外，对于场景的卸载，还可以通过调用加载时返回的 SceneAsset 对象的 Release 方法来卸载
 
-#### 环境需求
-XAsset 基于 Unity2017.2.0 进行开发，不过也可以通过导出源码源码的方式在低版本的Unity项目中运行，但是由于 AssetBundle.LoadFromFile（Async） 在 Android 上需要 Unity5.4 才能正常运行，所以不能低于此版本，建议不要使用5.4.2，过来人经验5.6相对比较稳定。
+**Assets.Load(Async)/Assets.Unload**
 
-#### 使用范例 
+主要用来对 WWW 和 AssetBundle 中的资源进行加载（同步/异步）和卸载，同上，对于资源的卸载，还可以通过调用加载时返回的 Asset 对象的 Release 方法来卸载
 
-使用 XAsset 资源管理 API 进行资源加载和卸载
+**Asset.Release**
 
-```c#
-IEnumerator LoadAsset ()
-{
-	string assetPath = "Assets/SampleAssets/MyCube.prefab"; 
-	/// 同步模式用路径加载资源
-	var asset = Assets.Load<GameObject> (assetPath);
-	if (asset != null && asset.asset != null) {
-		var go = GameObject.Instantiate (asset.asset);
-		GameObject.Destroy (go, 1);
-	}
-	/// 卸载
-	asset.Unload ();
-	asset = null; 
+资源在 Load 后如果不想用了，就调用这个接口释放资源的引用计数，引用计数为 0 时，底层会对资源进行回收处理
 
-	/// 异步模式加载
-	var assetAsync = Assets.LoadAsync<GameObject> (assetPath);
-	if (assetAsync != null) {
-		yield return assetAsync;
-		if (assetAsync.asset != null) {
-			var go = GameObject.Instantiate (assetAsync.asset);
-			GameObject.Destroy (go, 1);
-		} else {
-			Debug.LogError (assetAsync.error);
-		} 
-		assetAsync.Unload ();
-		assetAsync = null;
-	}
-}
-```
+**Asset.Require**
 
-> ***注：XAsset 提供了同步/异步两种加载模式，但是为了功能能够正常运转，对于同一个资源的加载，请不要在异步加载没有完成前进行同步加载，否则同步加载的资源将得不到正常的返回。***
+让资源关注输入的 Unity 对象，当输入对象为空时，底层会自动释放对应的引用计数，用这种方式可以避免 基于 OnDestroy 回收资源时，对象销毁时可能不触发 OnDestroy 导致资源不能正常回收的问题，这个机制借鉴了[ABSystem](https://github.com/tangzx/ABSystem) 的做法，具体可以点击链接查看 
+​ 
+**Asset.text/Asset.bytes**
+​ 
+当通过 WebAsset 加载文本/二进制 时，可以通过这个属性访问 文本/二进制 的内容
 
-为简化出包流程，XAsset 也还提供了一键输出程序包的命令，执行 "Assets/XAsset/Build Player" 可以很方便的一键输出 apk、app or exe 程序文件，文件名会根据 Unity 项目中 PlayerSettings 的 ProductName 和 BundleVersion 自动生成。
+**Asset.progress**
+​ 
+资源加载进度
+
+**Asset.completed**
+​ 
+资源加载完成时的事件回调
+
+**Asset.isDone**
+​ 
+资源是否加载完成
+
+**Asset.error**
+​ 
+资源加载的错误
+
+## 操作流程
+#### 打包
+对于资源打包，建议集成官方的 [AssetBundleBrowser](https://github.com/Unity-Technologies/AssetBundles-Browser ) 来检查 AssetBundle 中的资源冗余情况，打包的主要流程是：
+
+1. 标记 要打包的资源
+
+2. 生成 AssetBundle
+
+3. 生成 播放器
+
+下面是框架中提供的一些辅助工具：
+
+**Assets/AssetBundles/按目录标记**
+
+同一个目录下的资源一个AssetBundle 
+​ 
+**Assets/AssetBundles/按文件标记**
+
+每个文件一个AssetBundle，AssetBundle名称包含文件路径 
+
+**Assets/AssetBundles/按名称标记**
+
+每个文件一个AssetBundle，AssetBundle名称不包含文件路径
+
+**Assets/AssetBundles/生成配置**
+
+对工程中的所有打包 AssetBundle 的资源生成 Manifest 文件，主要用来寻址
+
+**Assets/AssetBundles/生成資源包**
+
+将所有标记过的资源生成对应的 AssetBundle
+
+**Assets/AssetBundles/生成播放器**
+
+针对当前平台生产对应的可执行文件，例如 exe，apk，ipa(需要在安装了xcode的mac下进行)等 
+
+#### 寻址
+所有资源加载，会优先判断资源是否在 AssetBundle 中，然后再根据具体的资源类型分别执行对应的操作： 
+1. 对于场景，不在 AssetBundle 中就从 Buildin 中的数据加载    
+2. 对于常规资源，路径中以这些符号 http:// https:// file:// ftp:// 开头的，在AssetBundle 中的，会基于 WWW 的 AssetBundle 资源加载, 不在的则基于 WWW 的普通资源加载
+
+#### 更新
+版本更新主要包括以下 3 个状态, 可以在框架中的 Demo 场景查看
+1. **Check** 
+
+    读取本地和远程资源版本，对比生成需要的下载的资源列表，如果列表的文件数量 > 0, 执行 Download，否则执行 Complete
+
+2. **Download**
+
+    依次下载列表中的资源文件，下载完成后，完成更新执行 Complete
+
+3. **Complete**
+
+    如果有下载更新，将下载的版本记录写入本地，并重新初始化完成资源热更
 
 
-#### 核心文件
+## 技术支持
+Email: jiyuan.feng@live.com
 
-- XAsset/Assets.cs 
+QQ-group: 693203087
 
-  提供了资源管理相关 API，让用户不需要关注 AssetBundle。主要提供了一下接口：
-
-  - Initialize 
-
-     初始化
-
-  - Load 
-
-     同步加载，阻塞主线程
-
-  - LoadAsync 
-
-     异步加载，不阻塞主线程
-
-  - Unload 
-
-     卸载资源，也可以参考上面的演示范例通过调用返回的 Asset 对象的 Unload 卸载资源
-
-  > ***注：编辑器下未激活 Bundle Mode 的时候都是同步加载***
-
-
-- XAsset/AssetsTest.cs
-
-  使用 Assets API 进行资源加载（同步/异步）和卸载的示范。
-
-
-- XAsset/Editor/AssetsMenuItem.cs
-
-   编辑器 “Assets” 菜单的定义，主要包含以下功能：
-
-   > "Assets/Copy Asset Path" 
-   >
-   > ​	复制资源的在工程中的相对路径
-   >
-   > "Assets/XAsset/Bundle Mode" 
-   >
-   > ​	编辑器下用来 激活（勾选）或关闭（反选） Bundle Mode
-   >
-   > "Assets/XAsset/Build AssetBundles"
-   >
-   > ​	构建 AssetBundles
-   >
-   > "Assets/XAsset/Build Player"
-   >
-   > ​	构建 程序包，iOS模式下会导出 xcode 工程
-
-- XAsset/Editor/BuildRule.cs
-
-   打包规则，实现了资源收集和打包（包括图集）策略，目前主要预定义了以下规则：
-
-   > BuildAssetsWithAssetBundleName 
-   >
-   > ​	将搜索到的所有资源按指定的 AssetBundleName 进行打包。
-   >
-   > BuildAssetsWithDirectroyName 
-   >
-   > ​	将搜索到的所有资源按资源所在的路径进行打包，同一个路径下的所有资源会被打到一个包。
-   >
-   > BuildAssetsWithFilename
-   > ​	将搜索到的所有资源按每个资源的文件名进行打包，每个文件一个包。
-   >
-   > ***注意：以上规则默认都会将规则中每个资源的同其非共享的所有依赖的资源打到同一个包***
-
-- XAsset/Bundles.cs 
-
-  封装了 AssetBundle 的依赖和变种的加载和释放的接口实现。
-
-- XAsset/Manifest.cs
-
-  配置文件，用来记录每个 AssetBundle 包含的所有文件。
-
-- XAsset/Editor/BuildScript.cs
-
-  打包脚本，实现了一键出包的主要流程。
-
-- XAsset/Utility.cs 
-
-  辅助工具。
-
-- XAsset/Logger.cs 
-
-  日志工具。
-
-##### 推荐阅读 #####
-1. [Assets, Resources and AssetBundles](https://unity3d.com/cn/learn/tutorials/s/best-practices ) 
-2. [如何用XAsset进行较理想的Unity项目资源打包方案？](./如何用XAsset进行较理想的Unity项目资源打包方案.md)
-3. [如何用XAsset进行资源更新](./如何用XAsset进行资源更新.md)
-
-##### 技术支持 #####
-
-QQ群：693203087
+## 贡献成员
+- [oucfeng](https://github.com/oucfeng)
+- [wl-666](https://github.com/wl-666)
+- [backjy](https://github.com/backjy)
+- [CatImmortal](https://github.com/CatImmortal)
+- [RoneBlog](https://github.com/RoneBlog)
