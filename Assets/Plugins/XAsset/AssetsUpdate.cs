@@ -56,7 +56,7 @@ namespace Plugins.XAsset
         private readonly List<Download> _downloads = new List<Download>();
         private int _downloadIndex;
 
-        [SerializeField] string versionsTxt = "";
+		[SerializeField] string versionsTxt = "versions.txt";
 
         private void OnError(string e)
         {
