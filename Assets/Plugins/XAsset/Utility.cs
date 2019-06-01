@@ -100,7 +100,7 @@ namespace Plugins.XAsset
                        filename;
 #if UNITY_IOS
 			path = "file://" + path;
-#elif UNITY_STANDALONE_WIN
+#elif UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
             path = "file:///" + path;
 #endif
             return path;
