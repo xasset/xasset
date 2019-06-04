@@ -104,6 +104,7 @@ xasset 致力于为 Unity 项目提供了一套 精简稳健 的资源管理环�
     如果有下载更新，将下载的版本记录写入本地，并重新初始化完成资源热更
 
 ## 友情链接
+ - [ET](https://github.com/egametang/ET) Unity3D Client And C# Server Framework
  - [QFramework](https://github.com/liangxiegame/QFramework) Your first K.I.S.S Unity 3D Framework.
 
 ## 技术支持
