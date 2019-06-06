@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
@@ -467,7 +468,11 @@ namespace Plugins.XAsset
 
     public class WebAsset : Asset
     {
+#if UNITY_2018_3_OR_NEWER
+        private UnityWebRequest _www;
+#else
         private WWW _www;
+#endif
 
         public override bool isDone
         {
@@ -480,6 +485,27 @@ namespace Plugins.XAsset
                     return _www.isDone;
                 if (asset != null)
                     return _www.isDone;
+
+#if UNITY_2018_3_OR_NEWER
+                if (assetType != typeof(Texture2D))
+                {
+                    if (assetType != typeof(TextAsset))
+                    {
+                        if (assetType != typeof(AudioClip))
+                            bytes = _www.downloadHandler.data;
+                        else
+                            asset = DownloadHandlerAudioClip.GetContent(_www);
+                    }
+                    else
+                    {
+                        text = _www.downloadHandler.text;
+                    }
+                }
+                else
+                {
+                    asset = DownloadHandlerTexture.GetContent(_www);
+                }
+#else
                 if (assetType != typeof(Texture2D))
                 {
                     if (assetType != typeof(TextAsset))
@@ -499,6 +525,8 @@ namespace Plugins.XAsset
                     asset = _www.texture;
                 }
 
+                
+#endif
                 return _www.isDone;
             }
         }
@@ -510,12 +538,30 @@ namespace Plugins.XAsset
 
         public override float progress
         {
-            get { return _www.progress; }
+            get { return _www.downloadProgress; }
         }
 
         internal override void Load()
         {
-            _www = new WWW(name);
+#if UNITY_2018_3_OR_NEWER
+            if (assetType == typeof(AudioClip))
+            {
+                _www = UnityWebRequestMultimedia.GetAudioClip(name, AudioType.WAV);
+            }
+            else if (assetType == typeof(Texture2D))
+            {
+                _www = UnityWebRequestTexture.GetTexture(name);
+            }
+            else
+            {
+                _www = new UnityWebRequest(name);
+            }
+#else
+              _www = new WWW(name);
+#endif
+
+
+
         }
 
         internal override void Unload()
@@ -525,7 +571,6 @@ namespace Plugins.XAsset
                 Object.Destroy(asset);
                 asset = null;
             }
-
             if (_www != null)
                 _www.Dispose();
         }

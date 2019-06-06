@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Plugins.XAsset
 {
@@ -98,7 +99,11 @@ namespace Plugins.XAsset
 
     public class WebBundle : Bundle
     {
+#if UNITY_2018_3_OR_NEWER
+        private UnityWebRequest _request;
+#else
         private WWW _request;
+#endif
         public bool cache;
         public Hash128 hash;
 
@@ -112,19 +117,25 @@ namespace Plugins.XAsset
             get
             {
                 if (_request == null) return true;
-                if (_request.isDone) assetBundle = _request.assetBundle;
+                if (_request.isDone) assetBundle = DownloadHandlerAssetBundle.GetContent(_request);
                 return _request.isDone;
             }
         }
 
         public override float progress
         {
-            get { return _request.progress; }
+            get { return _request.downloadProgress; }
         }
 
         internal override void Load()
         {
+#if UNITY_2018_3_OR_NEWER
+            _request = cache ? UnityWebRequestAssetBundle.GetAssetBundle(name,hash) : UnityWebRequestAssetBundle.GetAssetBundle(name);
+#else
             _request = cache ? WWW.LoadFromCacheOrDownload(name, hash) : new WWW(name);
+#endif
+
+
         }
 
         internal override void Unload()
