@@ -117,7 +117,12 @@ namespace Plugins.XAsset
             get
             {
                 if (_request == null) return true;
+#if UNITY_2018_3_OR_NEWER
                 if (_request.isDone) assetBundle = DownloadHandlerAssetBundle.GetContent(_request);
+#else
+                if (_request.isDone) assetBundle = _request.assetBundle;
+#endif
+
                 return _request.isDone;
             }
         }
