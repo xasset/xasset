@@ -129,7 +129,11 @@ namespace Plugins.XAsset
 
         public override float progress
         {
+#if UNITY_2018_3_OR_NEWER
             get { return _request.downloadProgress; }
+#else
+			get { return _request.progress; }
+#endif
         }
 
         internal override void Load()
