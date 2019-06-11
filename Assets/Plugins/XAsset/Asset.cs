@@ -541,7 +541,7 @@ namespace Plugins.XAsset
 #if UNITY_2018_3_OR_NEWER
             get { return _www.downloadProgress; }
 #else
-			get { return _www.progress;}
+            get { return _www.progress;}
 #endif
         }
 
