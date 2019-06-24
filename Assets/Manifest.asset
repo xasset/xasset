@@ -8,40 +8,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 350570c47320e7b44a1e40fa12f9bef9, type: 3}
+  m_Script: {fileID: 11500000, guid: 6540d7aaf4bac7843b4f3b8051584bed, type: 3}
   m_Name: Manifest
   m_EditorClassIdentifier: 
-  downloadURL: http://127.0.0.1:7888/
+  downloadURL: 
   activeVariants: []
-  bundles:
-  - manifest
-  - prefabs/uiroot
-  - sprites/unitylogo
-  - scenes/test
-  - prefabs/uiroot2
-  dirs:
-  - Assets
-  - Assets/Plugins/XAsset/Demo/Prefabs
-  - Assets/Plugins/XAsset/Demo/Sprites
-  - Assets/Plugins/XAsset/Demo/Scenes
-  assets:
-  - variant: -1
-    bundle: 0
-    dir: 0
-    name: Manifest.asset
-  - variant: -1
-    bundle: 1
-    dir: 1
-    name: UIRoot.prefab
-  - variant: -1
-    bundle: 2
-    dir: 2
-    name: UnityLogo.png
-  - variant: -1
-    bundle: 3
-    dir: 3
-    name: Test.unity
-  - variant: -1
-    bundle: 4
-    dir: 1
-    name: UIRoot2.prefab
+  bundles: []
+  dirs: []
+  assets: []

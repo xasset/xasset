@@ -36,11 +36,16 @@ namespace Plugins.XAsset
 
 	public static class Bundles
 	{
+		private const int MAX_LOAD_SIZE_PERFREME = 3;
 		// ReSharper disable once InconsistentNaming
 		private static readonly List<Bundle> _bundles = new List<Bundle> ();
 
 		// ReSharper disable once InconsistentNaming
 		private static readonly List<Bundle> _unusedBundles = new List<Bundle> ();
+
+		private static readonly List<Bundle> _ready2Load = new List<Bundle> ();
+
+		private static readonly List<Bundle> _loading = new List<Bundle> ();
 
 		public static string[] activeVariants { get; set; }
 
@@ -164,9 +169,9 @@ namespace Plugins.XAsset
 
 			Bundle bundle;
 			if (url.StartsWith ("http://") ||
-			             url.StartsWith ("https://") ||
-			             url.StartsWith ("file://") ||
-			             url.StartsWith ("ftp://"))
+			    url.StartsWith ("https://") ||
+			    url.StartsWith ("file://") ||
+			    url.StartsWith ("ftp://"))
 				bundle = new WebBundle {
 					hash = manifest.GetAssetBundleHash (assetBundleName),
 					cache = !isLoadingAssetBundleManifest
@@ -175,8 +180,12 @@ namespace Plugins.XAsset
 				bundle = asyncMode ? new BundleAsync () : new Bundle ();
 
 			bundle.name = url;
-			_bundles.Add (bundle);
-			bundle.Load ();
+			_bundles.Add (bundle); 
+			if (MAX_LOAD_SIZE_PERFREME > 0 && (bundle is BundleAsync || bundle is WebBundle)) {
+				_ready2Load.Add (bundle);
+			} else {
+				bundle.Load ();
+			}
 			if (!isLoadingAssetBundleManifest)
 				LoadDependencies (bundle, assetBundleName, asyncMode);
 			bundle.Retain ();
@@ -200,6 +209,28 @@ namespace Plugins.XAsset
 
 		internal static void Update ()
 		{
+			if (MAX_LOAD_SIZE_PERFREME > 0) {
+				if (_ready2Load.Count > 0 && _loading.Count < 3) {
+					var loadCount = Math.Min (3 - _loading.Count, _ready2Load.Count);
+					for (int i = 0; i < loadCount; i++) { 
+						var item = _ready2Load [i];
+						if (item.loadState == LoadState.Unload) {
+							item.Load ();
+							_ready2Load.RemoveAt (i);
+							i--;
+						}
+					} 
+				}
+				
+				for (int i = 0; i < _loading.Count; i++) {
+					var item = _loading [i];
+					if (item.loadState == LoadState.Loaded || item.Load == LoadState.Unload) {
+						_loading.RemoveAt (i);
+						i--;
+					}
+				} 
+			}
+
 			for (var i = 0; i < _bundles.Count; i++) {
 				var item = _bundles [i];
 				if (item.Update () || !item.IsUnused ())

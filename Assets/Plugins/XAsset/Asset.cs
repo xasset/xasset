@@ -50,6 +50,7 @@ namespace Plugins.XAsset
         private List<Object> _requires;
         public Type assetType;
         public string name;
+		public LoadState loadState { get; protected set; }
 
         public Asset()
         {
@@ -219,9 +220,7 @@ namespace Plugins.XAsset
     }
 
     public class BundleAssetAsync : BundleAsset
-    {
-        private LoadState _loadState = LoadState.Unload;
-
+    { 
         private AssetBundleRequest _request;
 
         public BundleAssetAsync(string bundle)
@@ -243,7 +242,7 @@ namespace Plugins.XAsset
                         return true;
                 }
 
-                switch (_loadState)
+                switch (loadState)
                 {
                     case LoadState.Loaded:
                         return true;
@@ -267,7 +266,7 @@ namespace Plugins.XAsset
 
                         var assetName = Path.GetFileName(name);
                         _request = bundle.assetBundle.LoadAssetAsync(assetName, assetType);
-                        _loadState = LoadState.LoadAsset;
+                        loadState = LoadState.LoadAsset;
                         break;
                     }
                     case LoadState.Unload:
@@ -278,12 +277,12 @@ namespace Plugins.XAsset
                         throw new ArgumentOutOfRangeException();
                 }
 
-                if (_loadState != LoadState.LoadAsset)
+                if (loadState != LoadState.LoadAsset)
                     return false;
                 if (!_request.isDone)
                     return false;
                 asset = _request.asset;
-                _loadState = LoadState.Loaded;
+                loadState = LoadState.Loaded;
                 return true;
             }
         }
@@ -309,13 +308,13 @@ namespace Plugins.XAsset
         internal override void Load()
         {
             bundle = Bundles.LoadAsync(assetBundleName);
-            _loadState = LoadState.LoadAssetBundle;
+            loadState = LoadState.LoadAssetBundle;
         }
 
         internal override void Unload()
         {
             _request = null;
-            _loadState = LoadState.Unload;
+            loadState = LoadState.Unload;
             base.Unload();
         }
     }
@@ -366,9 +365,7 @@ namespace Plugins.XAsset
     }
 
     public class SceneAssetAsync : SceneAsset
-    {
-        private LoadState _loadState = LoadState.Unload;
-
+    {  
         private AsyncOperation _request;
 
         public SceneAssetAsync(string path, bool addictive)
@@ -408,7 +405,7 @@ namespace Plugins.XAsset
                         return true;
                 }
 
-                switch (_loadState)
+                switch (loadState)
                 {
                     case LoadState.Loaded:
                         return true;
@@ -425,7 +422,7 @@ namespace Plugins.XAsset
                         }
 
                         _request = SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
-                        _loadState = LoadState.LoadAsset;
+                        loadState = LoadState.LoadAsset;
                         break;
                     }
                     case LoadState.Unload:
@@ -436,11 +433,11 @@ namespace Plugins.XAsset
                         throw new ArgumentOutOfRangeException();
                 }
 
-                if (_loadState != LoadState.LoadAsset)
+                if (loadState != LoadState.LoadAsset)
                     return false;
                 if (!_request.isDone)
                     return false;
-                _loadState = LoadState.Loaded;
+                loadState = LoadState.Loaded;
                 return true;
             }
         }
@@ -450,12 +447,12 @@ namespace Plugins.XAsset
             if (!string.IsNullOrEmpty(assetBundleName))
             {
                 bundle = Bundles.LoadAsync(assetBundleName);
-                _loadState = LoadState.LoadAssetBundle;
+                loadState = LoadState.LoadAssetBundle;
             }
             else
             {
                 _request = SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
-                _loadState = LoadState.LoadAsset;
+                loadState = LoadState.LoadAsset;
             }
         }
 
