@@ -224,7 +224,7 @@ namespace Plugins.XAsset
 				
 				for (int i = 0; i < _loading.Count; i++) {
 					var item = _loading [i];
-					if (item.loadState == LoadState.Loaded || item.Load == LoadState.Unload) {
+					if (item.loadState == LoadState.Loaded || item.loadState == LoadState.Unload) {
 						_loading.RemoveAt (i);
 						i--;
 					}
