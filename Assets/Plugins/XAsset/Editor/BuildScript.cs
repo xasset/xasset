@@ -205,7 +205,7 @@ namespace Plugins.XAsset.Editor
                         bundleIndex = usedBundles.Count - 1;
                     }
 
-                    var dir = System.IO.Path.GetDirectoryName(assetPath);
+                    var dir = System.IO.Path.GetDirectoryName(assetPath).Replace("\\", "/");
                     var dirIndex = usedDirs.FindIndex(delegate (string obj) { return obj == dir; });
                     if (dirIndex == -1)
                     {
@@ -244,7 +244,7 @@ namespace Plugins.XAsset.Editor
         public static void SetAssetBundleNameAndVariant(string assetPath, string bundleName, string variant)
         {
             var manifest = GetManifest();
-            var dir = System.IO.Path.GetDirectoryName(assetPath);
+            var dir = System.IO.Path.GetDirectoryName(assetPath).Replace("\\", "/");
             var dirs = manifest.dirs;
             var dirIndex = ArrayUtility.FindIndex(dirs, (string obj) => { return obj == dir; });
 

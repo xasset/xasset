@@ -88,7 +88,7 @@ namespace Plugins.XAsset.Editor
                     continue;
                 if (EditorUtility.DisplayCancelableProgressBar(KMarkAssets, path, i * 1f / assets.Length))
                     break; 
-                var assetBundleName = Path.GetDirectoryName(path) + "_g";
+                var assetBundleName = Path.GetDirectoryName(path).Replace("\\", "/") + "_g";
                 BuildScript.SetAssetBundleNameAndVariant(path, assetBundleName.ToLower(), null);
             }
 
@@ -112,6 +112,7 @@ namespace Plugins.XAsset.Editor
                 var name = Path.GetFileNameWithoutExtension(path);
                 if (dir == null)
                     continue;
+                dir = dir.Replace("\\", "/");
                 if (name == null)
                     continue;
 
