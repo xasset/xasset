@@ -171,9 +171,9 @@ namespace Plugins.XAsset
 
         void OnAssetLoaded(Asset asset)
         {
-            if (asset.name.EndsWith(".prefab"))
+            if (asset.name.EndsWith(".prefab", StringComparison.CurrentCulture))
             {
-                var go = GameObject.Instantiate(asset.asset);
+                var go = Instantiate(asset.asset);
                 go.name = asset.asset.name;
                 asset.Require(go);
                 Destroy(go, 3);

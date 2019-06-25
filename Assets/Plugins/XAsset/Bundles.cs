@@ -36,7 +36,7 @@ namespace Plugins.XAsset
 
 	public static class Bundles
 	{
-		private const int MAX_LOAD_SIZE_PERFREME = 3;
+		private static readonly int MAX_LOAD_SIZE_PERFREME = 3;
 		// ReSharper disable once InconsistentNaming
 		private static readonly List<Bundle> _bundles = new List<Bundle> ();
 
@@ -211,10 +211,9 @@ namespace Plugins.XAsset
 		{
 			if (MAX_LOAD_SIZE_PERFREME > 0) {
 				if (_ready2Load.Count > 0 && _loading.Count < 3) {
-					var loadCount = Math.Min (3 - _loading.Count, _ready2Load.Count);
-					for (int i = 0; i < loadCount; i++) { 
+					for (int i = 0; i < Math.Min(3 - _loading.Count, _ready2Load.Count); i++) {
 						var item = _ready2Load [i];
-						if (item.loadState == LoadState.Unload) {
+						if (item.loadState == LoadState.Init) {
 							item.Load ();
 							_ready2Load.RemoveAt (i);
 							i--;

@@ -39,10 +39,11 @@ namespace Plugins.XAsset
 {
     public enum LoadState
     {
-        Unload,
+        Init,
         LoadAssetBundle,
         LoadAsset,
-        Loaded
+        Loaded,
+        Unload,
     }
 
     public class Asset : Reference, IEnumerator
@@ -55,6 +56,7 @@ namespace Plugins.XAsset
         public Asset()
         {
             asset = null;
+            loadState = LoadState.Init;
         }
 
         public virtual bool isDone

@@ -60,7 +60,11 @@ namespace Plugins.XAsset
 
         public override bool isDone
         {
-            get { return _request == null || _request.isDone; }
+            get {
+                if (loadState == LoadState.Init)
+                    return false;
+                return _request == null || _request.isDone;
+            }
         }
 
         public override float progress
@@ -78,11 +82,15 @@ namespace Plugins.XAsset
             }
 
             if (_request != null) _request.completed += Request_completed;
+
+            loadState = LoadState.LoadAssetBundle;
         }
 
         private void Request_completed(AsyncOperation obj)
         {
             asset = _request.assetBundle;
+
+            loadState = LoadState.Loaded;
         }
 
         internal override void Unload()
@@ -92,7 +100,7 @@ namespace Plugins.XAsset
                 _request.completed -= Request_completed;
                 _request = null;
             }
-
+            loadState = LoadState.Unload;
             base.Unload();
         }
     }
@@ -116,6 +124,8 @@ namespace Plugins.XAsset
         {
             get
             {
+                if (loadState == LoadState.Init) return false;
+
                 if (_request == null) return true;
 #if UNITY_2018_3_OR_NEWER
                 if (_request.isDone) assetBundle = DownloadHandlerAssetBundle.GetContent(_request);
@@ -142,8 +152,8 @@ namespace Plugins.XAsset
             _request = cache ? UnityWebRequestAssetBundle.GetAssetBundle(name,hash) : UnityWebRequestAssetBundle.GetAssetBundle(name);
 #else
             _request = cache ? WWW.LoadFromCacheOrDownload(name, hash) : new WWW(name);
-#endif
-
+#endif 
+            loadState = LoadState.LoadAssetBundle;
 
         }
 
@@ -154,7 +164,7 @@ namespace Plugins.XAsset
                 _request.Dispose();
                 _request = null;
             }
-
+            loadState = LoadState.Unload;
             base.Unload();
         }
     }
