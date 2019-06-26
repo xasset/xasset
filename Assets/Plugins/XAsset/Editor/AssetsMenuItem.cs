@@ -84,7 +84,7 @@ namespace Plugins.XAsset.Editor
             {
                 var asset = assets[i];
                 var path = AssetDatabase.GetAssetPath(asset);
-                if (Directory.Exists(path))
+                if (Directory.Exists(path) || path.EndsWith(".cs", System.StringComparison.CurrentCulture))
                     continue;
                 if (EditorUtility.DisplayCancelableProgressBar(KMarkAssets, path, i * 1f / assets.Length))
                     break; 
@@ -103,7 +103,7 @@ namespace Plugins.XAsset.Editor
             {
                 var asset = assets[i];
                 var path = AssetDatabase.GetAssetPath(asset);
-                if (Directory.Exists(path))
+                if (Directory.Exists(path) || path.EndsWith(".cs", System.StringComparison.CurrentCulture))
                     continue;
                 if (EditorUtility.DisplayCancelableProgressBar(KMarkAssets, path, i * 1f / assets.Length))
                     break;  
@@ -131,7 +131,7 @@ namespace Plugins.XAsset.Editor
             {
                 var asset = assets[i];
                 var path = AssetDatabase.GetAssetPath(asset);
-                if (Directory.Exists(path))
+                if (Directory.Exists(path) || path.EndsWith(".cs", System.StringComparison.CurrentCulture))
                     continue;
                 if (EditorUtility.DisplayCancelableProgressBar(KMarkAssets, path, i * 1f / assets.Length))
                     break; 
@@ -151,6 +151,7 @@ namespace Plugins.XAsset.Editor
         [MenuItem(KBuildAssetBundles)]
         private static void BuildAssetBundles()
         {
+            BuildScript.BuildManifest();
             BuildScript.BuildAssetBundles();
         }
 
