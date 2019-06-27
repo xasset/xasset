@@ -38,6 +38,3 @@ Temp
 AssetBundles
 UnityPackageManager
 *.mdb
-*.meta
-XAsset.dll
-XAssetEditor.dll
