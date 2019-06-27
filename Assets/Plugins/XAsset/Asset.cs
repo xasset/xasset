@@ -51,7 +51,7 @@ namespace Plugins.XAsset
         private List<Object> _requires;
         public Type assetType;
         public string name;
-		public LoadState loadState { get; protected set; }
+        public LoadState loadState { get; protected set; }
 
         public Asset()
         {
@@ -222,7 +222,7 @@ namespace Plugins.XAsset
     }
 
     public class BundleAssetAsync : BundleAsset
-    { 
+    {
         private AssetBundleRequest _request;
 
         public BundleAssetAsync(string bundle)
@@ -246,31 +246,33 @@ namespace Plugins.XAsset
 
                 switch (loadState)
                 {
+                    case LoadState.Init:
+                        return false;
                     case LoadState.Loaded:
                         return true;
                     case LoadState.LoadAssetBundle:
-                    {
-                        if (!bundle.isDone)
-                            return false;
-
-                        for (int i = 0, max = bundle.dependencies.Count; i < max; i++)
                         {
-                            var item = bundle.dependencies[i];
-                            if (!item.isDone)
+                            if (!bundle.isDone)
                                 return false;
-                        }
 
-                        if (bundle.assetBundle == null)
-                        {
-                            error = "assetBundle == null";
-                            return true;
-                        }
+                            for (int i = 0, max = bundle.dependencies.Count; i < max; i++)
+                            {
+                                var item = bundle.dependencies[i];
+                                if (!item.isDone)
+                                    return false;
+                            }
 
-                        var assetName = Path.GetFileName(name);
-                        _request = bundle.assetBundle.LoadAssetAsync(assetName, assetType);
-                        loadState = LoadState.LoadAsset;
-                        break;
-                    }
+                            if (bundle.assetBundle == null)
+                            {
+                                error = "assetBundle == null";
+                                return true;
+                            }
+
+                            var assetName = Path.GetFileName(name);
+                            _request = bundle.assetBundle.LoadAssetAsync(assetName, assetType);
+                            loadState = LoadState.LoadAsset;
+                            break;
+                        }
                     case LoadState.Unload:
                         break;
                     case LoadState.LoadAsset:
@@ -367,7 +369,7 @@ namespace Plugins.XAsset
     }
 
     public class SceneAssetAsync : SceneAsset
-    {  
+    {
         private AsyncOperation _request;
 
         public SceneAssetAsync(string path, bool addictive)
@@ -412,21 +414,21 @@ namespace Plugins.XAsset
                     case LoadState.Loaded:
                         return true;
                     case LoadState.LoadAssetBundle:
-                    {
-                        if (!bundle.isDone)
-                            return false;
-
-                        for (int i = 0, max = bundle.dependencies.Count; i < max; i++)
                         {
-                            var item = bundle.dependencies[i];
-                            if (!item.isDone)
+                            if (!bundle.isDone)
                                 return false;
-                        }
 
-                        _request = SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
-                        loadState = LoadState.LoadAsset;
-                        break;
-                    }
+                            for (int i = 0, max = bundle.dependencies.Count; i < max; i++)
+                            {
+                                var item = bundle.dependencies[i];
+                                if (!item.isDone)
+                                    return false;
+                            }
+
+                            _request = SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
+                            loadState = LoadState.LoadAsset;
+                            break;
+                        }
                     case LoadState.Unload:
                         break;
                     case LoadState.LoadAsset:
@@ -477,6 +479,8 @@ namespace Plugins.XAsset
         {
             get
             {
+                if (loadState == LoadState.Init)
+                    return false;
                 if (_www == null)
                     return true;
 
@@ -552,19 +556,19 @@ namespace Plugins.XAsset
                 _www = UnityWebRequestMultimedia.GetAudioClip(name, AudioType.WAV);
             }
             else if (assetType == typeof(Texture2D))
-            {
+            { 
                 _www = UnityWebRequestTexture.GetTexture(name);
-            }
+            } 
             else
             {
                 _www = new UnityWebRequest(name);
+                _www.downloadHandler = new DownloadHandlerBuffer();
             }
+            _www.SendWebRequest();
 #else
-              _www = new WWW(name);
+            _www = new WWW(name);
 #endif
-
-
-
+            loadState = LoadState.LoadAsset;
         }
 
         internal override void Unload()
