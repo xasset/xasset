@@ -7,6 +7,9 @@ xasset 致力于为 Unity 项目提供了一套 精简稳健 的资源管理环�
 - 基于内建的引用计数机制确保资源不会重复加载和轻易卸载，并对提供了给资源设置关注对象的机制，在对象被销毁时，底层自动释放资源引用计数，当引用计数为 0 时，再自动卸载资源
 - 支持 Buildin 和 AssetBundle 中的场景，以及 WWW 和 AssetBundle 中的常规资源的加载和卸载，并都提供了同步和异步的加载模式，和基于离散文件的资源版本更新机制，以及一系列的批处理打包工具 
 
+## 使用范例
+请参考 [xasset 框架入门指南](https://zhuanlan.zhihu.com/p/69410498)
+
 ## 接口说明
 **Assets.Initialize** 
 
@@ -107,14 +110,12 @@ xasset 致力于为 Unity 项目提供了一套 精简稳健 的资源管理环�
  - [ET](https://github.com/egametang/ET) Unity3D Client And C# Server Framework
  - [QFramework](https://github.com/liangxiegame/QFramework) Your first K.I.S.S Unity 3D Framework.
 
-## 技术支持
-Email: jiyuan.feng@live.com
-
-QQ-group: 693203087
+## 技术支持 
+QQ群: [693203087](https://jq.qq.com/?_wv=1027&k=5DyV09a) 
 
 ## 贡献成员
-- [oucfeng](https://github.com/oucfeng)
-- [wl-666](https://github.com/wl-666)
-- [backjy](https://github.com/backjy)
-- [CatImmortal](https://github.com/CatImmortal)
-- [RoneBlog](https://github.com/RoneBlog)
+- [yusjoel](https://github.com/yusjoel): v2 处理Path.GetDirectoryName()获取的路径在.Net 3.5和.Net 4.0下斜杠不一致的问题
+- [veboys](https://github.com/veboys): v1 WEBGL兼容性支持 
+- [woshihuo12](https://github.com/woshihuo12):v1 修正编辑器下assetbundle模式报错的问题
+- [CatImmortal](https://github.com/CatImmortal):v2 WebAsset底层支持UnityWebRequest 
+- [ZhangDi](https://github.com/ZhangDi2018):v1 Tiny improve
