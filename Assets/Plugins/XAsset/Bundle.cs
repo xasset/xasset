@@ -30,142 +30,149 @@ using UnityEngine.Networking;
 
 namespace Plugins.XAsset
 {
-    public class Bundle : Asset
-    {
-        public readonly List<Bundle> dependencies = new List<Bundle>();
+	public class Bundle : Asset
+	{
+		public readonly List<Bundle> dependencies = new List<Bundle>();
 
-        public AssetBundle assetBundle
-        {
-            get { return asset as AssetBundle; }
-            internal set { asset = value; }
-        }
+		public AssetBundle assetBundle
+		{
+			get { return asset as AssetBundle; }
+			internal set { asset = value; }
+		}
 
-        internal override void Load()
-        {
-            asset = AssetBundle.LoadFromFile(name);
-            if (assetBundle == null) error = name + " LoadFromFile failed.";
-        }
+		internal override void Load()
+		{
+			asset = AssetBundle.LoadFromFile(name);
+			if (assetBundle == null)
+				error = name + " LoadFromFile failed.";
+		}
 
-        internal override void Unload()
-        {
-            if (assetBundle == null) return;
-            assetBundle.Unload(true);
-            assetBundle = null;
-        }
-    }
+		internal override void Unload()
+		{
+			if (assetBundle == null)
+				return;
+			assetBundle.Unload(true);
+			assetBundle = null;
+		}
+	}
 
-    public class BundleAsync : Bundle
-    {
-        private AssetBundleCreateRequest _request;
+	public class BundleAsync : Bundle
+	{
+		private AssetBundleCreateRequest _request;
 
-        public override bool isDone
-        {
-            get {
-                if (loadState == LoadState.Init)
-                    return false;
-                return _request == null || _request.isDone;
-            }
-        }
+		public override bool isDone
+		{
+			get
+			{
+				if (loadState == LoadState.Init)
+					return false;
 
-        public override float progress
-        {
-            get { return _request.progress; }
-        }
+				if (loadState == LoadState.Loaded)
+					return true;
 
-        internal override void Load()
-        {
-            _request = AssetBundle.LoadFromFileAsync(name);
-            if (_request == null)
-            {
-                error = name + " LoadFromFile failed.";
-                return;
-            }
+				if (loadState == LoadState.LoadAssetBundle && _request.isDone)
+				{
+					asset = _request.assetBundle;
+					loadState = LoadState.Loaded;
+				}
 
-            if (_request != null) _request.completed += Request_completed;
+				return _request == null || _request.isDone;
+			}
+		}
 
-            loadState = LoadState.LoadAssetBundle;
-        }
+		public override float progress
+		{
+			get { return _request.progress; }
+		}
 
-        private void Request_completed(AsyncOperation obj)
-        {
-            asset = _request.assetBundle;
+		internal override void Load()
+		{
+			_request = AssetBundle.LoadFromFileAsync(name);
+			if (_request == null)
+			{
+				error = name + " LoadFromFile failed.";
+				return;
+			} 
+			loadState = LoadState.LoadAssetBundle;
+		}
 
-            loadState = LoadState.Loaded;
-        }
+		internal override void Unload()
+		{
+			if (_request != null)
+			{ 
+				_request = null;
+			}
+			loadState = LoadState.Unload;
+			base.Unload();
+		}
+	}
 
-        internal override void Unload()
-        {
-            if (_request != null)
-            {
-                _request.completed -= Request_completed;
-                _request = null;
-            }
-            loadState = LoadState.Unload;
-            base.Unload();
-        }
-    }
-
-    public class WebBundle : Bundle
-    {
-#if UNITY_2018_3_OR_NEWER
+	public class WebBundle : Bundle
+	{
+		#if UNITY_2018_3_OR_NEWER
         private UnityWebRequest _request;
+
+
 #else
-        private WWW _request;
-#endif
-        public bool cache;
-        public Hash128 hash;
+		private WWW _request;
+		#endif
+		public bool cache;
+		public Hash128 hash;
 
-        public override string error
-        {
-            get { return _request.error; }
-        }
+		public override string error
+		{
+			get { return _request.error; }
+		}
 
-        public override bool isDone
-        {
-            get
-            {
-                if (loadState == LoadState.Init) return false;
+		public override bool isDone
+		{
+			get
+			{
+				if (loadState == LoadState.Init)
+					return false;
 
-                if (_request == null) return true;
+				if (_request == null)
+					return true;
 #if UNITY_2018_3_OR_NEWER
                 if (_request.isDone) assetBundle = DownloadHandlerAssetBundle.GetContent(_request);
 #else
-                if (_request.isDone) assetBundle = _request.assetBundle;
+				if (_request.isDone)
+					assetBundle = _request.assetBundle;
 #endif
 
-                return _request.isDone;
-            }
-        }
+				return _request.isDone;
+			}
+		}
 
-        public override float progress
-        {
+		public override float progress
+		{
 #if UNITY_2018_3_OR_NEWER
             get { return _request.downloadProgress; }
 #else
-            get { return _request.progress; }
+			get { return _request.progress; }
 #endif
-        }
+		}
 
-        internal override void Load()
-        {
+		internal override void Load()
+		{
 #if UNITY_2018_3_OR_NEWER
             _request = cache ? UnityWebRequestAssetBundle.GetAssetBundle(name,hash) : UnityWebRequestAssetBundle.GetAssetBundle(name);
 #else
-            _request = cache ? WWW.LoadFromCacheOrDownload(name, hash) : new WWW(name);
+			_request = cache ? WWW.LoadFromCacheOrDownload(name, hash) : new WWW(name);
 #endif 
-            loadState = LoadState.LoadAssetBundle;
+			loadState = LoadState.LoadAssetBundle;
 
-        }
+		}
 
-        internal override void Unload()
-        {
-            if (_request != null)
-            {
-                _request.Dispose();
-                _request = null;
-            }
-            loadState = LoadState.Unload;
-            base.Unload();
-        }
-    }
+		internal override void Unload()
+		{
+			if (_request != null)
+			{
+				_request.Dispose();
+				_request = null;
+			}
+			loadState = LoadState.Unload;
+			base.Unload();
+		}
+	}
 }
