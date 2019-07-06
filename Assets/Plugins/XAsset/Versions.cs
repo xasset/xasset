@@ -35,6 +35,7 @@ namespace Plugins.XAsset
     public static class Versions
     {
         private const string versionFile = "download.txt";
+        private const char splitKey = '=';
 
         public static Dictionary<string, string> data = new Dictionary<string, string>();
 
@@ -51,7 +52,7 @@ namespace Plugins.XAsset
                     {
                         if (line == string.Empty)
                             continue;
-                        var fields = line.Split(':');
+                        var fields = line.Split(splitKey);
                         if (fields.Length > 1)
                             data.Add(fields[0], fields[1]);
                     }
@@ -84,7 +85,7 @@ namespace Plugins.XAsset
             using (var s = new StreamWriter(path))
             {
                 foreach (var item in data)
-                    s.WriteLine(item.Key + ':' + item.Value);
+                    s.WriteLine(item.Key + splitKey + item.Value);
                 s.Flush();
                 s.Close();
             }
