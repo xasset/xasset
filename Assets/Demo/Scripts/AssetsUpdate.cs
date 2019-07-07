@@ -306,13 +306,14 @@ namespace Plugins.XAsset
                 }
 
                 File.WriteAllText(path, sb.ToString());
-                Assets.Initialize(completed, OnError);
-                state = State.Completed;
-
-                if (completed != null)
+                Assets.Initialize(delegate 
                 {
-                    completed();
-                }
+                    if (completed != null)
+                    {
+                        completed();
+                    }
+                }, OnError);
+                state = State.Completed;
 
                 message = string.Format("{0} files has update.", _downloads.Count);
                 return;
