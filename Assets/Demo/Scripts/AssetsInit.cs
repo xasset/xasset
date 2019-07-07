@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Plugins.XAsset;
 using System;
 
-public class Init : MonoBehaviour
+public class AssetsInit : MonoBehaviour
 {
     public string assetPath;
 
