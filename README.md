@@ -21,33 +21,33 @@ xasset 致力于为 Unity 项目提供了一套 精简稳健 的资源管理环�
 
    以下代码，可以在工程的 Assets/Demo/Scripts/AssetsInit.cs 中找到
   
-  ```c#
-  void Start()
-  {
-      /// 初始化
-    Assets.Initialize(OnInitialized, (error) => { Debug.Log(error); }); 
-  }
-  
-  private void OnInitialized()
-  {
+   ```c#
+   void Start()
+   {
+         /// 初始化
+       Assets.Initialize(OnInitialized, (error) => { Debug.Log(error); }); 
+   }
+
+   private void OnInitialized()
+   {
       var asset = Assets.Load(assetPath, typeof(UnityEngine.Object));
       asset.completed += delegate(Asset a) 
       {
-          if (a.name.EndsWith(".prefab", StringComparison.CurrentCulture))
-          {
-              var go = Instantiate(a.asset);
-              go.name = a.asset.name;
-              /// 设置关注对象，当关注对象销毁时，回收资源
-              a.Require(go); 
-              Destroy(go, 3);
-              /// 设置关注对象后，只需要释放一次，可以按自己的喜好调整，
-              /// 例如 ABSystem 中，不需要 调用这个 Release，
-              /// 这里如果之前没有调用 Require，下一帧这个资源就会被回收
-              a.Release();   
-          }
+         if (a.name.EndsWith(".prefab", StringComparison.CurrentCulture))
+         {
+            var go = Instantiate(a.asset);
+            go.name = a.asset.name;
+            /// 设置关注对象，当关注对象销毁时，回收资源
+            a.Require(go); 
+            Destroy(go, 3);
+            /// 设置关注对象后，只需要释放一次，可以按自己的喜好调整，
+            /// 例如 ABSystem 中，不需要 调用这个 Release，
+            /// 这里如果之前没有调用 Require，下一帧这个资源就会被回收
+            a.Release();   
+         }
       };
-  } 
-  ```
+   } 
+   ```
 
 2. 资源版本更新
 
