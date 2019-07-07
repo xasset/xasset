@@ -87,9 +87,9 @@ xasset 致力于为 Unity 项目提供了一套 精简稳健 的资源管理环�
 
    其次，上面的改动主要是注释了 `Utility.dataPath = System.Environment.CurrentDirectory;`这行代码，这样在编辑器下，xasset 会从 StreamingAssets 目录下读取资源，所以，对于构建后的资源包，我们需要执行 `Assets/AssetBundles/拷贝到StreamingAssets`复制到这个目录下
 
-   复制后，在编辑器下启动 Demo 场景，点击 Check 后，应该不会触发资源版本更新，停止播放后，可以修改已有的资源，例如在现有的 prefab 中添加新的内容，或者直接添加一些新的资源，执行标记打包后，再次启动 Demo 场景，点击 Check 后，单步调试可以看到以下画面：![update1](https://github.com/xasset/xasset/blob/master/Doc/update1.png)
+   复制后，在编辑器下启动 Demo 场景，点击 Check 后，应该不会触发资源版本更新，停止播放后，可以修改已有的资源，例如在现有的 prefab 中添加新的内容，或者直接添加一些新的资源（这里是添加了一个新的 prefab），执行标记打包后，再次启动 Demo 场景，点击 Check 后，单步调试可以看到以下画面： ![update1](https://github.com/xasset/xasset/blob/master/Doc/update1.png)
 
-   更新完成后，Demo 中会提示更新了几个文件，如下图所示：![update2](https://github.com/xasset/xasset/blob/master/Doc/update2.png)
+   更新完成后，Demo 中会提示更新了几个文件，如下图所示： ![update2](https://github.com/xasset/xasset/blob/master/Doc/update2.png)
 
    最后，以上就是基于 Demo 场景进行资源版本更新的主要流程，更多演示请参考: [xasset 框架入门指南](https://zhuanlan.zhihu.com/p/69410498)
 
