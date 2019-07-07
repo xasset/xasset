@@ -63,6 +63,9 @@ namespace Plugins.XAsset
         public static void Clear()
         {
             data.Clear();
+            var path = Utility.updatePath + versionFile;
+            if (File.Exists(path))
+                File.Delete(path);
         }
 
         public static void Set(string key, string version)
@@ -82,13 +85,14 @@ namespace Plugins.XAsset
             var path = Utility.updatePath + versionFile;
             if (File.Exists(path))
                 File.Delete(path);
+
             using (var s = new StreamWriter(path))
             {
                 foreach (var item in data)
                     s.WriteLine(item.Key + splitKey + item.Value);
                 s.Flush();
                 s.Close();
-            }
+            }  
         }
     }
 }

@@ -78,7 +78,7 @@ namespace Plugins.XAsset
 
         void Clear()
         {
-            var dir = System.IO.Path.GetDirectoryName(Utility.updatePath);
+            var dir = Path.GetDirectoryName(Utility.updatePath);
             if (Directory.Exists(dir))
             {
                 Directory.Delete(dir, true);
@@ -91,8 +91,7 @@ namespace Plugins.XAsset
             message = "click Check to start.";
             state = State.Wait;
 
-            Versions.Clear();
-            Versions.Save();
+            Versions.Clear(); 
         }
 
         void Check()
