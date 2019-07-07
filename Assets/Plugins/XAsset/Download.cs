@@ -114,8 +114,10 @@ namespace Plugins.XAsset
                         len = fs.Length;
                         if (len < maxlen)
                         { 
-                            var emptyVersion = string.IsNullOrEmpty(version); 
-                            if (emptyVersion || !Versions.Get(savePath).Equals(version))
+                            var emptyVersion = string.IsNullOrEmpty(version);
+                            var oldVersion = Versions.Get(savePath);
+                            var emptyOldVersion = string.IsNullOrEmpty(oldVersion);
+                            if (emptyVersion || emptyOldVersion || !oldVersion.Equals(version))
                             {
                                 Versions.Set(savePath, version); 
                                 len = 0; 
