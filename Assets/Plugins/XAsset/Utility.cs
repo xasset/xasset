@@ -96,10 +96,9 @@ namespace Plugins.XAsset
 
         public static string GetWebUrlFromDataPath(string filename)
         {
-            var path = Path.Combine(dataPath, Path.Combine(AssetBundles, GetPlatform())) + Path.DirectorySeparatorChar +
-                       filename;
-#if UNITY_IOS
-			path = "file://" + path;
+            var path = Path.Combine(dataPath, Path.Combine(AssetBundles, GetPlatform())) + Path.DirectorySeparatorChar + filename;
+#if UNITY_IOS || UNITY_EDITOR
+            path = "file://" + path;
 #elif UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
             path = "file:///" + path;
 #endif
@@ -113,7 +112,7 @@ namespace Plugins.XAsset
             {
                 path = Application.streamingAssetsPath + "/" + filename;
             }
-#if UNITY_IOS
+#if UNITY_IOS || UNITY_EDITOR
 			path = "file://" + path;
 #elif UNITY_STANDALONE_WIN
             path = "file:///" + path;

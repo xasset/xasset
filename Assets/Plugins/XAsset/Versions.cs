@@ -34,7 +34,7 @@ namespace Plugins.XAsset
 {
     public static class Versions
     {
-        private const string versionFile = "download.txt";
+        public const string versionFile = "download.txt";
         private const char splitKey = '=';
 
         public static Dictionary<string, string> data = new Dictionary<string, string>();
@@ -63,9 +63,6 @@ namespace Plugins.XAsset
         public static void Clear()
         {
             data.Clear();
-            var path = Utility.updatePath + versionFile;
-            if (File.Exists(path))
-                File.Delete(path);
         }
 
         public static void Set(string key, string version)

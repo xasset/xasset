@@ -92,6 +92,10 @@ namespace Plugins.XAsset
             state = State.Wait;
 
             Versions.Clear(); 
+
+            var path = Utility.updatePath + Versions.versionFile;
+            if (File.Exists(path))
+                File.Delete(path);
         }
 
         void Check()
