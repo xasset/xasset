@@ -104,6 +104,7 @@ xasset 提供了一种使用资源路径的简单的方式来加载资源，简�
 - [woshihuo12](https://github.com/woshihuo12)
 - [CatImmortal](https://github.com/CatImmortal) 
 - [ZhangDi](https://github.com/ZhangDi2018)
+- [QuinShuai](https://github.com/QuinShuai)
 
 ## 推荐链接
  - [ET](https://github.com/egametang/ET) Unity3D Client And C# Server Framework
