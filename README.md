@@ -2,7 +2,7 @@
 
 xasset 提供了一种使用资源路径的简单的方式来加载资源，简化了Unity项目资源打包，更新，加载，和回收的作业流程
 - 主页：https://github.com/xasset/xasset
-- 支持：QQ群[693203087](https://jq.qq.com/?_wv=1027&k=5DyV09a) （可点击加入）
+- 支持：[693203087](https://jq.qq.com/?_wv=1027&k=5DyV09a) （QQ群，可点击加入）
 
 ## 主要特点
 - 集成了官方的 [AssetBundleBrowser](https://docs.unity3d.com/Manual/AssetBundles-Browser.html)，支持可视化的资源冗余预警，以及拖拽式的批量打包粒度调整
