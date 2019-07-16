@@ -118,7 +118,7 @@ namespace Plugins.XAsset.Editor
                 var name = Path.GetFileNameWithoutExtension(path);
                 if (dir == null)
                     continue;
-                dir = dir.Replace("\\", "/");
+                dir = dir.Replace("\\", "/") + "/";
                 if (name == null)
                     continue;
 
