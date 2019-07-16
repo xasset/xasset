@@ -112,16 +112,16 @@ namespace Plugins.XAsset
                         } 
                         fs = new FileStream(savePath, FileMode.OpenOrCreate, FileAccess.Write);
                         len = fs.Length;
+                        var emptyVersion = string.IsNullOrEmpty(version);
+                        var oldVersion = Versions.Get(savePath);
+                        var emptyOldVersion = string.IsNullOrEmpty(oldVersion);
+                        if (emptyVersion || emptyOldVersion || !oldVersion.Equals(version))
+                        {
+                            Versions.Set(savePath, version); 
+                            len = 0; 
+                        }
                         if (len < maxlen)
                         { 
-                            var emptyVersion = string.IsNullOrEmpty(version);
-                            var oldVersion = Versions.Get(savePath);
-                            var emptyOldVersion = string.IsNullOrEmpty(oldVersion);
-                            if (emptyVersion || emptyOldVersion || !oldVersion.Equals(version))
-                            {
-                                Versions.Set(savePath, version); 
-                                len = 0; 
-                            }  
                             fs.Seek(len, SeekOrigin.Begin);
                             request = UnityWebRequest.Get(url);
                             request.SetRequestHeader("Range", "bytes=" + len + "-" + maxlen);
