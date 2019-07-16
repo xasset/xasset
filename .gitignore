@@ -38,3 +38,5 @@ Temp
 AssetBundles
 UnityPackageManager
 *.mdb
+
+_ReSharper.Caches
