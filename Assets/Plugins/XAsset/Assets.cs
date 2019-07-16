@@ -217,7 +217,7 @@ namespace Plugins.XAsset
             else
             {
                 if (path.StartsWith("http://") || path.StartsWith("https://") || path.StartsWith("file://") ||
-                    path.StartsWith("ftp://"))
+                    path.StartsWith("ftp://") || path.StartsWith("jar:file://"))
                     asset = new WebAsset();
                 else
                     asset = new Asset();
