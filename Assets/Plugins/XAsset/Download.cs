@@ -114,8 +114,10 @@ namespace Plugins.XAsset
                         len = fs.Length;
                         if (len < maxlen)
                         { 
-                            var emptyVersion = string.IsNullOrEmpty(version); 
-                            if (emptyVersion || !Versions.Get(savePath).Equals(version))
+                            var emptyVersion = string.IsNullOrEmpty(version);
+                            var oldVersion = Versions.Get(savePath);
+                            var emptyOldVersion = string.IsNullOrEmpty(oldVersion);
+                            if (emptyVersion || emptyOldVersion || !oldVersion.Equals(version))
                             {
                                 Versions.Set(savePath, version); 
                                 len = 0; 
@@ -123,7 +125,11 @@ namespace Plugins.XAsset
                             fs.Seek(len, SeekOrigin.Begin);
                             request = UnityWebRequest.Get(url);
                             request.SetRequestHeader("Range", "bytes=" + len + "-" + maxlen);
+                            #if UNITY_2017_1_OR_NEWER
                             request.SendWebRequest();
+                            #else
+                            request.Send();
+                            #endif
                             index = 0;
                             state = State.BodyRequest;
                         }
@@ -175,7 +181,11 @@ namespace Plugins.XAsset
         public void Start()
         {
             request = UnityWebRequest.Head(url);
+            #if UNITY_2017_1_OR_NEWER
             request.SendWebRequest();
+            #else
+            request.Send();
+            #endif
             progress = 0;
             isDone = false;
         }

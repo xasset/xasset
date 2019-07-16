@@ -40,7 +40,7 @@ namespace Plugins.XAsset.Editor
         private const string KBuildPlayer = "Assets/AssetBundles/生成播放器";
         private const string KCopyPath = "Assets/复制路径";
         private const string KMarkAssets = "标记资源";
-
+        private const string KCopyToStreamingAssets = "Assets/AssetBundles/拷贝到StreamingAssets";
         public static string assetRootPath;
 
         [InitializeOnLoadMethod]
@@ -53,7 +53,7 @@ namespace Plugins.XAsset.Editor
                 if (!isRunning)
                 {
                     LaunchLocalServer.Run();
-                }
+                } 
             }
             else
             {
@@ -63,7 +63,7 @@ namespace Plugins.XAsset.Editor
                     LaunchLocalServer.KillRunningAssetBundleServer();
                 }
             }
-			Utility.dataPath = System.Environment.CurrentDirectory;
+            //Utility.dataPath = System.Environment.CurrentDirectory;
             Utility.downloadURL = BuildScript.GetManifest().downloadURL;
             Utility.assetBundleMode = settings.runtimeMode;
             Utility.getPlatformDelegate = BuildScript.GetPlatformName;
@@ -74,6 +74,12 @@ namespace Plugins.XAsset.Editor
         public static string TrimedAssetBundleName(string assetBundleName)
         {
             return assetBundleName.Replace(assetRootPath, "");
+        }
+
+        [MenuItem(KCopyToStreamingAssets)]
+        private static void CopyAssetBundles()
+        {
+            BuildScript.CopyAssetBundlesTo(Path.Combine(Application.streamingAssetsPath, Utility.AssetBundles));
         }
 
         [MenuItem(KMarkAssetsWithDir)]
