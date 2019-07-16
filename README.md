@@ -108,7 +108,7 @@ QQ群: [693203087](https://jq.qq.com/?_wv=1027&k=5DyV09a) （可点击加入）
 **贡献成员**
 
 - [hemingfei](https://github.com/hemingfei): v2 解决下载有新增资源包文件报空指针的问题，AssetsUpdate.cs 中 更新完成后 completed 两次的问题
-- [yusjoel](https://github.com/yusjoel): v2 处理Path.GetDirectoryName()获取的路径在.Net 3.5和.Net 4.0下斜杠不一致的问题
+- [yusjoel](https://github.com/yusjoel): v2 处理Path.GetDirectoryName()获取的路径在.Net 3.5和.Net 4.0下斜杠不一致的问题, AAB扩展不需要传入资源的依赖.
 - [veboys](https://github.com/veboys): v1 WEBGL兼容性支持 
 - [woshihuo12](https://github.com/woshihuo12): v1 修正编辑器下assetbundle模式报错的问题
 - [CatImmortal](https://github.com/CatImmortal): v2 WebAsset底层支持UnityWebRequest 
