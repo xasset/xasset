@@ -381,6 +381,9 @@ namespace Plugins.XAsset
         {
             get
             {
+                if (bundle == null)
+                    return _request == null ? 0 : _request.progress;
+
                 var bundleProgress = bundle.progress;
                 if (bundle.dependencies.Count <= 0)
                     return bundleProgress * 0.3f + (_request != null ? _request.progress * 0.7f : 0);
@@ -399,22 +402,22 @@ namespace Plugins.XAsset
         {
             get
             {
-                if (bundle == null || bundle.error != null)
-                    return true;
-
-                for (int i = 0, max = bundle.dependencies.Count; i < max; i++)
-                {
-                    var item = bundle.dependencies[i];
-                    if (item.error != null)
-                        return true;
-                }
-
                 switch (loadState)
                 {
                     case LoadState.Loaded:
                         return true;
                     case LoadState.LoadAssetBundle:
                         {
+                            if (bundle == null || bundle.error != null)
+                                return true;
+
+                            for (int i = 0, max = bundle.dependencies.Count; i < max; i++)
+                            {
+                                var item = bundle.dependencies[i];
+                                if (item.error != null)
+                                    return true;
+                            }
+                            
                             if (!bundle.isDone)
                                 return false;
 
