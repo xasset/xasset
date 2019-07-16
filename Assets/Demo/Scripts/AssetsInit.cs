@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Plugins.XAsset;
 using System;
+using System.Collections;
 
 public class AssetsInit : MonoBehaviour
 {
@@ -15,10 +16,10 @@ public class AssetsInit : MonoBehaviour
 
     private void OnInitialized()
     {
-        var asset = Assets.Load(assetPath, typeof(UnityEngine.Object));
-        asset.completed += delegate(Asset a) 
+        if (assetPath.EndsWith(".prefab", StringComparison.CurrentCulture))
         {
-            if (a.name.EndsWith(".prefab", StringComparison.CurrentCulture))
+            var asset = Assets.Load(assetPath, typeof(UnityEngine.Object));
+            asset.completed += delegate(Asset a) 
             {
                 var go = Instantiate(a.asset);
                 go.name = a.asset.name;
@@ -29,7 +30,24 @@ public class AssetsInit : MonoBehaviour
                 /// 例如 ABSystem 中，不需要 调用这个 Release，
                 /// 这里如果之前没有调用 Require，下一帧这个资源就会被回收
                 a.Release();   
-            }
-        };
+            };
+        }
+        else if(assetPath.EndsWith(".unity", StringComparison.CurrentCulture))
+        {
+            StartCoroutine(LoadSceneAsync());
+        }
     } 
+    
+    IEnumerator LoadSceneAsync()
+    {
+        var sceneAsset = Assets.LoadScene(assetPath, true, true);
+        while(!sceneAsset.isDone)
+        {
+            Debug.Log(sceneAsset.progress);
+            yield return null;
+        }
+        
+        yield return new WaitForSeconds(3);
+        Assets.Unload(sceneAsset);
+    }
 }
