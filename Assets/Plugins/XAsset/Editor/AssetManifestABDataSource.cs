@@ -74,21 +74,6 @@ namespace Plugins.XAsset.Editor
                     assetPaths.Add(assetPath);
                 }
             } 
-
-            var dependencies = AssetDatabase.GetDependencies(assetPaths.ToArray()); 
-            foreach (var item in dependencies)
-            {
-                if (item.EndsWith(".cs") || assetPaths.Contains(item) || Array.Exists(manifest.assets, obj =>
-                    {
-                        var assetPath = dirs[obj.dir] + "/" + obj.name;
-                        return assetPath == item;
-                    }))
-                {
-                    continue;
-                } 
-
-                assetPaths.Add(item);
-            } 
             return assetPaths.ToArray();
         }
 
