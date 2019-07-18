@@ -88,7 +88,7 @@ namespace Plugins.XAsset.Editor
 
         private static string[] GetLevelsFromBuildSettings()
         {
-            return new[] { EditorBuildSettings.scenes[0].path };
+            return EditorBuildSettings.scenes.Select(scene => scene.path).ToArray();
         }
 
         private static string GetAssetBundleManifestFilePath()
