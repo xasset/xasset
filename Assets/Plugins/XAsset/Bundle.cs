@@ -82,7 +82,7 @@ namespace Plugins.XAsset
 
 		public override float progress
 		{
-			get { return _request.progress; }
+			get { return _request != null ? _request.progress : 0f; }
 		}
 
 		internal override void Load()
@@ -92,14 +92,14 @@ namespace Plugins.XAsset
 			{
 				error = name + " LoadFromFile failed.";
 				return;
-			} 
+			}
 			loadState = LoadState.LoadAssetBundle;
 		}
 
 		internal override void Unload()
 		{
 			if (_request != null)
-			{ 
+			{
 				_request = null;
 			}
 			loadState = LoadState.Unload;
@@ -147,9 +147,9 @@ namespace Plugins.XAsset
 		public override float progress
 		{
 #if UNITY_2018_3_OR_NEWER
-            get { return _request.downloadProgress; }
+            get { return _request != null ? _request.downloadProgress : 0f; }
 #else
-			get { return _request.progress; }
+			get { return _request != null ? _request.progress : 0f; }
 #endif
 		}
 
@@ -159,7 +159,7 @@ namespace Plugins.XAsset
             _request = cache ? UnityWebRequestAssetBundle.GetAssetBundle(name,hash) : UnityWebRequestAssetBundle.GetAssetBundle(name);
 #else
 			_request = cache ? WWW.LoadFromCacheOrDownload(name, hash) : new WWW(name);
-#endif 
+#endif
 			loadState = LoadState.LoadAssetBundle;
 
 		}
