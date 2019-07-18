@@ -303,7 +303,9 @@ namespace Plugins.XAsset.Editor
         public static void BuildManifest()
         {
             var manifest = GetManifest();
-            SetAssetBundleNameAndVariant(AssetDatabase.GetAssetPath(manifest), manifest.name.ToLower(), null);
+            var assetPath = AssetDatabase.GetAssetPath(manifest);
+            var bundleName = Path.GetFileNameWithoutExtension(assetPath).ToLower();
+            SetAssetBundleNameAndVariant(assetPath, bundleName, null);
         }
 
         public static void BuildAssetBundles()
@@ -424,7 +426,7 @@ namespace Plugins.XAsset.Editor
 #else
                     case BuildTarget.StandaloneOSXIntel:
                     case BuildTarget.StandaloneOSXIntel64:
-                    case BuildTarget.StandaloneOSXUniversal:               
+                    case BuildTarget.StandaloneOSXUniversal:
                                         return "/" + name + ".app";
 
 #endif
