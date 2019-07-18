@@ -69,7 +69,7 @@ namespace Plugins.XAsset
 				if (onError != null) {
 					onError (request.error);
 					return;
-				} 
+				}
 				manifest = request.assetBundle.LoadAsset<AssetBundleManifest> ("AssetBundleManifest");
 				request.assetBundle.Unload (false);
 				request.assetBundle = null;
@@ -180,7 +180,7 @@ namespace Plugins.XAsset
 				bundle = asyncMode ? new BundleAsync () : new Bundle ();
 
 			bundle.name = url;
-			_bundles.Add (bundle); 
+			_bundles.Add (bundle);
 			if (MAX_LOAD_SIZE_PERFREME > 0 && (bundle is BundleAsync || bundle is WebBundle)) {
 				_ready2Load.Add (bundle);
 			} else {
@@ -210,24 +210,25 @@ namespace Plugins.XAsset
 		internal static void Update ()
 		{
 			if (MAX_LOAD_SIZE_PERFREME > 0) {
-				if (_ready2Load.Count > 0 && _loading.Count < 3) {
-					for (int i = 0; i < Math.Min(3 - _loading.Count, _ready2Load.Count); i++) {
+				if (_ready2Load.Count > 0 && _loading.Count < MAX_LOAD_SIZE_PERFREME) {
+					for (int i = 0; i < Math.Min(MAX_LOAD_SIZE_PERFREME - _loading.Count, _ready2Load.Count); i++) {
 						var item = _ready2Load [i];
 						if (item.loadState == LoadState.Init) {
-							item.Load ();
+							item.Load();
+							_loading.Add(item);
 							_ready2Load.RemoveAt (i);
 							i--;
 						}
-					} 
+					}
 				}
-				
+
 				for (int i = 0; i < _loading.Count; i++) {
 					var item = _loading [i];
 					if (item.loadState == LoadState.Loaded || item.loadState == LoadState.Unload) {
 						_loading.RemoveAt (i);
 						i--;
 					}
-				} 
+				}
 			}
 
 			for (var i = 0; i < _bundles.Count; i++) {
