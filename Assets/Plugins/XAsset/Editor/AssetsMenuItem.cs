@@ -80,6 +80,7 @@ namespace Plugins.XAsset.Editor
         private static void CopyAssetBundles()
         {
             BuildScript.CopyAssetBundlesTo(Path.Combine(Application.streamingAssetsPath, Utility.AssetBundles));
+            AssetDatabase.Refresh();
         }
 
         [MenuItem(KMarkAssetsWithDir)]
