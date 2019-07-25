@@ -240,11 +240,11 @@ namespace Plugins.XAsset.Editor
             EditorUtility.SetDirty(manifest);
         }
 
-
-        public static void SetAssetBundleNameAndVariant(string assetPath, string bundleName, string variant)
+        /// 传入manifestCache表示外部负责文件保存,避免 loop 中多次调用AssetDatabase.SaveAssets影响速度
+        public static void SetAssetBundleNameAndVariant(string assetPath, string bundleName, string variant, AssetsManifest manifestCache = null)
         {
-            var manifest = GetManifest();
-            var dir = System.IO.Path.GetDirectoryName(assetPath).Replace("\\", "/");
+            var manifest = manifestCache == null ? GetManifest() : manifestCache;
+            var dir = Path.GetDirectoryName(assetPath).Replace("\\", "/");
             var dirs = manifest.dirs;
             var dirIndex = ArrayUtility.FindIndex(dirs, (string obj) => { return obj == dir; });
 
@@ -291,13 +291,15 @@ namespace Plugins.XAsset.Editor
             }
 
             var asset = assets[assetIndex];
-            asset.name = System.IO.Path.GetFileName(assetPath);
+            asset.name = Path.GetFileName(assetPath);
             asset.bundle = bundleIndex;
             asset.variant = variantIndex;
             asset.dir = dirIndex;
-
-            EditorUtility.SetDirty(manifest);
-            AssetDatabase.SaveAssets();
+            if (manifestCache == null)
+            {
+                EditorUtility.SetDirty(manifest);
+                AssetDatabase.SaveAssets();
+            }
         }
 
         public static void BuildManifest()
