@@ -34,6 +34,8 @@ namespace Plugins.XAsset
 {
 	public delegate string OverrideDataPathDelegate (string bundleName);
 
+	public delegate void  OverrideDispatchBundleDelegate (List<Bundle> readdy2Load, Action<Bundle> load);
+
 	public static class Bundles
 	{
 		private static readonly int MAX_LOAD_SIZE_PERFREME = 3;
@@ -54,6 +56,11 @@ namespace Plugins.XAsset
 		private static AssetBundleManifest manifest { get; set; }
 
 		public static event OverrideDataPathDelegate OverrideBaseDownloadingUrl;
+
+		// 重载bundle加载策略 如自定义加载优先级
+		// ReSharper disable once MemberCanBePrivate.Global
+		public static  OverrideDispatchBundleDelegate OverrideDispatchBundle = null;
+
 
 		public static string[] GetAllDependencies (string bundle)
 		{
@@ -209,26 +216,39 @@ namespace Plugins.XAsset
 
 		internal static void Update ()
 		{
-			if (MAX_LOAD_SIZE_PERFREME > 0) {
-				if (_ready2Load.Count > 0 && _loading.Count < MAX_LOAD_SIZE_PERFREME) {
-					for (int i = 0; i < Math.Min(MAX_LOAD_SIZE_PERFREME - _loading.Count, _ready2Load.Count); i++) {
-						var item = _ready2Load [i];
-						if (item.loadState == LoadState.Init) {
-							item.Load();
-							_loading.Add(item);
-							_ready2Load.RemoveAt (i);
+			if (OverrideDispatchBundle == null)
+			{
+				if (MAX_LOAD_SIZE_PERFREME > 0)
+				{
+					if (_ready2Load.Count > 0 && _loading.Count < MAX_LOAD_SIZE_PERFREME)
+					{
+						for (int i = 0; i < Math.Min(MAX_LOAD_SIZE_PERFREME - _loading.Count, _ready2Load.Count); i++)
+						{
+							var item = _ready2Load[i];
+							if (item.loadState == LoadState.Init)
+							{
+								item.Load();
+								_loading.Add(item);
+								_ready2Load.RemoveAt(i);
+								i--;
+							}
+						}
+					}
+
+					for (int i = 0; i < _loading.Count; i++)
+					{
+						var item = _loading[i];
+						if (item.loadState == LoadState.Loaded || item.loadState == LoadState.Unload)
+						{
+							_loading.RemoveAt(i);
 							i--;
 						}
 					}
 				}
-
-				for (int i = 0; i < _loading.Count; i++) {
-					var item = _loading [i];
-					if (item.loadState == LoadState.Loaded || item.loadState == LoadState.Unload) {
-						_loading.RemoveAt (i);
-						i--;
-					}
-				}
+			}
+			else
+			{
+				if (_ready2Load.Count > 0) OverrideDispatchBundle(_ready2Load, bundle => bundle.Load());
 			}
 
 			for (var i = 0; i < _bundles.Count; i++) {
