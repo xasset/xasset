@@ -3,9 +3,8 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -16,15 +15,16 @@ MonoBehaviour:
   activeVariants: []
   bundles:
   - scenes/test
-  - sprites/unitylogo
   - prefabs/uiroot
-  - scenes/init
+  - sprites/unitylogo
   - prefabs/uiroot2
+  - sprites/blacksquare
+  - scenes/init
   - manifest
   dirs:
   - Assets/Demo/Scenes
-  - Assets/Demo/Sprites
   - Assets/Demo/Prefabs
+  - Assets/Demo/Sprites
   - Assets
   assets:
   - variant: -1
@@ -34,20 +34,24 @@ MonoBehaviour:
   - variant: -1
     bundle: 1
     dir: 1
-    name: UnityLogo.png
+    name: UIRoot.prefab
   - variant: -1
     bundle: 2
     dir: 2
-    name: UIRoot.prefab
+    name: UnityLogo.png
   - variant: -1
     bundle: 3
-    dir: 0
-    name: Init.unity
+    dir: 1
+    name: UIRoot2.prefab
   - variant: -1
     bundle: 4
     dir: 2
-    name: UIRoot2.prefab
+    name: blackSquare.png
   - variant: -1
     bundle: 5
+    dir: 0
+    name: Init.unity
+  - variant: -1
+    bundle: 6
     dir: 3
     name: Manifest.asset
