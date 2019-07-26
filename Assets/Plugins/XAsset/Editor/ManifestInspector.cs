@@ -47,20 +47,20 @@ namespace Plugins.XAsset.Editor
 
             for (var i = 0; i < manifest.bundles.Length; i++)
             {
-                sb.AppendLine(string.Format("bundle{0} {1}", i, manifest.bundles[i]));
+                sb.AppendLine(string.Format("bundle[{0}]={1}", i, manifest.bundles[i]));
             }
 
             sb.AppendLine();
             for (var i = 0; i < manifest.dirs.Length; i++)
             {
-                sb.AppendLine(string.Format("dir{0} {1}", i, manifest.dirs[i]));
+                sb.AppendLine(string.Format("dir[{0}]={1}", i, manifest.dirs[i]));
             }
             sb.AppendLine();
 
             for (int i = 0; i < manifest.assets.Length; i++)
             {
                 var assetData = manifest.assets[i];
-                var desc = string.Format("asset{0} bundle:{1} variant:{2}, dir:{3}, name:{4}", i,
+                var desc = string.Format("asset[{0}] = bundle:{1} variant:{2}, dir:{3}, name:{4}", i,
                     assetData.bundle, assetData.variant, assetData.dir, assetData.name);
                 sb.AppendLine(desc);
             }
@@ -87,7 +87,7 @@ namespace Plugins.XAsset.Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("downloadURL"), true);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("activeVariants"), true);
             serializedObject.ApplyModifiedProperties();
-
+            GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("<<", EditorStyles.label, GUILayout.MaxWidth(40)))
             {
@@ -106,15 +106,14 @@ namespace Plugins.XAsset.Editor
                     "Cancel"))
                     ResetManifest();
             }
-
+            GUILayout.Space(2);
             if (GUILayout.Button("refresh", EditorStyles.toolbarButton, GUILayout.MaxWidth(60)))
             {
                 BuildCahe();
             }
 
-            GUILayout.Space(10);
             GUILayout.EndHorizontal();
-
+            GUILayout.Space(5);
             var maxLine = _lineIndex.Count - 1;
             _startLine = Math.Max(Math.Min(_startLine, maxLine - DisplayLineNum), 0);
             int start = _startLine;
