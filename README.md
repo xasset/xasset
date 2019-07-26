@@ -109,6 +109,7 @@ xasset 提供了一种使用资源路径的简单的方式来加载资源，简�
 - [woodelfLee](https://github.com/woodelfLee)
 - [LostEarth](https://github.com/LostEarth)
 
-## 推荐链接
+## 推荐框架
  - [ET](https://github.com/egametang/ET) Unity3D Client And C# Server Framework
+ - [Loxodon Framework](https://github.com/cocowolf/loxodon-framework) MVVM Framework for Unity3D(C# & XLua)
  - [QFramework](https://github.com/liangxiegame/QFramework) Your first K.I.S.S Unity 3D Framework
