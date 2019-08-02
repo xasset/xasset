@@ -100,7 +100,7 @@ namespace Plugins.XAsset.Editor
                     continue;
                 if (EditorUtility.DisplayCancelableProgressBar(KMarkAssets, path, i * 1f / assets.Length))
                     break;
-                var assetBundleName = Path.GetDirectoryName(path).Replace("\\", "/") + "_g";
+                var assetBundleName = TrimedAssetBundleName(Path.GetDirectoryName(path).Replace("\\", "/")) + "_g";
                 BuildScript.SetAssetBundleNameAndVariant(path, assetBundleName.ToLower(), null, assetsManifest);
             }
             EditorUtility.SetDirty(assetsManifest);
@@ -143,7 +143,7 @@ namespace Plugins.XAsset.Editor
         [MenuItem(KMarkAssetsWithName)]
         private static void MarkAssetsWithName()
         {
-             var settings = BuildScript.GetSettings();
+            var settings = BuildScript.GetSettings();
             assetRootPath = settings.assetRootPath; 
             var assets = Selection.GetFiltered<Object>(SelectionMode.DeepAssets);
             var assetsManifest = BuildScript.GetManifest();
