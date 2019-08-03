@@ -131,13 +131,20 @@ namespace Plugins.XAsset
 				if (loadState == LoadState.Init)
 					return false;
 
-				if (_request == null)
+				if (_request == null || loadState == LoadState.Loaded)
 					return true;
 #if UNITY_2018_3_OR_NEWER
-                if (_request.isDone) assetBundle = DownloadHandlerAssetBundle.GetContent(_request);
-#else
 				if (_request.isDone)
-					assetBundle = _request.assetBundle;
+				{
+					assetBundle = DownloadHandlerAssetBundle.GetContent(_request);
+					loadState = LoadState.Loaded;
+				}
+#else
+                if (_request.isDone)
+                {
+                    assetBundle = _request.assetBundle;
+                    loadState = LoadState.Loaded;
+                }
 #endif
 
 				return _request.isDone;
