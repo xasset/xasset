@@ -121,7 +121,7 @@ namespace Plugins.XAsset
 
 		public override string error
 		{
-			get { return _request.error; }
+			get { return _request != null ? _request.error : null; }
 		}
 
 		public override bool isDone
