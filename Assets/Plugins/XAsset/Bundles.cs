@@ -173,7 +173,7 @@ namespace Plugins.XAsset
 			    url.StartsWith ("file://") ||
 			    url.StartsWith ("ftp://"))
 				bundle = new WebBundle {
-					hash = manifest.GetAssetBundleHash (assetBundleName),
+					hash = manifest != null ? manifest.GetAssetBundleHash (assetBundleName):new Hash128(),
 					cache = !isLoadingAssetBundleManifest
 				};
 			else
