@@ -168,10 +168,10 @@ namespace Plugins.XAsset
 			}
 
 			Bundle bundle;
-			if (url.StartsWith ("http://") ||
-			    url.StartsWith ("https://") ||
-			    url.StartsWith ("file://") ||
-			    url.StartsWith ("ftp://"))
+			if (url.StartsWith ("http://", StringComparison.Ordinal) ||
+			    url.StartsWith ("https://", StringComparison.Ordinal) ||
+			    url.StartsWith ("file://", StringComparison.Ordinal) ||
+			    url.StartsWith ("ftp://", StringComparison.Ordinal))
 				bundle = new WebBundle {
 					hash = manifest != null ? manifest.GetAssetBundleHash (assetBundleName):new Hash128(),
 					cache = !isLoadingAssetBundleManifest
