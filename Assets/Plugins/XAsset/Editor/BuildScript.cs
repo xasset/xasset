@@ -193,7 +193,7 @@ namespace Plugins.XAsset.Editor
             {
                 var item = manifest.assets[i];
                 var assetPath = dirs[item.dir] + "/" + item.name;
-                if (System.IO.File.Exists(assetPath))
+                if (System.IO.File.Exists(assetPath) && !string.IsNullOrEmpty(manifest.bundles[item.bundle]))
                 {
                     var bundleIndex = usedBundles.FindIndex((string obj) =>
                     {
