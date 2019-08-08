@@ -49,7 +49,7 @@ xasset 提供了一种使用资源路径的简单的方式来加载资源，简�
 
    这里主要说明如何基于 Demo 场景进行测试资源版本更新
 
-   首先，资源打包后，把 AssetsMenuItem 的 OnIntialize 替换为下面的样子：
+   首先，资源打包后，把 AssetsMenuItem 的 OnInitialize 替换为下面的样子：
 
    ```c#
    [InitializeOnLoadMethod]
