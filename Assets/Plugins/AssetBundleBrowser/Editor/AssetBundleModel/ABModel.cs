@@ -235,7 +235,7 @@ namespace AssetBundleBrowser.AssetBundleModel
 
         internal static bool BundleListIsEmpty()
         {
-            return (s_RootLevelBundles.GetChildList().Count() == 0);
+            return (!s_RootLevelBundles.GetChildList().Any());
         }
 
         internal static string GetEmptyMessage()
@@ -674,7 +674,7 @@ namespace AssetBundleBrowser.AssetBundleModel
 
         internal static bool ValidateAsset(string name)
         {
-            if (!name.StartsWith("Assets/"))
+            if (!name.StartsWith("Assets/", StringComparison.Ordinal))
                 return false;
             string ext = System.IO.Path.GetExtension(name);
             if (ext == ".dll" || ext == ".cs" || ext == ".meta" || ext == ".js" || ext == ".boo")

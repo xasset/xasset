@@ -165,7 +165,7 @@ namespace Plugins.XAsset.Editor
             List<AssetBundleBuild> builds = new List<AssetBundleBuild>();
             foreach (var item in map)
             {
-                builds.Add(new AssetBundleBuild()
+                builds.Add(new AssetBundleBuild
                     {
                         assetBundleName = item.Key,
                         assetNames = item.Value.ToArray()

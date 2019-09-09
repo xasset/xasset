@@ -72,7 +72,6 @@ namespace AssetBundleBrowser
 
         private void OnEnable()
         {
-
             Rect subPos = GetSubWindowArea();
             if(m_ManageTab == null)
                 m_ManageTab = new AssetBundleManageTab();

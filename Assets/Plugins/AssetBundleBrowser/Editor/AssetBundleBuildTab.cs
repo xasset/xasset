@@ -267,7 +267,6 @@ namespace AssetBundleBrowser
                             tog.state);
                         if (newState != tog.state)
                         {
-
                             if (newState)
                                 m_UserData.m_OnToggles.Add(tog.content.text);
                             else

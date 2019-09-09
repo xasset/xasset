@@ -48,7 +48,6 @@ namespace AssetBundleBrowser
                         var folderItem = new TreeViewItem(folder.Key.GetHashCode(), 0, folder.Key);
                         foreach (var path in folder.Value)
                         {
-
                             var prettyName = path;
                             if (path.StartsWith(folder.Key)) //how could it not?
                                 prettyName = path.Remove(0, folder.Key.Length + 1);

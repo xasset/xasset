@@ -152,7 +152,6 @@ namespace AssetBundleBrowser
             }
             else
             {
-
                 //Left half
                 var bundleTreeRect = new Rect(
                     m_Position.x,

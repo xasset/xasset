@@ -805,7 +805,6 @@ namespace AssetBundleBrowser.AssetBundleModel
         }
         internal virtual bool HandleChildRename(string oldName, string newName)
         {
-
             if (!System.String.IsNullOrEmpty(newName) && m_Children.ContainsKey(newName))
             {
                 Model.LogWarning("Attempting to name an item '" + newName + "' which matches existing name at this level in hierarchy.  If your desire is to merge bundles, drag one on top of the other.");

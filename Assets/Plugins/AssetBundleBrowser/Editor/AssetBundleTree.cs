@@ -88,7 +88,6 @@ namespace AssetBundleBrowser
 
         protected override void SelectionChanged(IList<int> selectedIds)
         {
-
             var selectedBundles = new List<AssetBundleModel.BundleInfo>();
             if (selectedIds != null)
             {

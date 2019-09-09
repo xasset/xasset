@@ -98,10 +98,7 @@ namespace Plugins.XAsset
 
 		internal override void Unload()
 		{
-			if (_request != null)
-			{
-				_request = null;
-			}
+			_request = null;
 			loadState = LoadState.Unload;
 			base.Unload();
 		}
