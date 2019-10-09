@@ -36,7 +36,7 @@ namespace Plugins.XAsset.Editor
         private const string KMarkAssetsWithFile = "Assets/AssetBundles/按文件标记";
         private const string KMarkAssetsWithName = "Assets/AssetBundles/按名称标记";
         private const string KBuildManifest = "Assets/AssetBundles/生成配置";
-        private const string KBuildAssetBundles = "Assets/AssetBundles/生成資源包";
+        private const string KBuildAssetBundles = "Assets/AssetBundles/生成资源包";
         private const string KBuildPlayer = "Assets/AssetBundles/生成播放器";
         private const string KCopyPath = "Assets/复制路径";
         private const string KMarkAssets = "标记资源";
@@ -101,7 +101,7 @@ namespace Plugins.XAsset.Editor
                 if (EditorUtility.DisplayCancelableProgressBar(KMarkAssets, path, i * 1f / assets.Length))
                     break;
                 var assetBundleName = TrimedAssetBundleName(Path.GetDirectoryName(path).Replace("\\", "/")) + "_g";
-                BuildScript.SetAssetBundleNameAndVariant(path, assetBundleName.ToLower(), null, assetsManifest);
+                BuildScript.SetAssetBundleNameAndVariant(path, assetBundleName.ToLower(), null);
             }
             EditorUtility.SetDirty(assetsManifest);
             AssetDatabase.SaveAssets();
@@ -133,7 +133,7 @@ namespace Plugins.XAsset.Editor
                     continue;
 
                 var assetBundleName = TrimedAssetBundleName(Path.Combine(dir, name));
-                BuildScript.SetAssetBundleNameAndVariant(path, assetBundleName.ToLower(), null, assetsManifest);
+                BuildScript.SetAssetBundleNameAndVariant(path, assetBundleName.ToLower(), null);
             }
             EditorUtility.SetDirty(assetsManifest);
             AssetDatabase.SaveAssets();
@@ -156,7 +156,7 @@ namespace Plugins.XAsset.Editor
                 if (EditorUtility.DisplayCancelableProgressBar(KMarkAssets, path, i * 1f / assets.Length))
                     break;
                 var assetBundleName = Path.GetFileNameWithoutExtension(path);
-                BuildScript.SetAssetBundleNameAndVariant(path, assetBundleName.ToLower(), null, assetsManifest);
+                BuildScript.SetAssetBundleNameAndVariant(path, assetBundleName.ToLower(), null);
             }
             EditorUtility.SetDirty(assetsManifest);
             AssetDatabase.SaveAssets();

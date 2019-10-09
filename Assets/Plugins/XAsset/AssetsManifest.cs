@@ -31,8 +31,7 @@ namespace Plugins.XAsset
 {
     [Serializable]
     public class AssetData
-    {
-        public int variant;
+    { 
         public int bundle;
         public int dir;
         public string name;

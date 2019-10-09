@@ -180,175 +180,71 @@ namespace Plugins.XAsset.Editor
 
         public static void RemoveUnusedAssetBundleNames()
         {
-            var manifest = GetManifest();
-            var assetBundleNames = manifest.bundles;
-            var variantNames = manifest.activeVariants;
-            var dirs = manifest.dirs;
-
-            List<string> usedBundles = new List<string>();
-            List<string> usedDirs = new List<string>();
-            List<string> usedVariants = new List<string>();
-
-            for (int i = 0; i < manifest.assets.Length; i++)
-            {
-                var item = manifest.assets[i];
-                var assetPath = dirs[item.dir] + "/" + item.name;
-                if (System.IO.File.Exists(assetPath) && !string.IsNullOrEmpty(manifest.bundles[item.bundle]))
-                {
-                    var bundleIndex = usedBundles.FindIndex((string obj) =>
-                    {
-                        return obj.Equals(assetBundleNames[item.bundle]);
-                    });
-                    if (bundleIndex == -1)
-                    {
-                        usedBundles.Add(assetBundleNames[item.bundle]);
-                        bundleIndex = usedBundles.Count - 1;
-                    }
-
-                    var dir = System.IO.Path.GetDirectoryName(assetPath).Replace("\\", "/");
-                    var dirIndex = usedDirs.FindIndex(delegate (string obj) { return obj == dir; });
-                    if (dirIndex == -1)
-                    {
-                        usedDirs.Add(dir);
-                        dirIndex = usedDirs.Count - 1;
-                    }
-
-                    if (item.variant != -1)
-                    {
-                        var variantIndex = usedVariants.FindIndex(delegate (string obj) { return obj == dir; });
-                        if (variantIndex == -1)
-                        {
-                            usedVariants.Add(variantNames[item.variant]);
-                            variantIndex = usedVariants.Count - 1;
-                        }
-
-                        item.variant = variantIndex;
-                    }
-
-                    item.bundle = bundleIndex;
-                    item.dir = dirIndex;
-                }
-                else
-                {
-                    ArrayUtility.RemoveAt(ref manifest.assets, i);
-                    i--;
-                }
-            }
-
-            manifest.dirs = usedDirs.ToArray();
-            manifest.bundles = usedBundles.ToArray();
-            EditorUtility.SetDirty(manifest);
+            AssetDatabase.RemoveUnusedAssetBundleNames();
         }
 
-        /// 传入manifestCache表示外部负责文件保存,避免 loop 中多次调用AssetDatabase.SaveAssets影响速度
-        public static void SetAssetBundleNameAndVariant(string assetPath, string bundleName, string variant, AssetsManifest manifestCache = null)
-        {
-            var manifest = manifestCache == null ? GetManifest() : manifestCache;
-            var dir = Path.GetDirectoryName(assetPath).Replace("\\", "/");
-            var dirs = manifest.dirs;
-            var dirIndex = ArrayUtility.FindIndex(dirs, (string obj) => { return obj == dir; });
-
-            if (dirIndex == -1)
-            {
-                ArrayUtility.Add(ref manifest.dirs, dir);
-                dirIndex = manifest.dirs.Length - 1;
-                dirs = manifest.dirs;
-            }
-
-            var assetBundleNames = manifest.bundles;
-            var bundleIndex = ArrayUtility.FindIndex(assetBundleNames, (string obj) => { return obj == bundleName; });
-
-            if (bundleIndex == -1)
-            {
-                ArrayUtility.Add(ref manifest.bundles, bundleName);
-                assetBundleNames = manifest.bundles;
-                bundleIndex = assetBundleNames.Length - 1;
-            }
-
-            var variantNames = manifest.activeVariants;
-            var variantIndex = ArrayUtility.FindIndex(variantNames, (string obj) => { return obj == variant; });
-
-            if (variantIndex == -1 && !string.IsNullOrEmpty(variant))
-            {
-                ArrayUtility.Add(ref manifest.activeVariants, variant);
-                variantNames = manifest.activeVariants;
-                variantIndex = variantNames.Length - 1;
-            }
-
-            var assets = manifest.assets;
-            var assetIndex = ArrayUtility.FindIndex(assets, (AssetData obj) =>
-            {
-                var path = dirs[obj.dir] + "/" + obj.name;
-                return path == assetPath;
-            });
-
-            if (assetIndex == -1)
-            {
-                var info = new AssetData();
-                ArrayUtility.Add(ref manifest.assets, info);
-                assetIndex = manifest.assets.Length - 1;
-                assets = manifest.assets;
-            }
-
-            var asset = assets[assetIndex];
-            asset.name = Path.GetFileName(assetPath);
-            asset.bundle = bundleIndex;
-            asset.variant = variantIndex;
-            asset.dir = dirIndex;
-            if (manifestCache == null)
-            {
-                EditorUtility.SetDirty(manifest);
-                AssetDatabase.SaveAssets();
-            }
+        public static void SetAssetBundleNameAndVariant(string assetPath, string bundleName, string variant)
+        { 
+            var importer = AssetImporter.GetAtPath(assetPath);
+            if(importer == null) return;
+            importer.assetBundleName = bundleName;
+            importer.assetBundleVariant = variant; 
         }
 
         public static void BuildManifest()
         {
             var manifest = GetManifest();
+
+            AssetDatabase.RemoveUnusedAssetBundleNames();
+            var bundles = AssetDatabase.GetAllAssetBundleNames();
+
+            List<string> dirs = new List<string>();
+            List<AssetData> assets = new List<AssetData>();  
+
+            for (int i = 0; i < bundles.Length; i++)
+            {
+                var paths = AssetDatabase.GetAssetPathsFromAssetBundle(bundles[i]);
+                foreach(var path in paths) 
+                {
+                    var dir = Path.GetDirectoryName(path);
+                    var index = dirs.FindIndex((o)=>o.Equals(dir));
+                    if(index == -1) 
+                    {
+                        index = dirs.Count;
+                        dirs.Add(dir);
+                    }  
+
+                    var asset = new AssetData();
+                    asset.bundle = i;
+                    asset.dir = index;
+                    asset.name = Path.GetFileName(path);
+
+                    assets.Add(asset);
+                }
+            }
+
+            manifest.bundles = bundles;
+            manifest.dirs = dirs.ToArray();
+            manifest.assets = assets.ToArray();
+
             var assetPath = AssetDatabase.GetAssetPath(manifest);
             var bundleName = Path.GetFileNameWithoutExtension(assetPath).ToLower();
             SetAssetBundleNameAndVariant(assetPath, bundleName, null);
+
+            EditorUtility.SetDirty(manifest);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
 
         public static void BuildAssetBundles()
         {
-            var assetManifest = GetManifest();
-            BuildScript.RemoveUnusedAssetBundleNames();
-
-            var assets = assetManifest.assets;
-            var assetBundleNames = assetManifest.bundles;
-            var dirs = assetManifest.dirs;
-
-            var map = new Dictionary<string, List<string>>();
-
-            foreach (var item in assetManifest.bundles)
-            {
-                map[item] = new List<string>();
-            }
-
-            foreach (var item in assets)
-            {
-                var assetPath = dirs[item.dir] + "/" + item.name;
-                map[assetBundleNames[item.bundle]].Add(assetPath);
-            }
-
-            List<AssetBundleBuild> builds = new List<AssetBundleBuild>();
-            foreach (var item in map)
-            {
-                builds.Add(new AssetBundleBuild()
-                {
-                    assetBundleName = item.Key,
-                    assetNames = item.Value.ToArray()
-                });
-            }
-
             // Choose the output path according to the build target.
             var outputPath = CreateAssetBundleDirectory();
 
             const BuildAssetBundleOptions options = BuildAssetBundleOptions.ChunkBasedCompression;
 
             var manifest =
-                BuildPipeline.BuildAssetBundles(outputPath, builds.ToArray(), options,
+                BuildPipeline.BuildAssetBundles(outputPath, options,
                     EditorUserBuildSettings.activeBuildTarget);
             var versionsTxt = outputPath + "/versions.txt";
             var versions = new Dictionary<string, string>();

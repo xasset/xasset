@@ -60,8 +60,7 @@ namespace Plugins.XAsset.Editor
             for (int i = 0; i < manifest.assets.Length; i++)
             {
                 var assetData = manifest.assets[i];
-                var desc = string.Format("asset[{0}] = bundle:{1} variant:{2}, dir:{3}, name:{4}", i,
-                    assetData.bundle, assetData.variant, assetData.dir, assetData.name);
+                var desc = string.Format("asset[{0}] = bundle:{1}, dir:{2}, name:{3}", i, assetData.bundle, assetData.dir, assetData.name);
                 sb.AppendLine(desc);
             }
 
