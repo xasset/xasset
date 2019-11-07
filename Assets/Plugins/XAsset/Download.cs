@@ -124,7 +124,7 @@ namespace Plugins.XAsset
                         { 
                             fs.Seek(len, SeekOrigin.Begin);
                             request = UnityWebRequest.Get(url);
-                            request.SetRequestHeader("Range", "bytes=" + len + "-" + maxlen);
+                            request.SetRequestHeader("Range", "bytes=" + len + "-");
                             #if UNITY_2017_1_OR_NEWER
                             request.SendWebRequest();
                             #else
