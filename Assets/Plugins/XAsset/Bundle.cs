@@ -73,6 +73,9 @@ namespace Plugins.XAsset
 				if (loadState == LoadState.LoadAssetBundle && _request.isDone)
 				{
 					asset = _request.assetBundle;
+					if (_request.assetBundle == null) {
+						error = string.Format ("unable to load assetBundle:{0}", name);
+					}
 					loadState = LoadState.Loaded;
 				}
 

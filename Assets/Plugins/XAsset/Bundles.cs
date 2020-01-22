@@ -69,7 +69,7 @@ namespace Plugins.XAsset
 				if (onError != null) {
 					onError (request.error);
 					return;
-				}
+				} 
 				manifest = request.assetBundle.LoadAsset<AssetBundleManifest> ("AssetBundleManifest");
 				request.assetBundle.Unload (false);
 				request.assetBundle = null;
