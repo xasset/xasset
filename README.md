@@ -155,7 +155,7 @@ Settings 文件只会在编辑器下使用，另外的一份 Manifest 文件则�
 
 ## 捐赠
 
-![xasset-donate](C:\Users\fjy\Documents\GitHub\xasset\Doc\xasset-donate.png)
+![xasset-donate](./Doc/xasset-donate.png)
 
 ## 贡献成员
 
