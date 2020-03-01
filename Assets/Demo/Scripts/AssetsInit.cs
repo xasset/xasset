@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using Plugins.XAsset;
-using System;
+﻿using System;
 using System.Collections;
-using System.Collections.Generic;
+using UnityEngine;
+using xasset;
 
 
 public class AssetsInit : MonoBehaviour
@@ -13,7 +12,7 @@ public class AssetsInit : MonoBehaviour
     void Start()
     {
         /// 初始化
-        Assets.Initialize(OnInitialized, (error) => { Debug.Log(error); }); 
+        xasset.Assets.Initialize(OnInitialized, (error) => { Debug.Log(error); }); 
     }
 
 
@@ -21,7 +20,7 @@ public class AssetsInit : MonoBehaviour
     {
         if (assetPath.EndsWith(".prefab", StringComparison.CurrentCulture))
         {
-			var asset = Assets.LoadAsync(assetPath, typeof(UnityEngine.Object));
+			var asset = xasset.Assets.LoadAsync(assetPath, typeof(UnityEngine.Object));
             asset.completed += delegate(Asset a) 
             {
                 var go = Instantiate(a.asset);
@@ -43,7 +42,7 @@ public class AssetsInit : MonoBehaviour
 
     IEnumerator LoadSceneAsync()
     {
-        var sceneAsset = Assets.LoadScene(assetPath, true, true);
+        var sceneAsset = xasset.Assets.LoadScene(assetPath, true, true);
         while(!sceneAsset.isDone)
         {
             Debug.Log(sceneAsset.progress);
@@ -51,6 +50,6 @@ public class AssetsInit : MonoBehaviour
         }
         
         yield return new WaitForSeconds(3);
-        Assets.Unload(sceneAsset);
+        xasset.Assets.Unload(sceneAsset);
     }
 }

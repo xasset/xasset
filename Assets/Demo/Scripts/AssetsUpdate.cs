@@ -30,7 +30,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 
-namespace Plugins.XAsset
+namespace xasset
 {
 	public class AssetsUpdate : MonoBehaviour
 	{
@@ -78,7 +78,7 @@ namespace Plugins.XAsset
 
 		void Clear ()
 		{
-			var dir = Path.GetDirectoryName (Utility.updatePath);
+			var dir = Path.GetDirectoryName (Assets.updatePath);
 			if (Directory.Exists (dir)) {
 				Directory.Delete (dir, true);
 			}
@@ -92,7 +92,7 @@ namespace Plugins.XAsset
 
 			Versions.Clear (); 
 
-			var path = Utility.updatePath + Versions.versionFile;
+			var path = Assets.updatePath + Versions.versionFile;
 			if (File.Exists (path))
 				File.Delete (path);
 		}
@@ -100,9 +100,9 @@ namespace Plugins.XAsset
 		void Check ()
 		{
 			Assets.Initialize (delegate {
-				var path = Utility.GetRelativePath4Update (versionsTxt);
+				var path = Assets.GetRelativeUpdatePath (versionsTxt);
 				if (!File.Exists (path)) {
-					var asset = Assets.LoadAsync (Utility.GetWebUrlFromDataPath (versionsTxt), typeof(TextAsset));
+					var asset = Assets.LoadAsync (Assets.GetAssetBundleDataPathURL(versionsTxt), typeof(TextAsset));
 					asset.completed += delegate {
 						if (asset.error != null) {
 							LoadVersions (string.Empty);
@@ -271,7 +271,7 @@ namespace Plugins.XAsset
 					sb.AppendLine (string.Format ("{0}:{1}", item.Key, item.Value));
 				}
 
-				var path = Utility.GetRelativePath4Update (versionsTxt);
+				var path = Assets.GetRelativeUpdatePath (versionsTxt);
 				if (File.Exists (path)) {
 					File.Delete (path);
 				}
@@ -306,7 +306,7 @@ namespace Plugins.XAsset
 		private void LoadVersions (string text)
 		{
 			LoadText2Map (text, ref _versions);
-			var asset = Assets.LoadAsync (Utility.GetDownloadURL (versionsTxt), typeof(TextAsset));
+			var asset = Assets.LoadAsync (Assets.GetDownloadURL (versionsTxt), typeof(TextAsset));
 			asset.completed += delegate {
 				if (asset.error != null) {
 					OnError (asset.error);
@@ -318,10 +318,10 @@ namespace Plugins.XAsset
 					string ver;
 					if (!_versions.TryGetValue (item.Key, out ver) || !ver.Equals (item.Value)) {
 						var downloader = new Download ();
-						downloader.url = Utility.GetDownloadURL (item.Key);
+						downloader.url = Assets.GetDownloadURL (item.Key);
 						downloader.path = item.Key;
 						downloader.version = item.Value;
-						downloader.savePath = Utility.GetRelativePath4Update (item.Key);
+						downloader.savePath = Assets.GetRelativeUpdatePath (item.Key);
 						_downloads.Add (downloader);
 					}
 				}
@@ -330,9 +330,9 @@ namespace Plugins.XAsset
 					Complete ();
 				} else {
 					var downloader = new Download ();
-					downloader.url = Utility.GetDownloadURL (Utility.GetPlatform ());
-					downloader.path = Utility.GetPlatform ();
-					downloader.savePath = Utility.GetRelativePath4Update (Utility.GetPlatform ());
+					downloader.url = Assets.GetDownloadURL (Assets.platform);
+					downloader.path = Assets.platform;
+					downloader.savePath = Assets.GetRelativeUpdatePath (Assets.platform);
 					_downloads.Add (downloader);
 					state = State.WaitDownload;
 					message = string.Format ("检查到有 {0} 个文件需要更新，点 Download 开始更新。", _downloads.Count);

@@ -8,135 +8,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6951743adb93844fcb5ddf53e02547c9, type: 3}
+  m_Script: {fileID: 1353581271, guid: e1af893c2924147d0915dfddb38c8270, type: 3}
   m_Name: Manifest
   m_EditorClassIdentifier: 
-  downloadURL: http://127.0.0.1:7888/
+  downloadURL: 
   activeVariants: []
   bundles:
-  - assets/demo/prefabs_g
-  - manifest
-  - prefabs
-  - sprites/navicon
+  - prefabs/canvas
+  - prefabs/uiroot2
+  - scenes/init
+  - scenes/test
   dirs:
   - Assets/Demo/Prefabs
-  - Assets
-  - Assets/Demo/Sprites/Navicon
+  - Assets/Demo/Scenes
   assets:
   - bundle: 0
     dir: 0
-    name: UIRoot.prefab
-  - bundle: 0
+    name: Canvas.prefab
+  - bundle: 1
     dir: 0
     name: UIRoot2.prefab
-  - bundle: 1
+  - bundle: 2
     dir: 1
-    name: Manifest.asset
+    name: Init.unity
   - bundle: 3
-    dir: 2
-    name: 1.png
-  - bundle: 3
-    dir: 2
-    name: 2.png
-  - bundle: 3
-    dir: 2
-    name: 3.png
-  - bundle: 3
-    dir: 2
-    name: 5.png
-  - bundle: 3
-    dir: 2
-    name: 9.png
-  - bundle: 3
-    dir: 2
-    name: 10.png
-  - bundle: 3
-    dir: 2
-    name: 11.png
-  - bundle: 3
-    dir: 2
-    name: 13.png
-  - bundle: 3
-    dir: 2
-    name: 15.png
-  - bundle: 3
-    dir: 2
-    name: 202.png
-  - bundle: 3
-    dir: 2
-    name: 203.png
-  - bundle: 3
-    dir: 2
-    name: 204.png
-  - bundle: 3
-    dir: 2
-    name: 206.png
-  - bundle: 3
-    dir: 2
-    name: 207.png
-  - bundle: 3
-    dir: 2
-    name: 1001.png
-  - bundle: 3
-    dir: 2
-    name: 1002.png
-  - bundle: 3
-    dir: 2
-    name: 1003.png
-  - bundle: 3
-    dir: 2
-    name: 1004.png
-  - bundle: 3
-    dir: 2
-    name: 1005.png
-  - bundle: 3
-    dir: 2
-    name: 1006.png
-  - bundle: 3
-    dir: 2
-    name: 1007.png
-  - bundle: 3
-    dir: 2
-    name: 1008.png
-  - bundle: 3
-    dir: 2
-    name: 1009.png
-  - bundle: 3
-    dir: 2
-    name: 1010.png
-  - bundle: 3
-    dir: 2
-    name: 1011.png
-  - bundle: 3
-    dir: 2
-    name: 1012.png
-  - bundle: 3
-    dir: 2
-    name: 1013.png
-  - bundle: 3
-    dir: 2
-    name: 1014.png
-  - bundle: 3
-    dir: 2
-    name: 1015.png
-  - bundle: 3
-    dir: 2
-    name: 1016.png
-  - bundle: 3
-    dir: 2
-    name: 1017.png
-  - bundle: 3
-    dir: 2
-    name: 1018.png
-  - bundle: 3
-    dir: 2
-    name: 1019.png
-  - bundle: 3
-    dir: 2
-    name: 1020.png
-  - bundle: 3
-    dir: 2
-    name: 1021.png
-  - bundle: 3
-    dir: 2
-    name: all.png
+    dir: 1
+    name: Test.unity

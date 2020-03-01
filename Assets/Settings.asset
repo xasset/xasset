@@ -8,9 +8,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d1cd05a3c6af421f90a9c6525845f35, type: 3}
+  m_Script: {fileID: 1794219286, guid: 520ca73b6241b4058b38c6fa63fccfc2, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  runtimeMode: 1
-  localServer: 1
-  assetRootPath: Assets/Plugins/XAsset/Demo/
+  runtimeMode: 0
+  localServer: 0
