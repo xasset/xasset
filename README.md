@@ -5,6 +5,7 @@ xasset 是一个简易轻量的 Unity 资源管理框架，要快速掌握 xasse
 ![xasset](./Doc/xasset.png)
 
 - 主页：https://github.com/xasset/xasset
+- 源码：https://github.com/xasset/libx
 - 视频：https://www.bilibili.com/video/av71508438
 - Q群：[693203087](https://jq.qq.com/?_wv=1027&k=5DyV09a) 
 
