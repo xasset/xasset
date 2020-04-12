@@ -8,17 +8,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 2092766474, guid: 520ca73b6241b4058b38c6fa63fccfc2, type: 3}
+  m_Script: {fileID: 11500000, guid: 03142c330ced64e0ab46cddcd0484ab7, type: 3}
   m_Name: Rules
   m_EditorClassIdentifier: 
-  rules:
-  - searchPath: Assets/Demo/Prefabs
-    searchPattern: '*.prefab'
-    assetBundleName: 
-    searchDirOnly: 0
-    searchOption: 1
-  - searchPath: Assets/Demo
-    searchPattern: '*Scenes'
-    assetBundleName: 
-    searchDirOnly: 1
-    searchOption: 1
+  searchPatternText: '*.txt,*.bytes,*.json,*.csv,*.xml,*htm,*.html,*.yaml,*.fnt'
+  searchPatternPrefab: '*.prefab'
+  searchPatternMaterial: '*.mat'
+  searchPatternController: '*.controller'
+  searchPatternPNG: '*.png'
+  searchPatternAsset: '*.asset'
+  searchPatternScene: '*.unity'
+  searchPatternDir: '*'
+  unshared: []
+  rules: []

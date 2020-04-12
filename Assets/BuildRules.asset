@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03142c330ced64e0ab46cddcd0484ab7, type: 3}
+  m_Name: BuildRules
+  m_EditorClassIdentifier: 
+  searchPatternText: '*.txt,*.bytes,*.json,*.csv,*.xml,*htm,*.html,*.yaml,*.fnt'
+  searchPatternPrefab: '*.prefab'
+  searchPatternMaterial: '*.mat'
+  searchPatternController: '*.controller'
+  searchPatternPNG: '*.png'
+  searchPatternAsset: '*.asset'
+  searchPatternScene: '*.unity'
+  searchPatternDir: '*'
+  unshared: []
+  rules:
+  - searchPath: Assets/Demo/Prefabs
+    searchPattern: '*.prefab'
+    assetBundleName: 
+    searchDirOnly: 0
+    unshared: 0
+    searchOption: 1
+  - searchPath: Assets/Demo/Scenes
+    searchPattern: '*.unity'
+    assetBundleName: 
+    searchDirOnly: 0
+    unshared: 0
+    searchOption: 1

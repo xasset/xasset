@@ -208,3 +208,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   versionsTxt: versions.txt
+  downloadURL: http://127.0.0.1:7888

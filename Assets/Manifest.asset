@@ -8,29 +8,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1353581271, guid: e1af893c2924147d0915dfddb38c8270, type: 3}
+  m_Script: {fileID: 11500000, guid: 7882bd278763c45f49cef7deeae496e5, type: 3}
   m_Name: Manifest
   m_EditorClassIdentifier: 
-  downloadURL: 
   activeVariants: []
   bundles:
+  - demo/scenes
+  - manifest
   - prefabs/canvas
-  - prefabs/uiroot2
-  - scenes/init
-  - scenes/test
   dirs:
-  - Assets/Demo/Prefabs
   - Assets/Demo/Scenes
+  - Assets
+  - Assets/Demo/Prefabs
   assets:
   - bundle: 0
     dir: 0
-    name: Canvas.prefab
-  - bundle: 1
+    name: LoadAsset.unity
+  - bundle: 0
     dir: 0
-    name: UIRoot2.prefab
-  - bundle: 2
-    dir: 1
-    name: Init.unity
-  - bundle: 3
-    dir: 1
+    name: LoadScene.unity
+  - bundle: 0
+    dir: 0
     name: Test.unity
+  - bundle: 1
+    dir: 1
+    name: Manifest.asset
+  - bundle: 2
+    dir: 2
+    name: Canvas.prefab
+  - bundle: 2
+    dir: 2
+    name: UIRoot.prefab

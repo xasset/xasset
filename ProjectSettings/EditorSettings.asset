@@ -8,7 +8,7 @@ EditorSettings:
   m_SerializationMode: 2
   m_LineEndingsForNewScripts: 1
   m_DefaultBehaviorMode: 0
-  m_SpritePackerMode: 4
+  m_SpritePackerMode: 3
   m_SpritePackerPaddingPower: 1
   m_EtcTextureCompressorBehavior: 0
   m_EtcTextureFastCompressor: 2
