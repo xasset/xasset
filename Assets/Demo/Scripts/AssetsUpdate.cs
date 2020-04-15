@@ -60,6 +60,8 @@ namespace libx
         [SerializeField] string versionsTxt = "versions.txt";
         [SerializeField] string downloadURL = "http://127.0.0.1:7888/";
 
+        public UpdateScreen updateScreen;
+
         private void OnError(string e)
         {
             if (onError != null)
@@ -73,9 +75,11 @@ namespace libx
 
         string message = "click Check to start.";
 
-        void OnProgress(string arg1, float arg2)
+        void OnProgress(string file, float value)
         {
-            message = string.Format("{0:F0}%:{1}({2}/{3})", arg2 * 100, arg1, _downloadIndex, _downloads.Count);
+            updateScreen.loadingText.text = string.Format("Loading...({0}/{1})", _downloadIndex + 1, _downloads.Count);
+            updateScreen.progressText.text = string.Format("{0:F0}%:{1}", value * 100, file);
+            updateScreen.progressBar.value = (_downloadIndex + 1f) / _downloads.Count;
         }
 
         void Clear()
@@ -90,14 +94,16 @@ namespace libx
             _downloadIndex = 0;
             _versions.Clear();
             _serverVersions.Clear();
-            message = "click Check to start.";
-            state = State.Wait;
+            // message = "click Check to start.";
+            // state = State.Wait;
 
             Versions.Clear();
 
             var path = Assets.updatePath + Versions.versionFile;
             if (File.Exists(path))
                 File.Delete(path);
+
+            Check();
         }
 
         void OnInit(AssetRequest request)
@@ -132,7 +138,7 @@ namespace libx
             }
         }
 
-        void Check()
+        public void Check()
         {
             var request = Assets.Initialize();
             request.completed = OnInit;
@@ -144,6 +150,7 @@ namespace libx
         {
             state = State.Wait;
             Versions.Load();
+            Check();
         }
 
         private void Update()
@@ -196,38 +203,17 @@ namespace libx
 
         private void OnGUI()
         {
-            using (var v = new GUILayout.VerticalScope("AssetsUpdate Demo", "window"))
+            if (state == State.Completed)
             {
-                switch (state)
+                using (var v = new GUILayout.VerticalScope("AssetsUpdate Demo", "window"))
                 {
-                    case State.Wait:
-                        if (GUILayout.Button("Check"))
-                        {
-                            Check();
-                        }
+                    GUILayout.Label(string.Format("{0}:{1}", state, message));
 
-                        break;
+                    if (GUILayout.Button("Clear"))
+                    {
+                        Clear();
+                    }
 
-                    case State.WaitDownload:
-                        if (GUILayout.Button("Download"))
-                        {
-                            Download();
-                        }
-                        break;
-
-                    case State.Completed:
-                        if (GUILayout.Button("Clear"))
-                        {
-                            Clear();
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-                GUILayout.Label(string.Format("{0}:{1}", state, message));
-                if (state == State.Completed)
-                {
                     GUILayout.Label("AllBundleAssets:");
                     var assets = Assets.GetAllBundleAssetPaths();
                     foreach (var item in assets)
@@ -294,6 +280,8 @@ namespace libx
 
         private void Complete()
         {
+            updateScreen.progressBar.gameObject.SetActive(false);
+
             Versions.Save();
 
             if (_downloads.Count > 0)
@@ -357,8 +345,10 @@ namespace libx
             state = State.Completed;
         }
 
-        private void Download()
+        public void Download()
         {
+            updateScreen.messageBox.SetActive(false);
+            updateScreen.progressBar.gameObject.SetActive(true);
             _downloadIndex = 0;
             _downloads[_downloadIndex].Start();
             state = State.Downloading;
@@ -412,7 +402,8 @@ namespace libx
                     downloader.savePath = Assets.GetRelativeUpdatePath(Assets.platform);
                     _downloads.Add(downloader);
                     state = State.WaitDownload;
-                    message = string.Format("检查到有 {0} 个文件需要更新，点 Download 开始更新。", _downloads.Count);
+                    updateScreen.messageBox.SetActive(true);
+                    updateScreen.message.text = string.Format("检查到有 {0} 个文件需要更新，点 Download 开始更新。", _downloads.Count);
                 }
             };
         }

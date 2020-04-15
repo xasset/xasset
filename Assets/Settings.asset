@@ -14,4 +14,4 @@ MonoBehaviour:
   runtimeMode: 1
   localServer: 1
   scenes:
-  - Assets/Demo/Scenes/AssetsUpdate.unity
+  - Assets/Logo.unity

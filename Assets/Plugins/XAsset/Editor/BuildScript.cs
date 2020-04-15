@@ -288,23 +288,8 @@ namespace libx
                         isNew = false;
                 if (isNew)
                     updates.Add(item.Key);
-            }
-
-            MD5 md5 = new MD5CryptoServiceProvider();
-            foreach (var item in buildVersions)
-            {
-                var filename = Path.Combine(outputPath,item.Key);
-                var bytes = File.ReadAllText(filename);
-                var hash2 = Hash128.Parse(bytes);
-                // byte[] result = md5.ComputeHash(bytes);
-                // string fileMD5 = "";
-                // foreach (byte b in result)
-                // {
-                //     fileMD5 += Convert.ToString(b, 16);
-                // }
-                Debug.Log(string.Format("{0} hash:{1} md5:{2}", item.Key, item.Value, hash2));    
-            }
-
+            } 
+            
             if (updates.Count > 0)
             {
                 using (var s = new StreamWriter(File.Open(outputPath + "/updates.txt", FileMode.Append)))
