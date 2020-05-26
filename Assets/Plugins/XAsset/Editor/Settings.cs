@@ -4,7 +4,7 @@
 // Author:
 //       fjy <jiyuan.feng@live.com>
 //
-// Copyright (c) 2019 fjy
+// Copyright (c) 2020 fjy
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.IO;
-using UnityEditor;
 using UnityEngine;
 
-namespace Plugins.XAsset.Editor
+namespace libx
 {
     public class Settings : ScriptableObject
     {
+        [Tooltip("是否在编辑器下开启加载AssetBundle的模式，开启后需要先打AssetBundle")] 
         public bool runtimeMode = true;
-        public bool localServer = false;
-        public string assetRootPath = "Assets/Plugins/XAsset/Demo/";
+        [Tooltip("是否开启本地服务器器，可以用来做版本更新测试")]
+        public bool localServer = false; 
+        [Tooltip("BuildPlayer 的时候被打包的场景")]
+        public string[] scenes = { };
     }
 }

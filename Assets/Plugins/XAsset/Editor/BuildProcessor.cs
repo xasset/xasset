@@ -4,7 +4,7 @@
 // Author:
 //       fjy <jiyuan.feng@live.com>
 //
-// Copyright (c) 2019 fjy
+// Copyright (c) 2020 fjy
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
 
-namespace Plugins.XAsset.Editor
+namespace libx
 {
     public class BuildProcessor : IPreprocessBuild, IPostprocessBuild
     {
@@ -63,9 +63,9 @@ namespace Plugins.XAsset.Editor
 
         public void OnPreprocessBuild(BuildTarget target, string path)
         {
-            BuildScript.CopyAssetBundlesTo(Path.Combine(Application.streamingAssetsPath, Utility.AssetBundles));
+            BuildScript.CopyAssetBundlesTo(Path.Combine(Application.streamingAssetsPath, Assets.AssetBundles));
             var platformName = BuildScript.GetPlatformName();
-            var searchPath = Path.Combine(Path.Combine(Application.streamingAssetsPath, Utility.AssetBundles),
+            var searchPath = Path.Combine(Path.Combine(Application.streamingAssetsPath, Assets.AssetBundles),
                 platformName);
             if (!Directory.Exists(searchPath)) return;
             var files = Directory.GetFiles(searchPath, "*.manifest", SearchOption.AllDirectories);

@@ -4,7 +4,7 @@
 // Author:
 //       fjy <jiyuan.feng@live.com>
 //
-// Copyright (c) 2019 fjy
+// Copyright (c) 2020 fjy
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,21 +30,48 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using UnityEditor;
 using UnityEngine;
 
-namespace Plugins.XAsset.Editor
+namespace libx
 {
     public static class BuildScript
     {
         public static string overloadedDevelopmentServerURL = "";
+
+        public static void ClearAssetBundles()
+        {
+            string[] allAssetBundleNames = AssetDatabase.GetAllAssetBundleNames();
+            for (int i = 0; i < allAssetBundleNames.Length; i++)
+            {
+                string text = allAssetBundleNames[i];
+                if (EditorUtility.DisplayCancelableProgressBar(string.Format("Clear AssetBundles {0}/{1}", i, allAssetBundleNames.Length), text, i * 1f / allAssetBundleNames.Length))
+                {
+                    break;
+                }
+                AssetDatabase.RemoveAssetBundleName(text, true);
+            }
+            EditorUtility.ClearProgressBar();
+        }
+
+        internal static void ApplyBuildRules()
+        {
+            var rules = GetBuildRules();
+            rules.Apply();
+        }
+
+        internal static BuildRules GetBuildRules()
+        {
+            return GetAsset<BuildRules>("Assets/Rules.asset");
+        }
 
         public static void CopyAssetBundlesTo(string outputPath)
         {
             if (!Directory.Exists(outputPath))
                 Directory.CreateDirectory(outputPath);
             var outputFolder = GetPlatformName();
-            var source = Path.Combine(Path.Combine(Environment.CurrentDirectory, Utility.AssetBundles), outputFolder);
+            var source = Path.Combine(Path.Combine(Environment.CurrentDirectory, Assets.AssetBundles), outputFolder);
             if (!Directory.Exists(source))
                 Debug.Log("No assetBundle output folder, try to build the assetBundles first.");
             var destination = Path.Combine(outputPath, outputFolder);
@@ -88,18 +115,18 @@ namespace Plugins.XAsset.Editor
 
         private static string[] GetLevelsFromBuildSettings()
         {
-            return EditorBuildSettings.scenes.Select(scene => scene.path).ToArray();
+            return GetSettings().scenes;
         }
 
         private static string GetAssetBundleManifestFilePath()
         {
-            var relativeAssetBundlesOutputPathForPlatform = Path.Combine(Utility.AssetBundles, GetPlatformName());
+            var relativeAssetBundlesOutputPathForPlatform = Path.Combine(Assets.AssetBundles, GetPlatformName());
             return Path.Combine(relativeAssetBundlesOutputPathForPlatform, GetPlatformName()) + ".manifest";
         }
 
         public static void BuildStandalonePlayer()
         {
-            var outputPath = EditorUtility.SaveFolderPanel("Choose Location of the Built Game", "", "");
+            var outputPath = Path.Combine(System.Environment.CurrentDirectory, "Build/" + GetPlatformName().ToLower()); //EditorUtility.SaveFolderPanel("Choose Location of the Built Game", "", "");
             if (outputPath.Length == 0)
                 return;
 
@@ -132,7 +159,7 @@ namespace Plugins.XAsset.Editor
         public static string CreateAssetBundleDirectory()
         {
             // Choose the output path according to the build target.
-            var outputPath = Path.Combine(Utility.AssetBundles, GetPlatformName());
+            var outputPath = Path.Combine(Assets.AssetBundles, GetPlatformName());
             if (!Directory.Exists(outputPath))
                 Directory.CreateDirectory(outputPath);
 
@@ -184,37 +211,35 @@ namespace Plugins.XAsset.Editor
         }
 
         public static void SetAssetBundleNameAndVariant(string assetPath, string bundleName, string variant)
-        { 
+        {
             var importer = AssetImporter.GetAtPath(assetPath);
-            if(importer == null) return;
+            if (importer == null) return;
             importer.assetBundleName = bundleName;
-            importer.assetBundleVariant = variant; 
+            importer.assetBundleVariant = variant;
         }
 
         public static void BuildManifest()
-        {
-            var manifest = GetManifest();
-
+        { 
             AssetDatabase.RemoveUnusedAssetBundleNames();
-            var bundles = AssetDatabase.GetAllAssetBundleNames();
-
+            var bundles = AssetDatabase.GetAllAssetBundleNames(); 
+            var manifest = GetManifest();
             List<string> dirs = new List<string>();
-            List<AssetData> assets = new List<AssetData>();  
+            List<AssetRef> assets = new List<AssetRef>();
 
             for (int i = 0; i < bundles.Length; i++)
             {
                 var paths = AssetDatabase.GetAssetPathsFromAssetBundle(bundles[i]);
-                foreach(var path in paths) 
+                foreach (var path in paths)
                 {
                     var dir = Path.GetDirectoryName(path);
-                    var index = dirs.FindIndex((o)=>o.Equals(dir));
-                    if(index == -1) 
+                    var index = dirs.FindIndex((o) => o.Equals(dir));
+                    if (index == -1)
                     {
                         index = dirs.Count;
                         dirs.Add(dir);
-                    }  
+                    }
 
-                    var asset = new AssetData();
+                    var asset = new AssetRef();
                     asset.bundle = i;
                     asset.dir = index;
                     asset.name = Path.GetFileName(path);
@@ -233,7 +258,7 @@ namespace Plugins.XAsset.Editor
 
             EditorUtility.SetDirty(manifest);
             AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
+            AssetDatabase.Refresh(); 
         }
 
         public static void BuildAssetBundles()
@@ -263,8 +288,8 @@ namespace Plugins.XAsset.Editor
                         isNew = false;
                 if (isNew)
                     updates.Add(item.Key);
-            }
-
+            } 
+            
             if (updates.Count > 0)
             {
                 using (var s = new StreamWriter(File.Open(outputPath + "/updates.txt", FileMode.Append)))
@@ -274,8 +299,7 @@ namespace Plugins.XAsset.Editor
                         s.WriteLine(item);
                     s.Flush();
                     s.Close();
-                }
-
+                } 
                 SaveVersions(versionsTxt, buildVersions);
             }
             else
@@ -306,8 +330,8 @@ namespace Plugins.XAsset.Editor
 
         private static string GetBuildTargetName(BuildTarget target)
         {
-            var name = PlayerSettings.productName + "_" + PlayerSettings.bundleVersion;
-            // ReSharper disable once SwitchStatementMissingSomeCases
+            var time = System.DateTime.Now.ToString("yyyyMMdd-HHmmss");
+            var name = PlayerSettings.productName + "-v" + PlayerSettings.bundleVersion + "-" + time;
             switch (target)
             {
                 case BuildTarget.Android:
@@ -322,10 +346,10 @@ namespace Plugins.XAsset.Editor
                     return "/" + name + ".app";
 
 #else
-                    case BuildTarget.StandaloneOSXIntel:
-                    case BuildTarget.StandaloneOSXIntel64:
-                    case BuildTarget.StandaloneOSXUniversal:
-                                        return "/" + name + ".app";
+                case BuildTarget.StandaloneOSXIntel:
+                case BuildTarget.StandaloneOSXIntel64:
+                case BuildTarget.StandaloneOSXUniversal:
+                    return "/" + name + ".app";
 
 #endif
 
@@ -358,9 +382,9 @@ namespace Plugins.XAsset.Editor
             return GetAsset<Settings>(path);
         }
 
-        public static AssetsManifest GetManifest()
+        public static Manifest GetManifest()
         {
-            return GetAsset<AssetsManifest>(Utility.AssetsManifestAsset);
+            return GetAsset<Manifest>(Assets.AssetsManifestAsset);
         }
 
         public static string GetServerURL()

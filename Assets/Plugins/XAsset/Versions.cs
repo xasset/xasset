@@ -1,10 +1,10 @@
 //
-// VersionManager.cs
+// Versions.cs
 //
 // Author:
 //       fjy <jiyuan.feng@live.com>
 //
-// Copyright (c) 2019 fjy
+// Copyright (c) 2020 fjy
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,72 +24,94 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEngine.Networking;
 
-namespace Plugins.XAsset
+namespace libx
 {
     public static class Versions
-    {
-        public const string versionFile = "download.txt";
-        private const char splitKey = '=';
+	{
+		public const string versionFile = "download.txt";
+		public const string appVersionFile = "app_ver.txt";
 
-        public static Dictionary<string, string> data = new Dictionary<string, string>();
+		private const char splitKey = '=';
 
-        public static void Load()
-        {
-            Clear();
-            var path = Utility.updatePath + versionFile;
-            if (File.Exists(path))
-            { 
-                using (var s = new StreamReader(path))
-                {
-                    string line;
-                    while ((line = s.ReadLine()) != null)
-                    {
-                        if (line == string.Empty)
-                            continue;
-                        var fields = line.Split(splitKey);
-                        if (fields.Length > 1)
-                            data.Add(fields[0], fields[1]);
-                    }
-                }
-            }
-        }
+		public static Dictionary<string, string> data = new Dictionary<string, string> ();
 
-        public static void Clear()
-        {
-            data.Clear();
-        }
+		public static void Load ()
+		{
+			var path = Assets.GetRelativeUpdatePath(appVersionFile);
+			if (File.Exists (path)) {
+				var ver = new System.Version (File.ReadAllText (path));
+				if (ver < new System.Version (Application.version)) {
+					Clear ();
+				} 
+			} 
 
-        public static void Set(string key, string version)
-        {
-            data[key] = version;
-        }
+			data.Clear();
+			path = Assets.GetRelativeUpdatePath(versionFile); 
+			if (File.Exists (path)) { 
+				using (var s = new StreamReader (path)) {
+					string line;
+					while ((line = s.ReadLine ()) != null) {
+						if (line == string.Empty)
+							continue;
+						var fields = line.Split (splitKey);
+						if (fields.Length > 1)
+							data.Add (fields [0], fields [1]);
+					}
+				}
+			}
+		}
 
-        public static string Get(string key)
-        {
-            string version;
-            data.TryGetValue(key, out version);
-            return version;
-        }
+		public static void Clear ()
+		{
+			data.Clear ();
+			var dir = Path.GetDirectoryName (Assets.updatePath);
+			if (Directory.Exists (dir)) {
+				Directory.Delete (dir, true);
+			}
+		}
 
-        public static void Save()
-        {
-            var path = Utility.updatePath + versionFile;
-            if (File.Exists(path))
-                File.Delete(path);
+		public static void Set (string key, string version)
+		{
+			data [key] = version;
+		}
 
-            using (var s = new StreamWriter(path))
-            {
-                foreach (var item in data)
-                    s.WriteLine(item.Key + splitKey + item.Value);
-                s.Flush();
-                s.Close();
-            }  
-        }
-    }
+		public static string Get (string key)
+		{
+			string version;
+			data.TryGetValue (key, out version);
+			return version;
+		}
+
+		public static void Save ()
+		{
+			var dir = Path.GetDirectoryName (Assets.updatePath);
+			if (! Directory.Exists (dir)) {
+				Directory.CreateDirectory(dir);
+			}
+
+			var path = Assets.updatePath + versionFile;
+			if (File.Exists (path))
+				File.Delete (path);
+
+			if (data.Count > 0) {
+				using (var s = new StreamWriter (path)) {
+					foreach (var item in data)
+						s.WriteLine (item.Key + splitKey + item.Value);
+					s.Flush ();
+					s.Close ();
+				} 
+			} 
+
+			path = Assets.GetRelativeUpdatePath(appVersionFile); 
+
+			if (File.Exists (path))
+				File.Delete (path);
+			
+			File.WriteAllText (path, Application.version); 
+		}
+	}
 }

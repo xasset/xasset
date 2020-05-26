@@ -5,9 +5,9 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Plugins.XAsset.Editor
+namespace libx
 {
-    internal class LaunchLocalServer : ScriptableSingleton<LaunchLocalServer>
+    public class LaunchLocalServer : ScriptableSingleton<LaunchLocalServer>
     {
         [SerializeField] int m_ServerPID = 0;
 

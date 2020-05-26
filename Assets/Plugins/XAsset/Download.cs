@@ -1,10 +1,10 @@
 //
-// AssetDownload.cs
+// Download.cs
 //
 // Author:
 //       fjy <jiyuan.feng@live.com>
 //
-// Copyright (c) 2019 fjy
+// Copyright (c) 2020 fjy
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,17 +26,16 @@
 
 using System;
 using System.IO;
-using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Plugins.XAsset
+namespace libx
 {
-    public class Download
+    public class Download: System.Collections.IEnumerator
     {
         public enum State
         {
             HeadRequest,
-            BodyRequest,
+            ContentRequest,
             FinishRequest,
             Completed,
         }
@@ -71,6 +70,8 @@ namespace Plugins.XAsset
 
         private FileStream fs { get; set; }
 
+        public object Current { get { return null; }}
+
         void WriteBuffer()
         {
             var buff = request.downloadHandler.data;
@@ -98,7 +99,6 @@ namespace Plugins.XAsset
                     {
                         error = request.error;
                     }
-
                     if (request.isDone)
                     {
                         maxlen = long.Parse(request.GetResponseHeader("Content-Length"));
@@ -107,9 +107,8 @@ namespace Plugins.XAsset
                         var dir = Path.GetDirectoryName(savePath);
                         if (!Directory.Exists(dir))
                         {
-                            // ReSharper disable once AssignNullToNotNullAttribute
                             Directory.CreateDirectory(dir);
-                        } 
+                        }
                         fs = new FileStream(savePath, FileMode.OpenOrCreate, FileAccess.Write);
                         len = fs.Length;
                         var emptyVersion = string.IsNullOrEmpty(version);
@@ -117,21 +116,17 @@ namespace Plugins.XAsset
                         var emptyOldVersion = string.IsNullOrEmpty(oldVersion);
                         if (emptyVersion || emptyOldVersion || !oldVersion.Equals(version))
                         {
-                            Versions.Set(savePath, version); 
-                            len = 0; 
+                            Versions.Set(savePath, version);
+                            len = 0;
                         }
                         if (len < maxlen)
-                        { 
+                        {
                             fs.Seek(len, SeekOrigin.Begin);
                             request = UnityWebRequest.Get(url);
                             request.SetRequestHeader("Range", "bytes=" + len + "-");
-                            #if UNITY_2017_1_OR_NEWER
                             request.SendWebRequest();
-                            #else
-                            request.Send();
-                            #endif
+                            state = State.ContentRequest;
                             index = 0;
-                            state = State.BodyRequest;
                         }
                         else
                         {
@@ -140,7 +135,7 @@ namespace Plugins.XAsset
                     }
 
                     break;
-                case State.BodyRequest:
+                case State.ContentRequest:
                     if (request.error != null)
                     {
                         error = request.error;
@@ -181,11 +176,7 @@ namespace Plugins.XAsset
         public void Start()
         {
             request = UnityWebRequest.Head(url);
-            #if UNITY_2017_1_OR_NEWER
             request.SendWebRequest();
-            #else
-            request.Send();
-            #endif
             progress = 0;
             isDone = false;
         }
@@ -193,6 +184,15 @@ namespace Plugins.XAsset
         public void Stop()
         {
             isDone = true;
+        }
+
+        public bool MoveNext()
+        {
+            return !isDone;
+        }
+
+        public void Reset()
+        {
         }
     }
 }

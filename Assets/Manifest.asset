@@ -3,44 +3,39 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6951743adb93844fcb5ddf53e02547c9, type: 3}
+  m_Script: {fileID: 11500000, guid: 7882bd278763c45f49cef7deeae496e5, type: 3}
   m_Name: Manifest
   m_EditorClassIdentifier: 
-  downloadURL: http://127.0.0.1:7888/
   activeVariants: []
   bundles:
+  - demo/scenes
   - manifest
-  - prefabs
-  - sprites
+  - prefabs/canvas
   dirs:
+  - Assets/Demo/Scenes
   - Assets
   - Assets/Demo/Prefabs
-  - Assets/Demo/Sprites
   assets:
   - bundle: 0
     dir: 0
+    name: LoadAsset.unity
+  - bundle: 0
+    dir: 0
+    name: LoadScene.unity
+  - bundle: 0
+    dir: 0
+    name: Test.unity
+  - bundle: 1
+    dir: 1
     name: Manifest.asset
-  - bundle: 1
-    dir: 1
+  - bundle: 2
+    dir: 2
+    name: Canvas.prefab
+  - bundle: 2
+    dir: 2
     name: UIRoot.prefab
-  - bundle: 1
-    dir: 1
-    name: UIRoot2.prefab
-  - bundle: 2
-    dir: 2
-    name: blackSquare.png
-  - bundle: 2
-    dir: 2
-    name: log2.png
-  - bundle: 2
-    dir: 2
-    name: log3.png
-  - bundle: 2
-    dir: 2
-    name: UnityLogo.png

@@ -30,7 +30,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 
-namespace Plugins.XAsset
+namespace libx
 {
     public class AssetsUpdate : MonoBehaviour
     {
@@ -38,6 +38,7 @@ namespace Plugins.XAsset
         {
             Wait,
             Checking,
+            WaitDownload,
             Downloading,
             Completed,
             Error,
@@ -56,7 +57,10 @@ namespace Plugins.XAsset
         private readonly List<Download> _downloads = new List<Download>();
         private int _downloadIndex;
 
-		[SerializeField] string versionsTxt = "versions.txt";
+        [SerializeField] string versionsTxt = "versions.txt";
+        [SerializeField] string downloadURL = "http://127.0.0.1:7888/";
+
+        public UpdateScreen updateScreen;
 
         private void OnError(string e)
         {
@@ -71,14 +75,16 @@ namespace Plugins.XAsset
 
         string message = "click Check to start.";
 
-        void OnProgress(string arg1, float arg2)
+        void OnProgress(string file, float value)
         {
-            message = string.Format("{0:F0}%:{1}({2}/{3})", arg2 * 100, arg1, _downloadIndex, _downloads.Count);
+            updateScreen.loadingText.text = string.Format("Loading...({0}/{1})", _downloadIndex + 1, _downloads.Count);
+            updateScreen.progressText.text = string.Format("{0:F0}%:{1}", value * 100, file);
+            updateScreen.progressBar.value = (_downloadIndex + 1f) / _downloads.Count;
         }
 
         void Clear()
         {
-            var dir = Path.GetDirectoryName(Utility.updatePath);
+            var dir = Path.GetDirectoryName(Assets.updatePath);
             if (Directory.Exists(dir))
             {
                 Directory.Delete(dir, true);
@@ -88,45 +94,54 @@ namespace Plugins.XAsset
             _downloadIndex = 0;
             _versions.Clear();
             _serverVersions.Clear();
-            message = "click Check to start.";
-            state = State.Wait;
+            // message = "click Check to start.";
+            // state = State.Wait;
 
-            Versions.Clear(); 
+            Versions.Clear();
 
-            var path = Utility.updatePath + Versions.versionFile;
+            var path = Assets.updatePath + Versions.versionFile;
             if (File.Exists(path))
                 File.Delete(path);
+
+            Check();
         }
 
-        void Check()
+        void OnInit(AssetRequest request)
         {
-            Assets.Initialize(delegate
+            if (!string.IsNullOrEmpty(request.error))
             {
-                var path = Utility.GetRelativePath4Update(versionsTxt);
-                if (!File.Exists(path))
+                LoadVersions(string.Empty);
+                return;
+            }
+            var path = Assets.GetRelativeUpdatePath(versionsTxt);
+            if (!File.Exists(path))
+            {
+                var asset = Assets.LoadAssetAsync(Assets.GetAssetBundleDataPathURL(versionsTxt), typeof(TextAsset));
+                asset.completed += delegate
                 {
-                    var asset = Assets.LoadAsync(Utility.GetWebUrlFromDataPath(versionsTxt), typeof(TextAsset));
-                    asset.completed += delegate
+                    if (asset.error != null)
                     {
-                        if (asset.error != null)
-                        {
-                            OnError(asset.error);
-                            return;
-                        }
+                        LoadVersions(string.Empty);
+                        return;
+                    }
+                    var dir = Path.GetDirectoryName(path);
+                    if (!Directory.Exists(dir))
+                        Directory.CreateDirectory(dir);
+                    File.WriteAllText(path, asset.text);
+                    LoadVersions(asset.text);
+                    asset.Release();
+                };
+            }
+            else
+            {
+                LoadVersions(File.ReadAllText(path));
+            }
+        }
 
-                        var dir = Path.GetDirectoryName(path);
-                        if (!Directory.Exists(dir))
-                            Directory.CreateDirectory(dir);
-                        File.WriteAllText(path, asset.text);
-                        LoadVersions(asset.text);
-                        asset.Release();
-                    };
-                }
-                else
-                {
-                    LoadVersions(File.ReadAllText(path));
-                }
-            }, OnError);
+        public void Check()
+        {
+            var request = Assets.Initialize();
+            request.completed = OnInit;
             progress += OnProgress;
             state = State.Checking;
         }
@@ -134,7 +149,8 @@ namespace Plugins.XAsset
         private void Start()
         {
             state = State.Wait;
-            Versions.Load(); 
+            Versions.Load();
+            Check();
         }
 
         private void Update()
@@ -170,11 +186,11 @@ namespace Plugins.XAsset
 
         string assetPath = "";
 
-        List<Asset> loadedAssets = new List<Asset>();
+        List<AssetRequest> loadedAssets = new List<AssetRequest>();
 
-        void OnAssetLoaded(Asset asset)
+        void OnAssetLoaded(AssetRequest asset)
         {
-            if (asset.name.EndsWith(".prefab", StringComparison.CurrentCulture))
+            if (asset.url.EndsWith(".prefab", StringComparison.CurrentCulture))
             {
                 var go = Instantiate(asset.asset);
                 go.name = asset.asset.name;
@@ -187,37 +203,24 @@ namespace Plugins.XAsset
 
         private void OnGUI()
         {
-            using (var v = new GUILayout.VerticalScope("AssetsUpdate Demo", "window"))
+            if (state == State.Completed)
             {
-                switch (state)
+                using (var v = new GUILayout.VerticalScope("AssetsUpdate Demo", "window"))
                 {
-                    case State.Wait:
-                        if (GUILayout.Button("Check"))
-                        {
-                            Check();
-                        }
+                    GUILayout.Label(string.Format("{0}:{1}", state, message));
 
-                        break;
-
-                    case State.Completed:
-                        if (GUILayout.Button("Clear"))
-                        {
-                            Clear(); 
-                        } 
-                        break;
-                    default:
-                        break;
-                }
-
-                GUILayout.Label(string.Format("{0}:{1}", state, message));
-                if (state == State.Completed)
-                {
-                    GUILayout.Label("AllBundleAssets:");
-                    foreach (var item in Assets.bundleAssets)
+                    if (GUILayout.Button("Clear"))
                     {
-                        if (GUILayout.Button(item.Key))
+                        Clear();
+                    }
+
+                    GUILayout.Label("AllBundleAssets:");
+                    var assets = Assets.GetAllBundleAssetPaths();
+                    foreach (var item in assets)
+                    {
+                        if (GUILayout.Button(item))
                         {
-                            assetPath = item.Key;
+                            assetPath = item;
                         }
                     }
 
@@ -226,19 +229,19 @@ namespace Plugins.XAsset
                         assetPath = GUILayout.TextField(assetPath, GUILayout.Width(256));
                         if (GUILayout.Button("Load"))
                         {
-                            var asset = Assets.Load(assetPath, typeof(UnityEngine.Object));
+                            var asset = Assets.LoadAsset(assetPath, typeof(UnityEngine.Object));
                             asset.completed += OnAssetLoaded;
                         }
 
                         if (GUILayout.Button("LoadAsync"))
                         {
-                            var asset = Assets.LoadAsync(assetPath, typeof(UnityEngine.Object));
+                            var asset = Assets.LoadAssetAsync(assetPath, typeof(UnityEngine.Object));
                             asset.completed += OnAssetLoaded;
                         }
 
                         if (GUILayout.Button("LoadScene"))
                         {
-                            var asset = Assets.LoadScene(assetPath, true, true);
+                            var asset = Assets.LoadSceneAsync(assetPath, true);
                             asset.completed += OnAssetLoaded;
                         }
                     }
@@ -261,7 +264,7 @@ namespace Plugins.XAsset
                             var item = loadedAssets[i];
                             using (var h = new GUILayout.HorizontalScope())
                             {
-                                GUILayout.Label(item.name);
+                                GUILayout.Label(item.url);
                                 if (GUILayout.Button("Unload"))
                                 {
                                     item.Release();
@@ -277,6 +280,8 @@ namespace Plugins.XAsset
 
         private void Complete()
         {
+            updateScreen.progressBar.gameObject.SetActive(false);
+
             Versions.Save();
 
             if (_downloads.Count > 0)
@@ -303,20 +308,28 @@ namespace Plugins.XAsset
                     sb.AppendLine(string.Format("{0}:{1}", item.Key, item.Value));
                 }
 
-                var path = Utility.GetRelativePath4Update(versionsTxt);
+                var path = Assets.GetRelativeUpdatePath(versionsTxt);
                 if (File.Exists(path))
                 {
                     File.Delete(path);
                 }
 
                 File.WriteAllText(path, sb.ToString());
-                Assets.Initialize(delegate 
+                var request = Assets.Initialize();
+                request.completed = delegate (AssetRequest req)
                 {
-                    if (completed != null)
+                    if (!string.IsNullOrEmpty(req.error))
                     {
-                        completed();
+                        OnError(req.error);
                     }
-                }, OnError);
+                    else
+                    {
+                        if (completed != null)
+                        {
+                            completed();
+                        }
+                    }
+                };
                 state = State.Completed;
 
                 message = string.Format("{0} files has update.", _downloads.Count);
@@ -332,17 +345,25 @@ namespace Plugins.XAsset
             state = State.Completed;
         }
 
-        private void Download()
+        public void Download()
         {
+            updateScreen.messageBox.SetActive(false);
+            updateScreen.progressBar.gameObject.SetActive(true);
             _downloadIndex = 0;
             _downloads[_downloadIndex].Start();
             state = State.Downloading;
         }
 
+        public string GetDownloadURL(string filename)
+        {
+            return Path.Combine(Path.Combine(downloadURL, Assets.platform), filename);
+        }
+
         private void LoadVersions(string text)
         {
             LoadText2Map(text, ref _versions);
-            var asset = Assets.LoadAsync(Utility.GetDownloadURL(versionsTxt), typeof(TextAsset));
+            var url = GetDownloadURL(versionsTxt);
+            var asset = Assets.LoadAssetAsync(url, typeof(TextAsset));
             asset.completed += delegate
             {
                 if (asset.error != null)
@@ -352,16 +373,19 @@ namespace Plugins.XAsset
                 }
 
                 LoadText2Map(asset.text, ref _serverVersions);
+                asset.Release();
+                asset = null;
+
                 foreach (var item in _serverVersions)
                 {
                     string ver;
                     if (!_versions.TryGetValue(item.Key, out ver) || !ver.Equals(item.Value))
                     {
                         var downloader = new Download();
-                        downloader.url = Utility.GetDownloadURL(item.Key);
+                        downloader.url = GetDownloadURL(item.Key);
                         downloader.path = item.Key;
                         downloader.version = item.Value;
-                        downloader.savePath = Utility.GetRelativePath4Update(item.Key);
+                        downloader.savePath = Assets.GetRelativeUpdatePath(item.Key);
                         _downloads.Add(downloader);
                     }
                 }
@@ -373,11 +397,13 @@ namespace Plugins.XAsset
                 else
                 {
                     var downloader = new Download();
-                    downloader.url = Utility.GetDownloadURL(Utility.GetPlatform());
-                    downloader.path = Utility.GetPlatform();
-                    downloader.savePath = Utility.GetRelativePath4Update(Utility.GetPlatform());
+                    downloader.url = GetDownloadURL(Assets.platform);
+                    downloader.path = Assets.platform;
+                    downloader.savePath = Assets.GetRelativeUpdatePath(Assets.platform);
                     _downloads.Add(downloader);
-                    Download();
+                    state = State.WaitDownload;
+                    updateScreen.messageBox.SetActive(true);
+                    updateScreen.message.text = string.Format("检查到有 {0} 个文件需要更新，点 Download 开始更新。", _downloads.Count);
                 }
             };
         }

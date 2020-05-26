@@ -3,15 +3,15 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d1cd05a3c6af421f90a9c6525845f35, type: 3}
+  m_Script: {fileID: 11500000, guid: dc7122dd6d8f94d628f5183bb0ce97d4, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
   runtimeMode: 1
   localServer: 1
-  assetRootPath: Assets/Demo/
+  scenes:
+  - Assets/Logo.unity

@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Plugins.XAsset.Editor
+namespace libx
 {
     internal static class MonoInstallationFinder
     {
@@ -13,7 +13,6 @@ namespace Plugins.XAsset.Editor
         {
             var editorAppPath = EditorApplication.applicationPath;
             if (Application.platform == RuntimePlatform.WindowsEditor)
-                // ReSharper disable once AssignNullToNotNullAttribute
                 return Path.Combine(Path.GetDirectoryName(editorAppPath), "Data");
             else if (Application.platform == RuntimePlatform.OSXEditor)
             {
@@ -24,7 +23,6 @@ namespace Plugins.XAsset.Editor
 #endif
             }
             else // Linux...?
-                // ReSharper disable once AssignNullToNotNullAttribute
                 return Path.Combine(Path.GetDirectoryName(editorAppPath), "Data");
         }
 
