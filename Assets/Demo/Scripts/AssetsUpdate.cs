@@ -356,7 +356,7 @@ namespace libx
 
         public string GetDownloadURL(string filename)
         {
-            return Path.Combine(Path.Combine(downloadURL, Assets.platform), filename);
+            return string.Format("{0}/{1}/{2}", downloadURL, Assets.platform, filename);
         }
 
         private void LoadVersions(string text)
