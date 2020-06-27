@@ -11,7 +11,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc7122dd6d8f94d628f5183bb0ce97d4, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  runtimeMode: 1
-  localServer: 1
-  scenes:
-  - Assets/Logo.unity
+  runtimeMode: 0
+  localServer: 0
+  copyToStreamingAssets: 1

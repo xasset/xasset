@@ -1,0 +1,10 @@
+{
+    "name": "XAsset.Editor",
+    "references": [
+        "XAsset.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}
