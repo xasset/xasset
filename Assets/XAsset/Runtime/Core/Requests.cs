@@ -47,7 +47,6 @@ namespace libx
 
     public class AssetRequest : Reference, IEnumerator
     {
-        private List<Object> _requires;
         public Type assetType;
         public string url;
 
@@ -77,45 +76,6 @@ namespace libx
 
         public Object asset { get; internal set; }
 
-        private bool checkRequires
-        {
-            get { return _requires != null; }
-        }
-
-        public void Require(Object obj)
-        {
-            if (_requires == null)
-                _requires = new List<Object>();
-
-            _requires.Add(obj);
-            Retain();
-        }
-
-        public void Dequire(Object obj)
-        {
-            if (_requires == null)
-                return;
-
-            if (_requires.Remove(obj))
-                Release();
-        }
-
-        private void UpdateRequires()
-        {
-            for (var i = 0; i < _requires.Count; i++)
-            {
-                var item = _requires[i];
-                if (item != null)
-                    continue;
-                Release();
-                _requires.RemoveAt(i);
-                i--;
-            }
-
-            if (_requires.Count == 0)
-                _requires = null;
-        }
-
         internal virtual void Load()
         {
             if (!Assets.runtimeMode && Assets.loadDelegate != null)
@@ -142,8 +102,6 @@ namespace libx
 
         internal bool Update()
         {
-            if (checkRequires)
-                UpdateRequires();
             if (!isDone)
                 return true;
             if (completed == null)

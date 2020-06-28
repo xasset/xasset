@@ -35,8 +35,10 @@ sysinfo.txt
 *.DS_Store
 Library
 Temp
-AssetBundles
+Bundles
 UnityPackageManager
+Output
 *.mdb
 
 _ReSharper.Caches
+*.idea
