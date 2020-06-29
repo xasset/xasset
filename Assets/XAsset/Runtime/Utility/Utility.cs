@@ -29,6 +29,17 @@ namespace libx
 			return ToHash (data);
 		}
 
+		public static uint GetCrc(byte[] bytes)
+		{
+			return Crc32.Compute (bytes);
+		}
+		
+		public static string GetCrc32Hash (byte[] bytes)
+		{
+			var data = Crc32.ComputeHash (bytes);
+			return ToHash (data);
+		}
+
 		static string ToHash (byte[] data)
 		{
 			var sb = new StringBuilder ();

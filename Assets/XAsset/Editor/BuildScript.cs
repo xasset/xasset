@@ -297,7 +297,7 @@ namespace libx
                 File.Copy(sourceFileName, destFileName, true);
             }
 
-            Versions.MakeRecords(rules.outputPath);
+            Versions.BuildVersions(rules.outputPath);
         }
 
         private static string GetBuildTargetName(BuildTarget target)

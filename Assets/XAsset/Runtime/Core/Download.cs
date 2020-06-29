@@ -36,13 +36,13 @@ namespace libx
         public bool isDone { get; private set; }
         public string error { get; private set; }
         public long len { get; set; }
-        public string hash { get; set; }
+        public uint crc { get; set; }
         public string url { get; set; }
         public long position { get; private set; }
 
         public string tempPath
         {
-            get { return Application.persistentDataPath + "/temp/" + hash; }
+            get { return Application.persistentDataPath + "/temp/" + crc; }
         }
 
         public Action<Download> completed { get; set; }

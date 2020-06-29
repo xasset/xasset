@@ -43,7 +43,6 @@ namespace libx
 
 		public static bool runtimeMode = false;
 		public static Func<string, Type, Object> loadDelegate = null;
-
 		private static readonly string TAG = "[Assets]";
 
 		[Conditional ("LOG_ENABLE")]

@@ -37,6 +37,7 @@ namespace libx
 		public const string KRuntimeMode = "Assets/Bundles/Enable RuntimeMode";
 		private const string KApplyBuildRules = "Assets/Bundles/Build Rules";
 		private const string KBuildAssetBundles = "Assets/Bundles/Build Bundles";
+		private const string KBuildVersions = "Assets/Bundles/Build Versions";
 		private const string KBuildPlayer = "Assets/Bundles/Build Player";
 		private const string KClearBundles = "Assets/Bundles/Clear Bundles";
 		private const string KCopyBundles = "Assets/Bundles/Copy Bundles"; 
@@ -114,7 +115,7 @@ namespace libx
 			AssetDatabase.SaveAssets ();
 			Selection.activeObject = rules;
 			EditorUtility.FocusProjectWindow ();
-		}
+		} 
 
 		[MenuItem (KApplyBuildRules)]
 		private static void ApplyBuildRules ()
@@ -135,7 +136,13 @@ namespace libx
 			watch.Stop ();
 			Debug.Log ("BuildAssetBundles " + watch.ElapsedMilliseconds + " ms."); 
 		}
-
+		
+		[MenuItem(KBuildVersions)]
+		private static void BuildVersions()
+		{
+			Versions.BuildVersions(Assets.AssetBundles);
+		}
+		
 		[MenuItem (KBuildPlayer)]
 		private static void BuildStandalonePlayer ()
 		{
@@ -152,7 +159,7 @@ namespace libx
 		private static void CopyAssetBundles ()
 		{
 			BuildScript.CopyAssetBundlesTo (Application.streamingAssetsPath);
-		} 
+		}  
 		
 		[MenuItem (KRuntimeMode)] 
 		private static void EnabledRuntimeMode()
@@ -165,7 +172,8 @@ namespace libx
 				Menu.SetChecked (KRuntimeMode, false); 
 				settings.runtimeMode = false; 
 			}
-		}
+		} 
+		
 #if !UNITY_2018_OR_NEWER
 		private const string KCopyPath = "Assets/Copy Path"; 
 		[MenuItem (KCopyPath)]

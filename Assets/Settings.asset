@@ -13,4 +13,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   runtimeMode: 0
   localServer: 0
-  copyToStreamingAssets: 1
+  copyToStreamingAssets: 0

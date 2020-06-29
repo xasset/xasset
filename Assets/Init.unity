@@ -695,7 +695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae4b267f2a7f94de28040900d4c7f394, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  downloadUrl: http://192.168.1.111:7555/Bundles/
+  downloadUrl: http://127.0.0.1:7555/Bundles/
   gameScene: Game.unity
   maxDownloadsPerFrame: 3
 --- !u!1 &597280430

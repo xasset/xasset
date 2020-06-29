@@ -51,8 +51,9 @@ namespace libx
 
         [SerializeField] private string downloadUrl = "http://127.0.0.1:7888/";
         [SerializeField] private string gameScene = "Game.unity";
+        [SerializeField] private bool useBin;
         private string _savePath;
-        private Dictionary<string, Record> _serverRecords = new Dictionary<string, Record>();
+        private Dictionary<string, FileVersion> _serverRecords = new Dictionary<string, FileVersion>();
         private List<Download> _downloads = new List<Download>();
         private List<Download> _prepareToDownload = new List<Download>();
         private int _currentIndex;
@@ -89,22 +90,21 @@ namespace libx
             _savePath = Application.persistentDataPath + '/' + Assets.AssetBundles + '/';
             Assets.updatePath = _savePath;
             DontDestroyOnLoad(gameObject);
+            Versions.useBin = useBin; 
         }
 
         public void Clear()
         {
             MessageBox.Show("提示", "清除数据后所有数据需要重新下载，请确认！", "清除").onComplete += id =>
             {
-                if (id == MessageBox.EventId.Ok)
+                if (id != MessageBox.EventId.Ok) return;
+                if (Directory.Exists(_savePath))
                 {
-                    if (Directory.Exists(_savePath))
-                    {
-                        Directory.Delete(_savePath, true);
-                    }
-
-                    OnMessage("数据清除完毕");
-                    StartUpdate();
+                    Directory.Delete(_savePath, true);
                 }
+
+                OnMessage("数据清除完毕");
+                StartUpdate();
             };
         }
 
@@ -168,7 +168,7 @@ namespace libx
             OnMessage("正在加载版本信息...");
             if (!File.Exists(path))
                 yield break;
-            var records = Versions.LoadRecords(path);
+            var records = Versions.LoadVersions(path);
             OnMessage("正在检查版本信息...");
             _serverRecords.Clear();
             _downloads.Clear();
@@ -268,7 +268,7 @@ namespace libx
             {
                 using (var stream = new MemoryStream(request.downloadHandler.data))
                 {
-                    var records = Versions.LoadRecords(stream);
+                    var records = Versions.LoadVersions(stream);
                     for (var index = 0; index < records.Count; index++)
                     {
                         var item = records[index];
@@ -295,7 +295,7 @@ namespace libx
             var path = basePath + Versions.Filename;
             if (!File.Exists(path))
                 yield break;
-            var records = Versions.LoadRecords(path);
+            var records = Versions.LoadVersions(path);
             for (var index = 0; index < records.Count; index++)
             {
                 var item = records[index];
@@ -327,8 +327,9 @@ namespace libx
             {
                 unitSize = totalSize / mb;
                 unit = "mb";
-            } 
-            return string.Format("{0:f2} {1}/s", unitSize/duration, unit);
+            }
+
+            return string.Format("{0:f2} {1}/s", unitSize / duration, unit);
         }
 
         private IEnumerator UpdateDownloads(float bytesToMb, long totalSize)
@@ -353,9 +354,11 @@ namespace libx
                 {
                     download.Update();
                     downloadSize += download.position;
-                }  
-                var elapsed = Time.realtimeSinceStartup - startTime;  
-                OnMessage(string.Format("下载中...{0:f2}/{1:f2}(MB, {2})", downloadSize * bytesToMb, totalSize * bytesToMb, GetDownloadSpeed(totalSize, elapsed)));
+                }
+
+                var elapsed = Time.realtimeSinceStartup - startTime;
+                OnMessage(string.Format("下载中...{0:f2}/{1:f2}(MB, {2})", downloadSize * bytesToMb, totalSize * bytesToMb,
+                    GetDownloadSpeed(totalSize, elapsed)));
                 OnProgress(downloadSize * 1f / totalSize);
 
                 if (downloadSize == totalSize)
@@ -427,7 +430,7 @@ namespace libx
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private bool IsUpdate(Record item)
+        private bool IsUpdate(FileVersion item)
         {
             var path = _savePath + item.name;
             if (!File.Exists(path))
@@ -436,34 +439,28 @@ namespace libx
             }
             else
             {
-                using (var stream = File.OpenRead(path))
+                var bytes = File.ReadAllBytes(path);
+                if (bytes.Length != item.len)
                 {
-                    if (Versions.verifyBy == VerifyBy.Size)
+                    return true;
+                } 
+                if (Versions.verifyBy == VerifyBy.Hash)
+                {
+                    var crc = Utility.GetCrc(bytes);
+                    if (crc != item.crc)
                     {
-                        if (stream.Length != item.len)
-                        {
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        var hash = Utility.GetCrc32Hash(stream);
-                        if (!Utility.VerifyCrc32Hash(hash, item.hash))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
-            }
-
+            } 
             return false;
         }
 
-        private void AddDownload(Record bundle)
+        private void AddDownload(FileVersion bundle)
         {
             var download = new Download
             {
-                url = downloadUrl + bundle.name, hash = bundle.hash, len = bundle.len, completed = OnDownloadCompleted
+                url = downloadUrl + bundle.name, crc = bundle.crc, len = bundle.len, completed = OnDownloadCompleted
             };
             _downloads.Add(download);
         }
@@ -508,28 +505,21 @@ namespace libx
 
         private string GetDownloadError(Download download)
         {
-            using (var stream = File.OpenRead(download.tempPath))
+            var bytes = File.ReadAllBytes(download.tempPath);
+            if (bytes.Length != download.len)
             {
-                if (Versions.verifyBy == VerifyBy.Hash)
-                {
-                    var hash = Utility.GetCrc32Hash(stream);
-                    if (Utility.VerifyCrc32Hash(download.hash, hash))
-                    {
-                        return null;
-                    }
-
-                    return string.Format("哈希不匹配：{0}, 长度：{1}", hash, stream.Length);
-                }
-                else
-                {
-                    if (stream.Length == download.len)
-                    {
-                        return null;
-                    }
-
-                    return "长度不匹配：" + stream.Length;
-                }
+                return "长度不匹配：" + bytes.Length; 
             }
+            if (Versions.verifyBy == VerifyBy.Hash)
+            {
+                var crc = Utility.GetCrc(bytes);
+                if (download.crc == crc)
+                {
+                    return null;
+                } 
+                return string.Format("crc 不匹配：{0}/{1}", crc, download.crc);
+            }
+            return null;
         }
 
         private void Quit()
