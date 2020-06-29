@@ -351,8 +351,7 @@ namespace libx
 
                 var downloadSize = 0L;
                 foreach (var download in _downloads)
-                {
-                    download.Update();
+                { 
                     downloadSize += download.position;
                 }
 

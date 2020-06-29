@@ -31,70 +31,61 @@ using UnityEngine.Networking;
 
 namespace libx
 {
-    public class Download : System.Collections.IEnumerator
-    { 
-        public bool isDone { get; private set; }
-        public string error { get; private set; }
+    public class Download : DownloadHandlerScript, System.Collections.IEnumerator
+    {
+        private static readonly byte[] preallocatedBuffer = new byte[1024 * 1024 * 4];
+        
+        public string error
+        {
+            get { return _request == null ? null : _request.error; }
+        }
+
         public long len { get; set; }
         public uint crc { get; set; }
         public string url { get; set; }
-        public long position { get; private set; }
+        public long position { get; private set; } 
 
-        public string tempPath
-        {
-            get { return Application.persistentDataPath + "/temp/" + crc; }
-        }
-
+        public string tempPath { get { return Application.persistentDataPath + "/temp/" + crc; } } 
         public Action<Download> completed { get; set; }
         private UnityWebRequest _request;
         private FileStream _stream;
-        private int _index;
-        private bool _started;
+        private bool _downloading;
 
-        public object Current
+        protected override float GetProgress()
         {
-            get { return null; }
+            return position * 1f / len;
+        }
+        
+        protected override byte[] GetData()
+        {
+            return null;
         }
 
-        private void WriteBuffer()
+        protected override void ReceiveContentLength(int contentLength)
         {
-            var buff = _request.downloadHandler.data;
-            if (buff == null) return;
-            var length = buff.Length - _index;
-            _stream.Write(buff, _index, length);
-            _index += length;
-            position += length;
         }
 
-        public void Update()
+        protected override bool ReceiveData(byte[] buffer, int dataLength)
         {
-            if (isDone)
-            {
-                return;
-            }
+            if (!string.IsNullOrEmpty(error)) return false;
+            _stream.Write(buffer, 0, dataLength);
+            position += dataLength;
+            return _downloading;
+        }
 
-            if (!_started) return;
+        protected override void CompleteContent()
+        {
+            Complete();
+        }
+
+        public Download() : base(preallocatedBuffer)
+        {
             
-            if (!string.IsNullOrEmpty(_request.error))
-            {
-                error = _request.error;
-                Complete();
-                return;
-            } 
-
-            if (_request.isDone)
-            {
-                WriteBuffer();
-                Complete();
-            }
-            else
-            {
-                WriteBuffer();
-            }
         }
 
         public void Start()
-        { 
+        {
+            _downloading = true;
             _stream = new FileStream(tempPath, FileMode.OpenOrCreate, FileAccess.Write);
             position = _stream.Length;
             if (position < len)
@@ -102,29 +93,23 @@ namespace libx
                 _stream.Seek(position, SeekOrigin.Begin);
                 _request = UnityWebRequest.Get(url);
                 _request.SetRequestHeader("Range", "bytes=" + position + "-");
-                _request.SendWebRequest(); 
-                _index = 0; 
-                isDone = false;
-                _started = true;
+                _request.downloadHandler = this;
+                _request.SendWebRequest();
             }
             else
             {
-                Complete(); 
-                isDone = true;
+                Complete();
             }
         }
 
         private void Complete()
         {
-            if (isDone)
-            {
-                return;
-            }
-
+            _downloading = false;
             if (_stream != null)
             {
                 _stream.Close();
                 _stream.Dispose();
+                _stream = null;
             }
 
             if (_request != null)
@@ -133,12 +118,9 @@ namespace libx
                 _request = null;
             }
 
-            if (completed != null)
-            {
-                completed.Invoke(this);
-            }
-            
-            isDone = true;
+            if (completed == null) return;
+            completed.Invoke(this);
+            completed = null;
         }
 
         public bool MoveNext()
@@ -148,6 +130,11 @@ namespace libx
 
         public void Reset()
         {
+        }
+
+        public object Current
+        {
+            get { return null; }
         }
     }
 }
