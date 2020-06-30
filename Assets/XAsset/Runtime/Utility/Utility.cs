@@ -6,14 +6,14 @@ using System.IO;
 
 namespace libx
 {
-	public class Utility
+	public static class Utility
 	{
-		private static readonly MD5 Md5Hash = MD5.Create ();
-		private static readonly Crc32 Crc32 = new Crc32 ();
+		private static readonly MD5 md5 = MD5.Create ();
+		private static readonly CRC32 crc32 = new CRC32 ();
 
 		public static string GetMd5Hash (string input)
 		{
-			var data = Md5Hash.ComputeHash (Encoding.UTF8.GetBytes (input)); 
+			var data = md5.ComputeHash (Encoding.UTF8.GetBytes (input));
 			return ToHash (data);
 		}
 
@@ -25,18 +25,18 @@ namespace libx
 
 		public static string GetCrc32Hash (Stream input)
 		{
-			var data = Crc32.ComputeHash (input);
+			var data = crc32.ComputeHash (input);
 			return ToHash (data);
 		}
 
 		public static uint GetCrc(byte[] bytes)
 		{
-			return Crc32.Compute (bytes);
+			return CRC32.Compute (bytes);
 		}
 		
 		public static string GetCrc32Hash (byte[] bytes)
 		{
-			var data = Crc32.ComputeHash (bytes);
+			var data = crc32.ComputeHash (bytes);
 			return ToHash (data);
 		}
 
@@ -50,7 +50,7 @@ namespace libx
 
 		public static string GetCrc32Hash (string input)
 		{
-			var data = Crc32.ComputeHash (Encoding.UTF8.GetBytes (input));
+			var data = crc32.ComputeHash (Encoding.UTF8.GetBytes (input));
 			return ToHash (data);
 		}
 
@@ -61,7 +61,7 @@ namespace libx
 		}
 	}
 
-	sealed class Crc32 : HashAlgorithm
+	sealed class CRC32 : HashAlgorithm
 	{
 		private const UInt32 DefaultPolynomial = 0xedb88320u;
 		private const UInt32 DefaultSeed = 0xffffffffu;
@@ -72,12 +72,12 @@ namespace libx
 		readonly UInt32[] _table;
 		UInt32 _hash;
 
-		public Crc32 ()
+		public CRC32 ()
 			: this (DefaultPolynomial, DefaultSeed)
 		{
 		}
 
-		public Crc32 (UInt32 polynomial, UInt32 seed)
+		public CRC32 (UInt32 polynomial, UInt32 seed)
 		{
 			if (!BitConverter.IsLittleEndian)
 				throw new PlatformNotSupportedException ("Not supported on Big Endian processors");

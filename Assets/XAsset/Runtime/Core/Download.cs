@@ -41,11 +41,11 @@ namespace libx
         }
 
         public long len { get; set; }
-        public uint crc { get; set; }
+        public string hash { get; set; }
         public string url { get; set; }
         public long position { get; private set; } 
 
-        public string tempPath { get { return Application.persistentDataPath + "/temp/" + crc; } } 
+        public string tempPath { get { return Application.persistentDataPath + "/temp/" + hash; } } 
         public Action<Download> completed { get; set; }
         private UnityWebRequest _request;
         private FileStream _stream;

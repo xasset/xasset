@@ -51,7 +51,6 @@ namespace libx
 
         [SerializeField] private string downloadUrl = "http://127.0.0.1:7888/";
         [SerializeField] private string gameScene = "Game.unity";
-        [SerializeField] private bool useBin;
         private string _savePath;
         private Dictionary<string, FileVersion> _serverRecords = new Dictionary<string, FileVersion>();
         private List<Download> _downloads = new List<Download>();
@@ -90,7 +89,6 @@ namespace libx
             _savePath = Application.persistentDataPath + '/' + Assets.AssetBundles + '/';
             Assets.updatePath = _savePath;
             DontDestroyOnLoad(gameObject);
-            Versions.useBin = useBin; 
         }
 
         public void Clear()
@@ -120,7 +118,7 @@ namespace libx
                 Directory.CreateDirectory(_savePath);
             }
 
-            yield return ExtractAssetsIfNeed();
+            yield return ExtractAssetsRequest();
 
             if (Application.internetReachability == NetworkReachability.NotReachable)
             {
@@ -203,7 +201,7 @@ namespace libx
             OnComplete();
         }
 
-        private IEnumerator ExtractAssetsIfNeed()
+        private IEnumerator ExtractAssetsRequest()
         {
             var path = _savePath + Versions.BuildVersion;
             var outerVersion = -1;
@@ -258,35 +256,51 @@ namespace libx
                 }
             }
         }
-
+        
         private IEnumerator CopyByRequest(string basePath)
         {
             var request = UnityWebRequest.Get(basePath + Versions.Filename);
+            var path = _savePath + Versions.Filename;
+            request.downloadHandler = new DownloadHandlerFile(path);
             request.SendWebRequest();
             yield return request;
             if (string.IsNullOrEmpty(request.error))
-            {
-                using (var stream = new MemoryStream(request.downloadHandler.data))
+            { 
+                var versions = Versions.LoadVersions(path);
+                if (versions.Count > 0)
                 {
-                    var records = Versions.LoadVersions(stream);
-                    for (var index = 0; index < records.Count; index++)
+                    var version = versions[0]; 
+                    if (version.name.Equals(Versions.Dataname))
                     {
-                        var item = records[index];
-                        var assetName = item.name;
+                        var assetName = version.name;  
+                        var assetPath = basePath + assetName;
                         var assetRequest = UnityWebRequest.Get(basePath + assetName);
-                        yield return assetRequest.SendWebRequest();
-                        if (string.IsNullOrEmpty(assetRequest.error))
+                        assetRequest.downloadHandler = new DownloadHandlerFile(_savePath + assetName);
+                        var req = assetRequest.SendWebRequest(); 
+                        while (!req.isDone)
                         {
-                            File.WriteAllBytes(_savePath + assetName, assetRequest.downloadHandler.data);
-                        }
-
-                        assetRequest.Dispose();
-                        OnMessage(string.Format("正在复制文件{0}/{1}", index, records.Count));
-                        OnProgress(index * 1f / records.Count);
+                            OnMessage("正在复制文件");
+                            OnProgress(req.progress);
+                            yield return null;
+                        } 
+                        assetRequest.Dispose(); 
                     }
-                }
-            }
-
+                    else
+                    {
+                        for (var index = 0; index < versions.Count; index++)
+                        {
+                            var item = versions[index];
+                            var assetName = item.name;
+                            var assetRequest = UnityWebRequest.Get(basePath + assetName);
+                            assetRequest.downloadHandler = new DownloadHandlerFile(_savePath + assetName);
+                            yield return assetRequest.SendWebRequest(); 
+                            assetRequest.Dispose();
+                            OnMessage(string.Format("正在复制文件{0}/{1}", index, versions.Count));
+                            OnProgress(index * 1f / versions.Count);
+                        }
+                    }
+                } 
+            } 
             request.Dispose();
         }
 
@@ -295,21 +309,37 @@ namespace libx
             var path = basePath + Versions.Filename;
             if (!File.Exists(path))
                 yield break;
-            var records = Versions.LoadVersions(path);
-            for (var index = 0; index < records.Count; index++)
+            var versions = Versions.LoadVersions(path);
+            if (versions.Count > 0)
             {
-                var item = records[index];
-                var assetName = item.name;
-                var assetPath = basePath + assetName;
-                if (File.Exists(assetPath))
+                var version = versions[0];
+                
+                if (version.name.Equals(Versions.Dataname))
                 {
-                    File.Copy(assetPath, _savePath + assetName, true);
+                    var assetName = version.name;  
+                    var assetPath = basePath + assetName;
+                    if (File.Exists(assetPath))
+                    {
+                        File.Copy(assetPath, _savePath + assetName, true);
+                    }  
                 }
-
-                OnMessage(string.Format("正在复制文件{0}/{1}", index, records.Count));
-                OnProgress(index * 1f / records.Count);
-                yield return null;
-            }
+                else
+                {
+                    for (var index = 0; index < versions.Count; index++)
+                    {
+                        var item = versions[index];
+                        var assetName = item.name; 
+                        var assetPath = basePath + assetName;
+                        if (File.Exists(assetPath))
+                        {
+                            File.Copy(assetPath, _savePath + assetName, true);
+                        } 
+                        OnMessage(string.Format("正在复制文件{0}/{1}", index, versions.Count));
+                        OnProgress(index * 1f / versions.Count);
+                        yield return null;
+                    }
+                } 
+            } 
         }
 
         private static string GetDownloadSpeed(long totalSize, float duration)
@@ -431,35 +461,14 @@ namespace libx
         /// <returns></returns>
         private bool IsUpdate(FileVersion item)
         {
-            var path = _savePath + item.name;
-            if (!File.Exists(path))
-            {
-                return true;
-            }
-            else
-            {
-                var bytes = File.ReadAllBytes(path);
-                if (bytes.Length != item.len)
-                {
-                    return true;
-                } 
-                if (Versions.verifyBy == VerifyBy.Hash)
-                {
-                    var crc = Utility.GetCrc(bytes);
-                    if (crc != item.crc)
-                    {
-                        return true;
-                    }
-                }
-            } 
-            return false;
-        }
+            return Versions.IsNew(_savePath + item.name, item.len, item.hash);
+        } 
 
         private void AddDownload(FileVersion bundle)
         {
             var download = new Download
             {
-                url = downloadUrl + bundle.name, crc = bundle.crc, len = bundle.len, completed = OnDownloadCompleted
+                url = downloadUrl + bundle.name, hash = bundle.hash, len = bundle.len, completed = OnDownloadCompleted
             };
             _downloads.Add(download);
         }
@@ -504,21 +513,23 @@ namespace libx
 
         private string GetDownloadError(Download download)
         {
-            var bytes = File.ReadAllBytes(download.tempPath);
-            if (bytes.Length != download.len)
+            using (var stream = File.OpenRead(download.tempPath))
             {
-                return "长度不匹配：" + bytes.Length; 
-            }
-            if (Versions.verifyBy == VerifyBy.Hash)
-            {
-                var crc = Utility.GetCrc(bytes);
-                if (download.crc == crc)
+                if (stream.Length != download.len)
                 {
-                    return null;
-                } 
-                return string.Format("crc 不匹配：{0}/{1}", crc, download.crc);
-            }
-            return null;
+                    return "长度不匹配：" + stream.Length; 
+                }
+                if (Versions.verifyBy == VerifyBy.Hash)
+                {
+                    var hash = Utility.GetCrc32Hash(stream);
+                    if (download.hash.Equals(hash, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return null;
+                    } 
+                    return string.Format("hash 不匹配：{0}/{1}", hash, download.hash);
+                }
+                return null;
+            } 
         }
 
         private void Quit()

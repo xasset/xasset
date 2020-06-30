@@ -697,7 +697,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   downloadUrl: http://127.0.0.1:7555/Bundles/
   gameScene: Game.unity
-  useBin: 0
   maxDownloadsPerFrame: 3
 --- !u!1 &597280430
 GameObject:
@@ -1957,7 +1956,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: XASSET v3.5
+  m_Text: xasset 4.0
 --- !u!222 &2061500322
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2105,8 +2104,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "    <b><size=48>xasset v3.5</size></b>    \n\n\u66F4\u7CBE\u7B80\u5B9E\u7528\u9AD8\u6548\u7A33\u5065\u7684Unity\u8D44\u6E90\u7BA1\u7406\u6846\u67B6\n\n-\u4E3B\u9875\uFF1Ahttps://www.xasset.org/\n-Github\uFF1Ahttps://github.com/xasset/xasset\n-QQ\u7FA4\uFF1A693203087\n\nyusjoel\r\uFF0Chemingfei\r\uFF0Cveboys\r\uFF0Cwoshihuo12\r\uFF0CCatImmortal\r\uFF0CZhangDi\r\uFF0CQuinShuai\r\uFF0Csongtm\r\uFF0CwoodelfLee\r\uFF0CLostEarth\r\uFF0CCoeur\r\uFF0CXINCGer\r\uFF0C\u70DF\u96E8\u8FF7\u79BB\u534A\u4E16\u6B87\r\uFF0C\u571F\u8C46\n\n\u3010\u4E3B\u8981\u6539\u53D8\u3011\n-\u57FA\u4E8E
-    SearchPath \u7684\u5BFB\u5740\u6A21\u5F0F\n-\u5168\u65B0\u7684\u7248\u672C\u66F4\u65B0\u673A\u5236\uFF0C\u65AD\u70B9\u7EED\u4F20\uFF0C\u5185\u5BB9\u6821\u9A8C\uFF0C\u5F02\u5E38\u5904\u7406\uFF0CAPK\u8D44\u6E90\u62F7\u8D1D\n-GC
+  m_Text: "    <b><size=48>xasset 4.0</size></b>    \n\n\u66F4\u7CBE\u7B80\u3001\u66F4\u9AD8\u6548\u3001\u66F4\u5B89\u5168\u7684Unity\u8D44\u6E90\u7BA1\u7406\u65B9\u6848\n\n
+    \   -\u4E3B\u9875\uFF1Ahttps://www.xasset.org/\n    -Github\uFF1Ahttps://github.com/xasset/xasset\n
+    \   -QQ\u7FA4\uFF1A693203087\n\nyusjoel\r\uFF0Chemingfei\r\uFF0Cveboys\r\uFF0Cwoshihuo12\r\uFF0CCatImmortal\r\uFF0CZhangDi\r\uFF0CQuinShuai\r\uFF0Csongtm\r\uFF0CwoodelfLee\r\uFF0CLostEarth\r\uFF0CCoeur\r\uFF0CXINCGer\r\uFF0C\u70DF\u96E8\u8FF7\u79BB\u534A\u4E16\u6B87\r\uFF0C\u571F\u8C46\n\n\u3010\u4E3B\u8981\u6539\u53D8\u3011\n-\u57FA\u4E8E
+    SearchPath \u7684\u5BFB\u5740\u6A21\u5F0F\n-VFS\u652F\u6301\uFF0C\u6587\u4EF6\u53E5\u67C4\u51CF\u5C11\u52301\u4E2A\uFF0CIO\u63D0\u53475ms\uFF0CGC\u4F18\u5316\u4E861KB\n-\u5168\u65B0\u7684\u7248\u672C\u66F4\u65B0\u673A\u5236\uFF0C\u65AD\u70B9\u7EED\u4F20\uFF0C\u5185\u5BB9\u6821\u9A8C\uFF0C\u5F02\u5E38\u5904\u7406\uFF0CAPK\u8D44\u6E90\u62F7\u8D1D\n-GC
     \u4F18\u5316\uFF0C\u8FD0\u884C\u65F6\u4E0D\u518D\u4F9D\u8D56 AssetBundleManifest
     \u7B49"
 --- !u!222 &2146984259
