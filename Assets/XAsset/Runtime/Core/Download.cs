@@ -41,7 +41,7 @@ namespace libx
         public string url { get; set; }
         public long position { get; private set; } 
 
-        public string tempPath { get { return Application.persistentDataPath + "/temp/" + hash; } } 
+        public string tempPath { get { return Application.persistentDataPath + "/temp_" + hash; } } 
         public Action<Download> completed { get; set; }
         private UnityWebRequest _request;
         private FileStream _stream;

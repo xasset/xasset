@@ -664,7 +664,7 @@ GameObject:
   - component: {fileID: 539367455}
   - component: {fileID: 539367460}
   m_Layer: 5
-  m_Name: UpdateManager
+  m_Name: Init
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -692,7 +692,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 539367454}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae4b267f2a7f94de28040900d4c7f394, type: 3}
+  m_Script: {fileID: 11500000, guid: 16b97ae374d27c0479dce9413bde907d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   downloadUrl: http://127.0.0.1:7888/Bundles/

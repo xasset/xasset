@@ -29,7 +29,7 @@ using UnityEngine.UI;
 
 namespace libx
 {
-    public class UpdateScreen : MonoBehaviour, IUpdateManager
+    public class UpdateScreen : MonoBehaviour, IInit
     {
         public Text appVersion;
         public Text buildVersion;
@@ -40,7 +40,7 @@ namespace libx
         {
             appVersion.text = Application.version;
             buildVersion.text = "1";
-            FindObjectOfType<UpdateManager>().listener = this;
+            FindObjectOfType<Init>().listener = this;
         }
 
         #region IUpdateManager implementation
