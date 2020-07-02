@@ -11,9 +11,14 @@ namespace libx
 		private static readonly MD5 md5 = MD5.Create ();
 		private static readonly CRC32 crc32 = new CRC32 ();
 
-		public static string GetMd5Hash (string input)
+		public static string GetMD5Hash (string input)
 		{
 			var data = md5.ComputeHash (Encoding.UTF8.GetBytes (input));
+			return ToHash (data);
+		}
+		public static string GetMD5Hash (Stream input)
+		{
+			var data = md5.ComputeHash (input);
 			return ToHash (data);
 		}
 
@@ -23,7 +28,7 @@ namespace libx
 			return 0 == comparer.Compare (input, hash);
 		}
 
-		public static string GetCrc32Hash (Stream input)
+		public static string GetCRC32Hash (Stream input)
 		{
 			var data = crc32.ComputeHash (input);
 			return ToHash (data);
@@ -34,7 +39,7 @@ namespace libx
 			return CRC32.Compute (bytes);
 		}
 		
-		public static string GetCrc32Hash (byte[] bytes)
+		public static string GetCRC32Hash (byte[] bytes)
 		{
 			var data = crc32.ComputeHash (bytes);
 			return ToHash (data);
@@ -48,7 +53,7 @@ namespace libx
 			return sb.ToString ();
 		}
 
-		public static string GetCrc32Hash (string input)
+		public static string GetCRC32Hash (string input)
 		{
 			var data = crc32.ComputeHash (Encoding.UTF8.GetBytes (input));
 			return ToHash (data);

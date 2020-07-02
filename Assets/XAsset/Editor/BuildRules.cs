@@ -99,7 +99,7 @@ namespace libx
         private readonly Dictionary<string, string[]> _conflicted = new Dictionary<string, string[]>();
         private readonly List<string> _duplicated = new List<string>();
         private readonly Dictionary<string, HashSet<string>> _tracker = new Dictionary<string, HashSet<string>>();
-        public int buildNumber;
+        public int version;
 		[Tooltip("BuildPlayer 的时候被打包的场景")]
 		public UnityEngine.Object[] scenes = new UnityEngine.Object[0];
         public RuleAsset[] ruleAssets = new RuleAsset[0];
@@ -115,6 +115,14 @@ namespace libx
         public string searchPatternText = "*.txt,*.bytes,*.json,*.csv,*.xml,*htm,*.html,*.yaml,*.fnt";
         public string outputPath = "Bundles";
         #region API
+
+        public int AddVersion()
+        {
+            EditorUtility.SetDirty(this); 
+            AssetDatabase.SaveAssets();
+            version = version + 1;
+            return version;
+        }
 
         public void Apply()
         {
@@ -158,7 +166,7 @@ namespace libx
 
         private static string RuledAssetBundleName(string name)
         {
-            return Utility.GetMd5Hash(name) + Assets.Extension;
+            return Utility.GetMD5Hash(name) + Assets.Extension;
         }
 
         private void Track(string asset, string bundle)

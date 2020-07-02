@@ -77,7 +77,7 @@ namespace libx
 		/// <summary>
 		/// 添加搜索路径，用来索引加载资源时的完整路径，如果资源的完整路径为 Assets/Demo.unity, 并把 Assets 添加到了搜索路径，那么加载该资源的时候用 LoadAsset("Demo.unity") 也能正常加载。
 		/// </summary>
-		/// <param name="path"></param>
+		/// <param path="path"></param>
 		public static void AddSearchPath (string path)
 		{
 			if (!path.EndsWith ("/")) {
@@ -497,7 +497,7 @@ namespace libx
 		private static string RemapVariantName (string assetBundleName)
 		{
 			var bundlesWithVariant = _activeVariants;
-			// Get base bundle name
+			// Get base bundle path
 			var baseName = assetBundleName.Split ('.') [0];
 
 			var bestFit = int.MaxValue;

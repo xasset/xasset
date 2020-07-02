@@ -254,15 +254,8 @@ namespace libx
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            var version = 0;
-            var versionFile = string.Format("{0}/{1}", outputPath, Versions.BuildVersion);
-            if (File.Exists(versionFile))
-            {
-                version = int.Parse(File.ReadAllText(versionFile));
-                version = version + 1;
-            }
-
-            File.WriteAllText(versionFile, version.ToString());
+            
+ 
             var manifestBundleName = "manifest.unity3d";
             builds = new[]
             {
@@ -274,8 +267,7 @@ namespace libx
             };
 
             BuildPipeline.BuildAssetBundles(outputPath, builds, options, targetPlatform);
-            ArrayUtility.Add(ref bundles, manifestBundleName);
-            ArrayUtility.Add(ref bundles, Versions.BuildVersion);
+            ArrayUtility.Add(ref bundles, manifestBundleName); 
 
             if (Directory.Exists(rules.outputPath))
             {
@@ -296,8 +288,8 @@ namespace libx
                 var destFileName = string.Format("{0}/{1}", rules.outputPath, item);
                 File.Copy(sourceFileName, destFileName, true);
             }
-
-            Versions.BuildVersions(rules.outputPath);
+            
+            Versions.BuildVersions(rules.outputPath, rules.AddVersion());
         }
 
         private static string GetBuildTargetName(BuildTarget target)
@@ -321,7 +313,7 @@ namespace libx
                 case BuildTarget.StandaloneOSXIntel:
                 case BuildTarget.StandaloneOSXIntel64:
                 case BuildTarget.StandaloneOSXUniversal:
-                    return "/" + name + ".app";
+                    return "/" + path + ".app";
 
 #endif
 

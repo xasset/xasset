@@ -11,11 +11,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03142c330ced64e0ab46cddcd0484ab7, type: 3}
   m_Name: Rules
   m_EditorClassIdentifier: 
-  buildNumber: 0
+  version: 13
   scenes: []
   ruleAssets:
   - bundle: b26a9bac179b4418b47a45737a4c6673.unity3d
     path: Assets/XAsset/Demo/Scenes/Game.unity
+  - bundle: 80f31f640f4201bb2524b469e4080fb8.unity3d
+    path: Assets/XAsset/Demo/Scenes/s2.unity
   - bundle: c61f086743d85a4c73f562a6fb4e0669.unity3d
     path: Assets/XAsset/Demo/UI/10Character/Btn_Buy1_h.png
   - bundle: c61f086743d85a4c73f562a6fb4e0669.unity3d
@@ -1344,6 +1346,9 @@ MonoBehaviour:
   - name: b26a9bac179b4418b47a45737a4c6673.unity3d
     assets:
     - Assets/XAsset/Demo/Scenes/Game.unity
+  - name: 80f31f640f4201bb2524b469e4080fb8.unity3d
+    assets:
+    - Assets/XAsset/Demo/Scenes/s2.unity
   - name: c61f086743d85a4c73f562a6fb4e0669.unity3d
     assets:
     - Assets/XAsset/Demo/UI/10Character/bg_CHARACTOR.png

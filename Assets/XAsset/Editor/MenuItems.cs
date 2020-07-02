@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Diagnostics;
 using System.IO;
 using UnityEditor;
@@ -140,7 +141,7 @@ namespace libx
 		[MenuItem(KBuildVersions)]
 		private static void BuildVersions()
 		{
-			Versions.BuildVersions(Assets.AssetBundles);
+			Versions.BuildVersions(Assets.AssetBundles, BuildScript.GetBuildRules().AddVersion());
 		}
 		
 		[MenuItem (KBuildPlayer)]
@@ -192,6 +193,38 @@ namespace libx
 			var json = JsonUtility.ToJson (Selection.activeObject);
 			File.WriteAllText (path.Replace (".asset", ".json"), json);
 			AssetDatabase.Refresh ();
+		}
+
+		[MenuItem("Assets/CRC")]
+		static void GetCRC()
+		{
+			var path = EditorUtility.OpenFilePanel("OpenFile", Environment.CurrentDirectory, "");
+			if (string.IsNullOrEmpty(path))
+			{
+				return;
+			} 
+			
+			using (var fs = File.OpenRead(path))
+			{
+				var crc = Utility.GetCRC32Hash(fs);
+				Debug.Log(crc);
+			}
+		}
+		
+		[MenuItem("Assets/MD5")]
+		static void GetMD5()
+		{
+			var path = EditorUtility.OpenFilePanel("OpenFile", Environment.CurrentDirectory, "");
+			if (string.IsNullOrEmpty(path))
+			{
+				return;
+			} 
+			
+			using (var fs = File.OpenRead(path))
+			{
+				var crc = Utility.GetMD5Hash(fs);
+				Debug.Log(crc);
+			}
 		}
 	}
 }

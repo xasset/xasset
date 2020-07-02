@@ -34,12 +34,8 @@ namespace libx
     public class Download : DownloadHandlerScript, System.Collections.IEnumerator
     {
         private static readonly byte[] preallocatedBuffer = new byte[1024 * 1024 * 4];
-        
-        public string error
-        {
-            get { return _request == null ? null : _request.error; }
-        }
 
+        public string error { get; private set; }
         public long len { get; set; }
         public string hash { get; set; }
         public string url { get; set; }
@@ -67,20 +63,29 @@ namespace libx
 
         protected override bool ReceiveData(byte[] buffer, int dataLength)
         {
-            if (!string.IsNullOrEmpty(error)) return false;
+            if (!string.IsNullOrEmpty(_request.error))
+            {
+                error = _request.error;
+                return true;
+            }
             _stream.Write(buffer, 0, dataLength);
             position += dataLength;
             return _downloading;
         }
 
         protected override void CompleteContent()
-        {
+        { 
             Complete();
         }
 
         public Download() : base(preallocatedBuffer)
         {
             
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}, size:{1}, hash:{2}", url, len, hash);
         }
 
         public void Start()
@@ -117,6 +122,33 @@ namespace libx
                 _request.Dispose();
                 _request = null;
             }
+
+			if (string.IsNullOrEmpty(error))
+			{
+				if (File.Exists(tempPath))
+				{
+					using (var  fs = File.OpenRead(tempPath))
+					{
+						if (fs.Length != len)
+						{
+							error = "下载文件长度异常:" + fs.Length;
+						}
+
+						if (Versions.verifyBy == VerifyBy.Hash)
+						{
+							var compare = StringComparison.OrdinalIgnoreCase; 
+							if (! hash.Equals(Utility.GetCRC32Hash(fs), compare))
+							{
+								error = "下载文件哈希异常:" + hash;
+							}  
+						} 
+					}
+				}
+				else
+				{
+					error = "保存下载失败";
+				}
+			}
 
             if (completed == null) return;
             completed.Invoke(this);
