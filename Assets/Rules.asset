@@ -11,7 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03142c330ced64e0ab46cddcd0484ab7, type: 3}
   m_Name: Rules
   m_EditorClassIdentifier: 
-  version: 13
+  version: 16
   scenes: []
   ruleAssets:
   - bundle: b26a9bac179b4418b47a45737a4c6673.unity3d

@@ -118,9 +118,9 @@ namespace libx
 
         public int AddVersion()
         {
+            version = version + 1; 
             EditorUtility.SetDirty(this); 
             AssetDatabase.SaveAssets();
-            version = version + 1;
             return version;
         }
 

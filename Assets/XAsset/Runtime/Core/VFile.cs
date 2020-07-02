@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using libx;
 
-namespace vfs
+namespace libx
 {
 	public class VFile
 	{
