@@ -1,5 +1,5 @@
 //
-// UpdateManager.cs
+// Updater.cs
 //
 // Author:
 //       fjy <jiyuan.feng@live.com>
@@ -30,11 +30,10 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
-using libx;
 
 namespace libx
 {
-    public interface IInit
+    public interface IUpdater
     {
         void OnMessage(string msg);
 
@@ -43,9 +42,9 @@ namespace libx
         void OnVersion(string ver);
     }
 
-    public class Init : MonoBehaviour, IInit
+    public class Updater : MonoBehaviour, IUpdater
     {
-        private const string Tag = "UpdateManager";
+		private const string Tag = "Updater";
 
         private static void Log(string s)
         {
@@ -60,7 +59,7 @@ namespace libx
         private int _currentIndex;
         public int maxDownloadsPerFrame = 3;
 
-        public IInit listener { get; set; }
+        public IUpdater listener { get; set; }
 
         public void OnMessage(string msg)
         {
@@ -88,7 +87,7 @@ namespace libx
 
         private void Start()
         {
-            _savePath = Application.persistentDataPath + '/' + Assets.AssetBundles + '/';
+			_savePath = Application.persistentDataPath + '/';
             Assets.updatePath = _savePath;
             DontDestroyOnLoad(gameObject);
         }
@@ -134,9 +133,9 @@ namespace libx
             }
 
             yield return RequestCopy();
-            
+
             OnMessage("正在获取服务器版本信息...");
-            
+
             var request = UnityWebRequest.Get(downloadUrl + Versions.Filename);
             request.downloadHandler = new DownloadHandlerFile(_savePath + Versions.Filename);
             yield return request.SendWebRequest();
@@ -152,19 +151,21 @@ namespace libx
                 {
                     Quit();
                     MessageBox.Dispose();
-                } 
+                }
+
                 yield break;
-            }  
-            request.Dispose(); 
+            }
+
+            request.Dispose();
             OnMessage("正在检查版本信息...");
-            var versions = Versions.LoadVersions(_savePath + Versions.Filename, true); 
+            var versions = Versions.LoadVersions(_savePath + Versions.Filename, true);
             _downloads.Clear();
             if (versions.Count > 0)
             {
                 if (!Versions.LoadDisk(_savePath + Versions.Dataname))
                 {
                     var item = versions[0];
-                    AddDownload(item); 
+                    AddDownload(item);
                 }
                 else
                 {
@@ -176,23 +177,27 @@ namespace libx
                         }
                     }
                 }
+
                 if (_downloads.Count > 0)
                 {
                     var totalSize = 0L;
                     foreach (var item in _downloads)
                     {
                         totalSize += item.len;
-                    } 
+                    }
+
                     const float bytesToMb = 1f / (1024 * 1024);
-                    var tips = string.Format("检查到有{0}个文件需要更新，总计需要下载{1:f2}（MB）内容", _downloads.Count, totalSize * bytesToMb);
+                    var tips = string.Format("检查到有{0}个文件需要更新，总计需要下载{1:f2}（MB）内容", _downloads.Count,
+                        totalSize * bytesToMb);
                     var mb = MessageBox.Show("提示", tips, "下载", "跳过");
                     yield return mb;
                     if (mb.isOk)
-                    { 
+                    {
                         yield return UpdateDownload(bytesToMb, totalSize);
                     }
                 }
-            }  
+            }
+
             OnComplete();
         }
 
@@ -206,12 +211,12 @@ namespace libx
             }
             else
             {
-                Versions.OnFileDownload(download, _savePath); 
+                Versions.OnFileDownload(download, _savePath);
                 if (_currentIndex < _downloads.Count)
                 {
                     _prepareToDownload.Add(_downloads[_currentIndex]);
                     _currentIndex++;
-                }  
+                }
             }
         }
 
@@ -221,7 +226,8 @@ namespace libx
             {
                 return Application.streamingAssetsPath;
             }
-            else if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor)
+            else if (Application.platform == RuntimePlatform.WindowsPlayer ||
+                     Application.platform == RuntimePlatform.WindowsEditor)
             {
                 return "file:///" + Application.streamingAssetsPath;
             }
@@ -233,22 +239,22 @@ namespace libx
 
         private IEnumerator RequestCopy()
         {
-            var v1 = Versions.LoadVersion(_savePath + Versions.Filename); 
-            var basePath = string.Format("{0}/{1}/", GetStreamingAssetsPath(), Assets.AssetBundles); 
+            var v1 = Versions.LoadVersion(_savePath + Versions.Filename);
+			var basePath = GetStreamingAssetsPath() + "/";
             var request = UnityWebRequest.Get(basePath + Versions.Filename);
             var path = _savePath + Versions.Filename + ".tmp";
             request.downloadHandler = new DownloadHandlerFile(path);
-            yield return request.SendWebRequest(); 
+            yield return request.SendWebRequest();
             if (string.IsNullOrEmpty(request.error))
             {
-                var v2 = Versions.LoadVersion(path); 
+                var v2 = Versions.LoadVersion(path);
                 if (v2 > v1)
                 {
                     var mb = MessageBox.Show("提示", "是否将资源解压到本地？", "解压", "跳过");
                     yield return mb;
                     if (mb.isOk)
                     {
-                        var versions = Versions.LoadVersions(path); 
+                        var versions = Versions.LoadVersions(path);
                         yield return UpdateCopy(versions, basePath);
                     }
                 }
@@ -259,37 +265,39 @@ namespace libx
             }
             else
             {
-                Log(string.Format("{0}加载失败{1}", request.url, request.error));
-            } 
+                Log(string.Format("{0} 加载失败：{1}", request.url, request.error));
+            }
+
             request.Dispose();
         }
 
         private IEnumerator UpdateCopy(List<VFile> versions, string basePath)
         {
-            var version = versions[0]; 
+            var version = versions[0];
             if (version.name.Equals(Versions.Dataname))
             {
                 var request = UnityWebRequest.Get(basePath + version.name);
                 request.downloadHandler = new DownloadHandlerFile(_savePath + version.name);
-                var req = request.SendWebRequest(); 
+                var req = request.SendWebRequest();
                 while (!req.isDone)
                 {
                     OnMessage("正在复制文件");
                     OnProgress(req.progress);
                     yield return null;
-                } 
-                request.Dispose(); 
+                }
+
+                request.Dispose();
             }
             else
             {
                 for (var index = 0; index < versions.Count; index++)
                 {
-                    var item = versions[index]; 
+                    var item = versions[index];
                     var request = UnityWebRequest.Get(basePath + item.name);
                     request.downloadHandler = new DownloadHandlerFile(_savePath + item.name);
-                    yield return request.SendWebRequest(); 
+                    yield return request.SendWebRequest();
                     request.Dispose();
-                    OnMessage(string.Format("正在复制文件{0}/{1}", index, versions.Count));
+                    OnMessage(string.Format("正在复制文件：{0}/{1}", index, versions.Count));
                     OnProgress(index * 1f / versions.Count);
                 }
             }
@@ -321,7 +329,8 @@ namespace libx
             if (!Directory.Exists(tempPath))
             {
                 Directory.CreateDirectory(tempPath);
-            } 
+            }
+
             _currentIndex = 0;
             _prepareToDownload.Clear();
             foreach (var item in _downloads)
@@ -329,6 +338,7 @@ namespace libx
                 _prepareToDownload.Add(item);
                 _currentIndex++;
             }
+
             var startTime = Time.realtimeSinceStartup;
             while (true)
             {
@@ -346,13 +356,13 @@ namespace libx
 
                 var downloadSize = 0L;
                 foreach (var download in _downloads)
-                { 
+                {
                     downloadSize += download.position;
                 }
 
                 var elapsed = Time.realtimeSinceStartup - startTime;
-                OnMessage(string.Format("下载中...{0:f2}/{1:f2}(MB, {2})", downloadSize * bytesToMb, totalSize * bytesToMb,
-                        GetSpeed(totalSize, elapsed)));
+				OnMessage(string.Format("下载中...{0:f2}/{1:f2}MB, 速度：{2}", downloadSize * bytesToMb, totalSize * bytesToMb,
+                    GetSpeed(totalSize, elapsed)));
                 OnProgress(downloadSize * 1f / totalSize);
 
                 if (downloadSize == totalSize)
@@ -373,6 +383,7 @@ namespace libx
             {
                 OnVersion(version.ToString());
             }
+
             StartCoroutine(LoadGameScene());
         }
 
@@ -404,7 +415,7 @@ namespace libx
         private void Quit()
         {
             _prepareToDownload.Clear();
-            _prepareToDownload = null;  
+            _prepareToDownload = null;
             _downloads.Clear();
             _downloads = null;
 #if UNITY_EDITOR

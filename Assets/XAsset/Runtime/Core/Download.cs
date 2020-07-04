@@ -33,15 +33,19 @@ namespace libx
 {
     public class Download : DownloadHandlerScript, System.Collections.IEnumerator
     {
-        private static readonly byte[] preallocatedBuffer = new byte[1024 * 1024 * 4];
+        private static readonly byte[] PreallocatedBuffer = new byte[1024 * 1024 * 4];
 
         public string error { get; private set; }
         public long len { get; set; }
         public string hash { get; set; }
         public string url { get; set; }
-        public long position { get; private set; } 
+        public long position { get; private set; }
 
-        public string tempPath { get { return Application.persistentDataPath + "/temp_" + hash; } } 
+        public string tempPath
+        {
+            get { return Application.persistentDataPath + "/temp_" + hash; }
+        }
+
         public Action<Download> completed { get; set; }
         private UnityWebRequest _request;
         private FileStream _stream;
@@ -51,7 +55,7 @@ namespace libx
         {
             return position * 1f / len;
         }
-        
+
         protected override byte[] GetData()
         {
             return null;
@@ -68,19 +72,19 @@ namespace libx
                 error = _request.error;
                 return true;
             }
+
             _stream.Write(buffer, 0, dataLength);
             position += dataLength;
             return _downloading;
         }
 
         protected override void CompleteContent()
-        { 
+        {
             Complete();
         }
 
-        public Download() : base(preallocatedBuffer)
+        public Download() : base(PreallocatedBuffer)
         {
-            
         }
 
         public override string ToString()
@@ -123,32 +127,32 @@ namespace libx
                 _request = null;
             }
 
-			if (string.IsNullOrEmpty(error))
-			{
-				if (File.Exists(tempPath))
-				{
-					using (var  fs = File.OpenRead(tempPath))
-					{
-						if (fs.Length != len)
-						{
-							error = "下载文件长度异常:" + fs.Length;
-						}
+            if (string.IsNullOrEmpty(error))
+            {
+                if (File.Exists(tempPath))
+                {
+                    using (var fs = File.OpenRead(tempPath))
+                    {
+                        if (fs.Length != len)
+                        {
+                            error = "下载文件长度异常:" + fs.Length;
+                        }
 
-						if (Versions.verifyBy == VerifyBy.Hash)
-						{
-							var compare = StringComparison.OrdinalIgnoreCase; 
-							if (! hash.Equals(Utility.GetCRC32Hash(fs), compare))
-							{
-								error = "下载文件哈希异常:" + hash;
-							}  
-						} 
-					}
-				}
-				else
-				{
-					error = "保存下载失败";
-				}
-			}
+                        if (Versions.verifyBy == VerifyBy.Hash)
+                        {
+                            var compare = StringComparison.OrdinalIgnoreCase;
+                            if (!hash.Equals(Utility.GetCRC32Hash(fs), compare))
+                            {
+                                error = "下载文件哈希异常:" + hash;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    error = "保存下载失败";
+                }
+            }
 
             if (completed == null) return;
             completed.Invoke(this);

@@ -1,4 +1,30 @@
-﻿using System;
+﻿//
+// VDisk.cs
+//
+// Author:
+//       fjy <jiyuan.feng@live.com>
+//
+// Copyright (c) 2020 fjy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -55,13 +81,12 @@ namespace libx
         private long _len;
 
         public VDisk(string path)
-        { 
-            name = path; 
+        {
+            name = path;
         }
 
         public VDisk()
         {
-			
         }
 
         public bool Exists()
@@ -91,15 +116,15 @@ namespace libx
             file.len = new FileInfo(path).Length;
             file.hash = hash;
             if (!write) return;
-            var tmpfile =  name + ".tmp";
+            var tmpfile = name + ".tmp";
             using (var fs = File.OpenWrite(tmpfile))
             {
                 var writer = new BinaryWriter(fs);
                 writer.Write(files.Count);
                 foreach (var item in files)
-                    item.Serialize(writer); 
+                    item.Serialize(writer);
                 var pos = writer.BaseStream.Position;
-                
+
                 using (var stream = File.OpenRead(name))
                 {
                     stream.Seek(_pos, SeekOrigin.Begin);
@@ -111,15 +136,17 @@ namespace libx
                         }
                         else
                         {
-                            WriteFile(path, writer); 
+                            WriteFile(path, writer);
                             stream.Seek(fileLen, SeekOrigin.Current);
                             WriteStream(stream.Length - stream.Position, stream, writer);
                             break;
                         }
-                    } 
-                } 
-                _pos = pos; 
-            } 
+                    }
+                }
+
+                _pos = pos;
+            }
+
             File.Copy(tmpfile, name, true);
             File.Delete(tmpfile);
         }
@@ -138,7 +165,7 @@ namespace libx
             var count = 0L;
             while (count < len)
             {
-                var read = (int)Math.Min(len - count, _buffers.Length);
+                var read = (int) Math.Min(len - count, _buffers.Length);
                 stream.Read(_buffers, 0, read);
                 writer.Write(_buffers, 0, read);
                 count += read;
@@ -154,41 +181,43 @@ namespace libx
                     hash = Utility.GetCRC32Hash(fs);
                 }
 
-                var file = new VFile { name = Path.GetFileName(path), id = files.Count, hash = hash, len = fs.Length };
+                var file = new VFile {name = Path.GetFileName(path), id = files.Count, hash = hash, len = fs.Length};
                 AddFile(file);
                 if (!write) return;
                 using (var stream = File.OpenWrite(name))
                 {
                     var writer = new BinaryWriter(stream);
                     stream.Seek(_pos, SeekOrigin.Begin);
-                    file.Serialize(writer); 
+                    file.Serialize(writer);
                     _pos = stream.Position;
                     stream.Seek(0, SeekOrigin.End);
                     WriteStream(fs.Length, fs, writer);
                 }
-            } 
+            }
         }
 
         public bool Load(string path)
         {
             if (!File.Exists(path))
                 return false;
-			
+
             files.Clear();
             name = path;
             using (var reader = new BinaryReader(File.OpenRead(path)))
-            { 
+            {
                 var count = reader.ReadInt32();
                 for (var i = 0; i < count; i++)
                 {
-                    var file = new VFile { id = i };
+                    var file = new VFile {id = i};
                     file.Deserialize(reader);
-                    AddFile(file); 
+                    AddFile(file);
                     Debug.Log(file);
                 }
+
                 _pos = reader.BaseStream.Length;
                 Reindex();
-            } 
+            }
+
             return true;
         }
 
@@ -218,23 +247,23 @@ namespace libx
         }
 
         public void Save()
-        { 
+        {
             using (var stream = File.OpenWrite(name))
             {
-                var writer = new BinaryWriter(stream); 
+                var writer = new BinaryWriter(stream);
                 var dir = Path.GetDirectoryName(name);
 
-                writer.Write(files.Count); 
+                writer.Write(files.Count);
                 foreach (var item in files)
                 {
                     item.Serialize(writer);
                 }
-                
+
                 foreach (var item in files)
                 {
                     writer.Write(File.ReadAllBytes(dir + "/" + item.name));
-                } 
-            }  
+                }
+            }
         }
 
         public void Clear()

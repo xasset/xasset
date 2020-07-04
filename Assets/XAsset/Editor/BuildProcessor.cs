@@ -33,48 +33,44 @@ using UnityEngine;
 
 namespace libx
 {
-	public class BuildProcessor : IPreprocessBuild, IPostprocessBuild
-	{
-		public void OnPostprocessBuild (BuildTarget target, string path)
-		{
-			if (target != BuildTarget.iOS || Environment.OSVersion.Platform != PlatformID.MacOSX)
-				return;
-			var searchPath = Path.Combine (Environment.CurrentDirectory, "Tools/shells");
-			var shells = Directory.GetFiles (searchPath, "*.sh", SearchOption.AllDirectories);
-			foreach (var item in shells) {
-				if (item == null)
-					continue;
-				var newPath = Path.Combine (path, Path.GetFileName (item));
-				File.Copy (item, newPath, true);
-			}
+    public class BuildProcessor : IPreprocessBuild, IPostprocessBuild
+    {
+        public void OnPostprocessBuild(BuildTarget target, string path)
+        {
+            if (target != BuildTarget.iOS || Environment.OSVersion.Platform != PlatformID.MacOSX)
+                return;
+            var searchPath = Path.Combine(Environment.CurrentDirectory, "Tools/shells");
+            var shells = Directory.GetFiles(searchPath, "*.sh", SearchOption.AllDirectories);
+            foreach (var item in shells)
+            {
+                if (item == null)
+                    continue;
+                var newPath = Path.Combine(path, Path.GetFileName(item));
+                File.Copy(item, newPath, true);
+            }
 
-			var bundleIdentifiers = PlayerSettings.applicationIdentifier.Split ('.');
-			var appName = bundleIdentifiers [bundleIdentifiers.Length - 1];
-			var ipaType = EditorUserBuildSettings.development ? "develop" : "release";
-			var ipaName = string.Format ("{0}-{1}-{2}",
-				                       appName,
-				                       PlayerSettings.bundleVersion,
-				                       ipaType);
+            var bundleIdentifiers = PlayerSettings.applicationIdentifier.Split('.');
+            var appName = bundleIdentifiers[bundleIdentifiers.Length - 1];
+            var ipaType = EditorUserBuildSettings.development ? "develop" : "release";
+            var ipaName = string.Format("{0}-{1}-{2}",
+                appName,
+                PlayerSettings.bundleVersion,
+                ipaType);
 
-			var configType = EditorUserBuildSettings.iOSBuildConfigType.ToString ();
-			var openTerminalBash = Path.Combine (path, "OpenTerminal.sh");
-			var args = openTerminalBash + " " + path + " " + ipaName + " " + ipaType + " " + appName + " " + configType;
-			Process.Start ("/bin/bash", args);
-		}
+            var configType = EditorUserBuildSettings.iOSBuildConfigType.ToString();
+            var openTerminalBash = Path.Combine(path, "OpenTerminal.sh");
+            var args = openTerminalBash + " " + path + " " + ipaName + " " + ipaType + " " + appName + " " + configType;
+            Process.Start("/bin/bash", args);
+        }
 
-		public void OnPreprocessBuild (BuildTarget target, string path)
-		{  
-			var destination = Path.Combine (Application.streamingAssetsPath, Assets.AssetBundles);
-			if (Directory.Exists (destination))
-				FileUtil.DeleteFileOrDirectory (destination); 
-			var settings = BuildScript.GetSettings ();
-			if (settings.copyToStreamingAssets) {
-				BuildScript.CopyAssetBundlesTo (Application.streamingAssetsPath);		
-			}
-		}
+        public void OnPreprocessBuild(BuildTarget target, string path)
+        {
+			BuildScript.CopyAssetBundlesTo (Application.streamingAssetsPath);
+        }
 
-		public int callbackOrder {
-			get { return 0; }
-		}
-	}
+        public int callbackOrder
+        {
+            get { return 0; }
+        }
+    }
 }

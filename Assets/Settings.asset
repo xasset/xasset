@@ -14,3 +14,4 @@ MonoBehaviour:
   runtimeMode: 0
   localServer: 0
   copyToStreamingAssets: 0
+  outputPath: Bundles

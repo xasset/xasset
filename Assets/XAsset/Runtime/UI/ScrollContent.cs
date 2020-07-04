@@ -1,5 +1,5 @@
 ﻿//
-// EditorRuntimeInitializeOnLoad.cs
+// ScrollContent.cs
 //
 // Author:
 //       fjy <jiyuan.feng@live.com>
@@ -24,31 +24,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.IO;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace libx
 {
-    public static class EditorRuntimeInitializeOnLoad
+    public class ScrollContent : MonoBehaviour
     {
-        [RuntimeInitializeOnLoadMethod]
-        private static void OnInitialize()
-        {
-            var settings = BuildScript.GetSettings();
-			Assets.basePath = settings.outputPath + Path.DirectorySeparatorChar;
-            Assets.runtimeMode = settings.runtimeMode;
-            Assets.loadDelegate = AssetDatabase.LoadAssetAtPath;
-            Menu.SetChecked(MenuItems.KRuntimeMode, settings.runtimeMode);
-        }
+        [SerializeField] private ScrollRect scroll;
+        [SerializeField] private float speed;
 
-        [InitializeOnLoadMethod]
-        private static void OnEditorInitialize()
+        private void LateUpdate()
         {
-            EditorUtility.ClearProgressBar();
-            BuildScript.GetManifest();
-            BuildScript.GetSettings();
-            BuildScript.GetBuildRules();
+            var size = scroll.content.rect.size;
+            var viewSize = scroll.viewport.rect.size;
+            var len = size.y - viewSize.y;
+            var pos = scroll.content.anchoredPosition;
+            if (pos.y < len)
+            {
+                pos.y += speed * Time.deltaTime;
+                scroll.content.anchoredPosition = pos;
+            }
         }
     }
 }
