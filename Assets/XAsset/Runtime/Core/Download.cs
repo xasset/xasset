@@ -33,8 +33,7 @@ namespace libx
 {
     public class Download : DownloadHandlerScript, System.Collections.IEnumerator
     {
-        private static readonly byte[] PreallocatedBuffer = new byte[1024 * 1024 * 4];
-
+        private static readonly byte[] PreallocatedBuffer = new byte[1024 * 1024 * 4]; 
         public string error { get; private set; }
         public long len { get; set; }
         public string hash { get; set; }

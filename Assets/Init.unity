@@ -617,7 +617,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   downloadUrl: http://127.0.0.1:7888/Bundles/
   gameScene: Game.unity
-  maxDownloadsPerFrame: 3
 --- !u!1 &597280430
 GameObject:
   m_ObjectHideFlags: 0
@@ -900,7 +899,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1.2
-  m_Text: "<b><size=36>\u66F4\u591A\u5185\u5BB9</size></b>\n\u4E3B\u9875\uFF1Ahttps://www.xasset.org\nGithub\uFF1Ahttps://github.com/xasset/xasset\nQQ\u7FA4\uFF1A693203087"
+  m_Text: "<b><size=36>\u4E86\u89E3\u66F4\u591A</size></b>\n\u4E3B\u9875\uFF1Ahttps://www.xasset.org\nGithub\uFF1Ahttps://github.com/xasset/xasset\nQQ\u7FA4\uFF1A693203087"
 --- !u!222 &654540648
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1349,7 +1348,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: '@XASSET 2020, ALL RIGHT RESERVED.'
+  m_Text: '@2020 XASSET, ALL RIGHT RESERVED.'
 --- !u!222 &900571687
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1552,7 +1551,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 768, y: 768}
+  m_SizeDelta: {x: 640, y: 640}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &984160482
 MonoBehaviour:

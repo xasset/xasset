@@ -40,7 +40,7 @@ namespace libx
         private const string KBuildAssetBundles = "Assets/Bundles/Build Bundles";
         private const string KBuildVersions = "Assets/Bundles/Build Versions";
         private const string KBuildPlayer = "Assets/Bundles/Build Player";
-        private const string KClearBundles = "Assets/Bundles/Clear Bundles";
+		private const string KViewDataPath = "Assets/Bundles/View Bundles";
         private const string KCopyBundles = "Assets/Bundles/Copy Bundles";
 
         [MenuItem("Assets/Apply Rule/Text", false, 1)]
@@ -133,6 +133,7 @@ namespace libx
         {
             var watch = new Stopwatch();
             watch.Start();
+			BuildScript.ApplyBuildRules ();
             BuildScript.BuildAssetBundles();
             watch.Stop();
             Debug.Log("BuildAssetBundles " + watch.ElapsedMilliseconds + " ms.");
@@ -150,10 +151,10 @@ namespace libx
             BuildScript.BuildStandalonePlayer();
         }
 
-        [MenuItem(KClearBundles)]
-        private static void ClearAssetBundles()
+		[MenuItem(KViewDataPath)]
+        private static void ViewDataPath()
         {
-            Directory.Delete(Application.persistentDataPath, true);
+			EditorUtility.OpenWithDefaultApp(Application.persistentDataPath);
         }
 
         [MenuItem(KCopyBundles)]

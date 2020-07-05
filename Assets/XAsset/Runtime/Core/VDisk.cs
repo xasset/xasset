@@ -31,245 +31,156 @@ using UnityEngine;
 
 namespace libx
 {
-    public class VFile
-    {
-        public string hash { get; set; }
+	public class VFile
+	{
+		public string hash { get; set; }
 
-        public long id { get; set; }
+		public long id { get; set; }
 
-        public long len { get; set; }
+		public long len { get; set; }
 
-        public string name { get; set; }
+		public string name { get; set; }
 
-        public long offset { get; set; }
+		public long offset { get; set; }
 
-        public VFile()
-        {
-            offset = -1;
-        }
+		public VFile ()
+		{
+			offset = -1;
+		}
 
-        public override string ToString()
-        {
-            return string.Format("file:{0}, {1}, {2}", name, len, hash);
-        }
+		public void Serialize (BinaryWriter writer)
+		{
+			writer.Write (name);
+			writer.Write (len);
+			writer.Write (hash);
+		}
 
-        public void Serialize(BinaryWriter writer)
-        {
-            writer.Write(name);
-            writer.Write(len);
-            writer.Write(hash);
-        }
+		public void Deserialize (BinaryReader reader)
+		{
+			name = reader.ReadString ();
+			len = reader.ReadInt64 ();
+			hash = reader.ReadString ();
+		}
+	}
 
-        public void Deserialize(BinaryReader reader)
-        {
-            name = reader.ReadString();
-            len = reader.ReadInt64();
-            hash = reader.ReadString();
-        }
-    }
+	public class VDisk
+	{
+		private readonly byte[] _buffers = new byte[1024 * 4];
+		private readonly Dictionary<string, VFile> _data = new Dictionary<string, VFile> ();
+		private readonly List<VFile> _files = new List<VFile>();
+		public  List<VFile> files { get { return _files; }}
+		public string name { get; set; } 
+		private long _pos;
+		private long _len;
 
-    public class VDisk
-    {
-        private readonly byte[] _buffers = new byte[1024 * 4];
-        private readonly Dictionary<string, VFile> _data = new Dictionary<string, VFile>();
+		public VDisk ()
+		{
+		}
 
-        public string name { get; private set; }
+		public bool Exists ()
+		{
+			return files.Count > 0;
+		}
 
-        public List<VFile> files = new List<VFile>();
+		private void AddFile (VFile file)
+		{
+			_data [file.name] = file;
+			files.Add (file);
+		}
 
-        private long _pos;
-        private long _len;
+		public void AddFile (string path, long len, string hash)
+		{ 
+			var file = new VFile{ name = Path.GetFileName (path), len = len, hash = hash };
+			AddFile (file);
+		}
 
-        public VDisk(string path)
-        {
-            name = path;
-        }
+		private void WriteFile (string path, BinaryWriter writer)
+		{
+			using (var fs = File.OpenRead (path)) {
+				var len = fs.Length;
+				WriteStream (len, fs, writer);
+			}
+		}
 
-        public VDisk()
-        {
-        }
+		private void WriteStream (long len, Stream stream, BinaryWriter writer)
+		{
+			var count = 0L;
+			while (count < len) {
+				var read = (int)Math.Min (len - count, _buffers.Length);
+				stream.Read (_buffers, 0, read);
+				writer.Write (_buffers, 0, read);
+				count += read;
+			}
+		}
 
-        public bool Exists()
-        {
-            return files.Count > 0;
-        }
+		public bool Load (string path)
+		{
+			if (!File.Exists (path))
+				return false;
 
-        public void AddFile(string path, string hash, bool write = false)
-        {
-            if (_pos > 0)
-            {
-                var file = GetFile(path, hash);
-                if (file != null)
-                    UpdateFile(path, hash, file, write);
-                else
-                    WriteNewFile(path, hash, write);
-            }
-            else
-            {
-                WriteNewFile(path, hash, write);
-            }
-        }
+			Clear ();
 
-        private void UpdateFile(string path, string hash, VFile file, bool write)
-        {
-            var fileLen = file.len;
-            file.len = new FileInfo(path).Length;
-            file.hash = hash;
-            if (!write) return;
-            var tmpfile = name + ".tmp";
-            using (var fs = File.OpenWrite(tmpfile))
-            {
-                var writer = new BinaryWriter(fs);
-                writer.Write(files.Count);
-                foreach (var item in files)
-                    item.Serialize(writer);
-                var pos = writer.BaseStream.Position;
+			name = path;
+			using (var reader = new BinaryReader (File.OpenRead (path))) {
+				var count = reader.ReadInt32 ();
+				for (var i = 0; i < count; i++) {
+					var file = new VFile { id = i };
+					file.Deserialize (reader);
+					AddFile (file); 
+				} 
+				_pos = reader.BaseStream.Position;  
+			}
+			Reindex ();
+			return true;
+		}
 
-                using (var stream = File.OpenRead(name))
-                {
-                    stream.Seek(_pos, SeekOrigin.Begin);
-                    foreach (var item in files)
-                    {
-                        if (item.id < file.id)
-                        {
-                            WriteStream(item.len, stream, writer);
-                        }
-                        else
-                        {
-                            WriteFile(path, writer);
-                            stream.Seek(fileLen, SeekOrigin.Current);
-                            WriteStream(stream.Length - stream.Position, stream, writer);
-                            break;
-                        }
-                    }
-                }
+		public void Reindex ()
+		{
+			_len = 0L;
+			for (var i = 0; i < files.Count; i++) {
+				var file = files [i];
+				file.offset = _pos + _len;
+				_len += file.len;
+			}
+		} 
 
-                _pos = pos;
-            }
+		public VFile GetFile (string path, string hash)
+		{
+			var key = Path.GetFileName (path);
+			VFile file;
+			_data.TryGetValue (key, out file);
+			return file;
+		}
 
-            File.Copy(tmpfile, name, true);
-            File.Delete(tmpfile);
-        }
+		public void Save (bool delete = false)
+		{
+			var dir = Path.GetDirectoryName (name);   
+			using (var stream = File.OpenWrite (name)) {
+				var writer = new BinaryWriter (stream);
+				writer.Write (files.Count);
+				foreach (var item in files) {
+					item.Serialize (writer);
+				}  
+				if (delete) {
+					foreach (var item in files) {
+						var path = dir + "/" + item.name;
+						WriteFile (path, writer);
+						File.Delete (path);
+						Debug.Log ("Delete:" + path);
+					}
+				} else {
+					foreach (var item in files) {
+						var path = dir + "/" + item.name;
+						WriteFile (path, writer);
+					}
+				} 
+			} 
+		}
 
-        private void WriteFile(string path, BinaryWriter writer)
-        {
-            using (var fs = File.OpenRead(path))
-            {
-                var len = fs.Length;
-                WriteStream(len, fs, writer);
-            }
-        }
-
-        private void WriteStream(long len, Stream stream, BinaryWriter writer)
-        {
-            var count = 0L;
-            while (count < len)
-            {
-                var read = (int) Math.Min(len - count, _buffers.Length);
-                stream.Read(_buffers, 0, read);
-                writer.Write(_buffers, 0, read);
-                count += read;
-            }
-        }
-
-        private void WriteNewFile(string path, string hash, bool write)
-        {
-            using (var fs = File.OpenRead(path))
-            {
-                if (string.IsNullOrEmpty(hash))
-                {
-                    hash = Utility.GetCRC32Hash(fs);
-                }
-
-                var file = new VFile {name = Path.GetFileName(path), id = files.Count, hash = hash, len = fs.Length};
-                AddFile(file);
-                if (!write) return;
-                using (var stream = File.OpenWrite(name))
-                {
-                    var writer = new BinaryWriter(stream);
-                    stream.Seek(_pos, SeekOrigin.Begin);
-                    file.Serialize(writer);
-                    _pos = stream.Position;
-                    stream.Seek(0, SeekOrigin.End);
-                    WriteStream(fs.Length, fs, writer);
-                }
-            }
-        }
-
-        public bool Load(string path)
-        {
-            if (!File.Exists(path))
-                return false;
-
-            files.Clear();
-            name = path;
-            using (var reader = new BinaryReader(File.OpenRead(path)))
-            {
-                var count = reader.ReadInt32();
-                for (var i = 0; i < count; i++)
-                {
-                    var file = new VFile {id = i};
-                    file.Deserialize(reader);
-                    AddFile(file);
-                    Debug.Log(file);
-                }
-
-                _pos = reader.BaseStream.Length;
-                Reindex();
-            }
-
-            return true;
-        }
-
-        public void Reindex()
-        {
-            _len = 0L;
-            for (var i = 0; i < files.Count; i++)
-            {
-                var file = files[i];
-                file.offset = _pos + _len;
-                _len += file.len;
-            }
-        }
-
-        private void AddFile(VFile file)
-        {
-            _data[file.name] = file;
-            files.Add(file);
-        }
-
-        public VFile GetFile(string path, string hash)
-        {
-            var key = Path.GetFileName(path);
-            VFile file;
-            _data.TryGetValue(key, out file);
-            return file;
-        }
-
-        public void Save()
-        {
-            using (var stream = File.OpenWrite(name))
-            {
-                var writer = new BinaryWriter(stream);
-                var dir = Path.GetDirectoryName(name);
-
-                writer.Write(files.Count);
-                foreach (var item in files)
-                {
-                    item.Serialize(writer);
-                }
-
-                foreach (var item in files)
-                {
-                    writer.Write(File.ReadAllBytes(dir + "/" + item.name));
-                }
-            }
-        }
-
-        public void Clear()
-        {
-            _data.Clear();
-            files.Clear();
-        }
-    }
+		public void Clear ()
+		{
+			_data.Clear ();
+			files.Clear ();
+		}
+	}
 }

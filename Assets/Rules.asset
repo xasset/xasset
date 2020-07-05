@@ -20,7 +20,7 @@ MonoBehaviour:
   searchPatternScene: '*.unity'
   searchPatternText: '*.txt,*.bytes,*.json,*.csv,*.xml,*htm,*.html,*.yaml,*.fnt'
   outputPath: Bundles
-  version: 4
+  version: 83
   scenes:
   - {fileID: 102900000, guid: 41515a2b3f98a445e88e746ac77f43d1, type: 3}
   rules:
@@ -28,10 +28,70 @@ MonoBehaviour:
     searchPattern: '*.unity'
     nameBy: 1
     assetBundleName: 
+  - searchPath: Assets/XAsset/Demo/UI/Backgrounds
+    searchPattern: '*'
+    nameBy: 2
+    assetBundleName: 
+  - searchPath: Assets/XAsset/Demo/UI/14Pause
+    searchPattern: '*'
+    nameBy: 2
+    assetBundleName: 
   ruleAssets:
   - bundle: b26a9bac179b4418b47a45737a4c6673.unity3d
     path: Assets/XAsset/Demo/Scenes/Game.unity
+  - bundle: 1f17032f365daa33b13cd4d261f6bea7.unity3d
+    path: Assets/XAsset/Demo/UI/14Pause/Btn_Continue0_h.png
+  - bundle: 1f17032f365daa33b13cd4d261f6bea7.unity3d
+    path: Assets/XAsset/Demo/UI/14Pause/Btn_Continue0_n.png
+  - bundle: 1f17032f365daa33b13cd4d261f6bea7.unity3d
+    path: Assets/XAsset/Demo/UI/14Pause/Btn_Continue0_p.png
+  - bundle: 1f17032f365daa33b13cd4d261f6bea7.unity3d
+    path: Assets/XAsset/Demo/UI/14Pause/Btn_Continue_h.png
+  - bundle: 1f17032f365daa33b13cd4d261f6bea7.unity3d
+    path: Assets/XAsset/Demo/UI/14Pause/Btn_Continue_n.png
+  - bundle: 1f17032f365daa33b13cd4d261f6bea7.unity3d
+    path: Assets/XAsset/Demo/UI/14Pause/Btn_Continue_p.png
+  - bundle: 1f17032f365daa33b13cd4d261f6bea7.unity3d
+    path: Assets/XAsset/Demo/UI/14Pause/PAUSE.png
+  - bundle: 1f17032f365daa33b13cd4d261f6bea7.unity3d
+    path: Assets/XAsset/Demo/UI/14Pause/TitleLine_Left.png
+  - bundle: 1f17032f365daa33b13cd4d261f6bea7.unity3d
+    path: Assets/XAsset/Demo/UI/14Pause/TitleLine_Right.png
+  - bundle: 1f17032f365daa33b13cd4d261f6bea7.unity3d
+    path: Assets/XAsset/Demo/UI/14Pause/bg_black.png
+  - bundle: 79dfdcbe2d3e0d4acd93ce6c1bb1eafc.unity3d
+    path: Assets/XAsset/Demo/UI/Backgrounds/background1_v2.png
+  - bundle: 79dfdcbe2d3e0d4acd93ce6c1bb1eafc.unity3d
+    path: Assets/XAsset/Demo/UI/Backgrounds/background2_v2.png
+  - bundle: 79dfdcbe2d3e0d4acd93ce6c1bb1eafc.unity3d
+    path: Assets/XAsset/Demo/UI/Backgrounds/background3_v2.png
+  - bundle: 79dfdcbe2d3e0d4acd93ce6c1bb1eafc.unity3d
+    path: Assets/XAsset/Demo/UI/Backgrounds/background4_v2.png
+  - bundle: 79dfdcbe2d3e0d4acd93ce6c1bb1eafc.unity3d
+    path: Assets/XAsset/Demo/UI/Backgrounds/background5_v2.png
+  - bundle: 79dfdcbe2d3e0d4acd93ce6c1bb1eafc.unity3d
+    path: Assets/XAsset/Demo/UI/Backgrounds/background6_v2.png
   ruleBundles:
   - name: b26a9bac179b4418b47a45737a4c6673.unity3d
     assets:
     - Assets/XAsset/Demo/Scenes/Game.unity
+  - name: 79dfdcbe2d3e0d4acd93ce6c1bb1eafc.unity3d
+    assets:
+    - Assets/XAsset/Demo/UI/Backgrounds/background1_v2.png
+    - Assets/XAsset/Demo/UI/Backgrounds/background2_v2.png
+    - Assets/XAsset/Demo/UI/Backgrounds/background3_v2.png
+    - Assets/XAsset/Demo/UI/Backgrounds/background4_v2.png
+    - Assets/XAsset/Demo/UI/Backgrounds/background5_v2.png
+    - Assets/XAsset/Demo/UI/Backgrounds/background6_v2.png
+  - name: 1f17032f365daa33b13cd4d261f6bea7.unity3d
+    assets:
+    - Assets/XAsset/Demo/UI/14Pause/bg_black.png
+    - Assets/XAsset/Demo/UI/14Pause/Btn_Continue0_h.png
+    - Assets/XAsset/Demo/UI/14Pause/Btn_Continue0_n.png
+    - Assets/XAsset/Demo/UI/14Pause/Btn_Continue0_p.png
+    - Assets/XAsset/Demo/UI/14Pause/Btn_Continue_h.png
+    - Assets/XAsset/Demo/UI/14Pause/Btn_Continue_n.png
+    - Assets/XAsset/Demo/UI/14Pause/Btn_Continue_p.png
+    - Assets/XAsset/Demo/UI/14Pause/PAUSE.png
+    - Assets/XAsset/Demo/UI/14Pause/TitleLine_Left.png
+    - Assets/XAsset/Demo/UI/14Pause/TitleLine_Right.png

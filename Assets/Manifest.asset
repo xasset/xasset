@@ -14,15 +14,77 @@ MonoBehaviour:
   activeVariants: []
   dirs:
   - Assets/XAsset/Demo/Scenes
+  - Assets/XAsset/Demo/UI/14Pause
+  - Assets/XAsset/Demo/UI/Backgrounds
   searchDirs:
   - Assets/XAsset/Demo/Scenes
+  - Assets/XAsset/Demo/UI/Backgrounds
+  - Assets/XAsset/Demo/UI/14Pause
   assets:
   - name: Game.unity
-    bundle: 0
+    bundle: 2
     dir: 0
+  - name: Btn_Continue0_h.png
+    bundle: 0
+    dir: 1
+  - name: Btn_Continue0_n.png
+    bundle: 0
+    dir: 1
+  - name: Btn_Continue0_p.png
+    bundle: 0
+    dir: 1
+  - name: Btn_Continue_h.png
+    bundle: 0
+    dir: 1
+  - name: Btn_Continue_n.png
+    bundle: 0
+    dir: 1
+  - name: Btn_Continue_p.png
+    bundle: 0
+    dir: 1
+  - name: PAUSE.png
+    bundle: 0
+    dir: 1
+  - name: TitleLine_Left.png
+    bundle: 0
+    dir: 1
+  - name: TitleLine_Right.png
+    bundle: 0
+    dir: 1
+  - name: bg_black.png
+    bundle: 0
+    dir: 1
+  - name: background1_v2.png
+    bundle: 1
+    dir: 2
+  - name: background2_v2.png
+    bundle: 1
+    dir: 2
+  - name: background3_v2.png
+    bundle: 1
+    dir: 2
+  - name: background4_v2.png
+    bundle: 1
+    dir: 2
+  - name: background5_v2.png
+    bundle: 1
+    dir: 2
+  - name: background6_v2.png
+    bundle: 1
+    dir: 2
   bundles:
-  - name: b26a9bac179b4418b47a45737a4c6673.unity3d
+  - name: 1f17032f365daa33b13cd4d261f6bea7.unity3d
     id: 0
     deps: 
-    len: 125676
+    len: 830312
+    hash: c68b09733ea7dd3a075c57b80cc0bf79
+  - name: 79dfdcbe2d3e0d4acd93ce6c1bb1eafc.unity3d
+    id: 1
+    deps: 
+    len: 2614185
+    hash: 36bf49fddd17a9b1ec9a88a9aaa4abaa
+  - name: b26a9bac179b4418b47a45737a4c6673.unity3d
+    id: 2
+    deps: 
+    len: 125690
     hash: d8aa1a33d637b44b5178059be28c8661
