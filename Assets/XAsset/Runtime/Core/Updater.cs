@@ -307,6 +307,8 @@ namespace libx
 				} 
 			} 
 			var startTime = Time.realtimeSinceStartup; 
+			var lastTime = 0f;
+			var lastSize = 0L;
 			while (_finishedIndex < _downloads.Count) {
 				if (_prepareToDownload.Count > 0) {
 					for (var i = 0; i < Math.Min (maxDownloads, _prepareToDownload.Count); i++) {
@@ -319,9 +321,15 @@ namespace libx
 				}
 				var downloadSize = GetDownloadSize (); 
 				var elapsed = Time.realtimeSinceStartup - startTime;
-				var speed = GetSpeed (totalSize, elapsed);  
-				OnMessage (string.Format ("下载中...{0}/{1}, 速度：{2}", downloadSize, totalSize, speed));
-				OnProgress (downloadSize * 1f / totalSize);
+				if (elapsed - lastTime > 0.5f)
+				{
+					var deltaTime = elapsed - lastTime;
+					var speed = GetSpeed (downloadSize - lastSize, deltaTime);
+					OnMessage (string.Format ("下载中...{0}/{1}, {2:f4}MB 速度：{3}", downloadSize, totalSize, downloadSize * BYTES_2_MB, speed));
+					OnProgress (downloadSize * 1f / totalSize);
+					lastTime = elapsed;  
+					lastSize = downloadSize;
+				}
 				yield return null;
 			}
 		}
