@@ -34,6 +34,8 @@ namespace libx
 {
 	public static class BuildScript
 	{
+		public static string outputPath  = "Bundles";
+
 		public static void ClearAssetBundles ()
 		{
 			var allAssetBundleNames = AssetDatabase.GetAllAssetBundleNames ();
@@ -59,14 +61,7 @@ namespace libx
 		internal static BuildRules GetBuildRules ()
 		{
 			return GetAsset<BuildRules> ("Assets/Rules.asset");
-		}
-
-		public static string GetOutputPath {
-			get {
-				return GetSettings ().outputPath;
-			}
-
-		}
+		} 
 
 		public static void CopyAssetBundlesTo (string outputPath)
 		{
@@ -87,7 +82,7 @@ namespace libx
 			var settings = BuildScript.GetSettings ();
 			if (settings.copyToStreamingAssets) {
 				foreach (var item in files) {
-					var src = settings.outputPath + "/" + item;
+					var src = outputPath + "/" + item;
 					var dest = Application.streamingAssetsPath + "/" + item;
 					if (File.Exists (src)) {
 						File.Copy (src, dest, true);
@@ -143,7 +138,7 @@ namespace libx
 
 		private static string GetAssetBundleManifestFilePath ()
 		{
-			var relativeAssetBundlesOutputPathForPlatform = Path.Combine (BuildScript.GetOutputPath, GetPlatformName ());
+			var relativeAssetBundlesOutputPathForPlatform = Path.Combine (BuildScript.outputPath, GetPlatformName ());
 			return Path.Combine (relativeAssetBundlesOutputPathForPlatform, GetPlatformName ()) + ".manifest";
 		}
 

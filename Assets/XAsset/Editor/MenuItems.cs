@@ -142,7 +142,7 @@ namespace libx
         [MenuItem(KBuildVersions)]
         private static void BuildVersions()
         {
-            Versions.BuildVersions(BuildScript.GetOutputPath, BuildScript.GetBuildRules().AddVersion());
+            Versions.BuildVersions(BuildScript.outputPath, BuildScript.GetBuildRules().AddVersion());
         }
 
         [MenuItem(KBuildPlayer)]

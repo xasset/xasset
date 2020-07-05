@@ -36,7 +36,7 @@ namespace libx
         private static void OnInitialize()
         {
             var settings = BuildScript.GetSettings();
-			Assets.basePath = settings.outputPath + Path.DirectorySeparatorChar;
+			Assets.basePath = BuildScript.outputPath + Path.DirectorySeparatorChar;
             Assets.runtimeMode = settings.runtimeMode;
             Assets.loadDelegate = AssetDatabase.LoadAssetAtPath;
             Menu.SetChecked(MenuItems.KRuntimeMode, settings.runtimeMode);
