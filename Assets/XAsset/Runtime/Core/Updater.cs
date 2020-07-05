@@ -82,7 +82,7 @@ namespace libx
 			if (listener != null) {
 				listener.OnProgress (progress);
 			}
-		}
+		} 
 
 		public void OnVersion (string ver)
 		{
@@ -118,7 +118,7 @@ namespace libx
 			StartCoroutine (Checking ());
 		}
 
-		void AddDownload (VFile item)
+		long AddDownload (VFile item)
 		{
 			var download = new Download {
 				url = GetDownloadURL (item.name),
@@ -127,14 +127,18 @@ namespace libx
 				completed = OnFinished
 			};
 			_downloads.Add (download);
+			var info = new FileInfo(download.tempPath);
+			if(info.Exists) {
+				return item.len - info.Length;
+			}
+			return item.len;
 		}
 
 		long PrepareDownloads ()
 		{
 			var size = 0L;
 			if (enableVFS && !File.Exists (_savePath + Versions.Dataname)) {
-				AddDownload (_versions [0]);
-				size += _versions [0].len;
+				size += AddDownload (_versions [0]);
 			} else {
 				if (enableVFS) {
 					Versions.LoadDisk (_savePath + Versions.Dataname);
@@ -142,8 +146,7 @@ namespace libx
 				for (var i = 1; i < _versions.Count; i++) {
 					var item = _versions [i];
 					if (Versions.IsNew (_savePath + item.name, item.len, item.hash)) {
-						AddDownload (item);
-						size += item.len;
+						size += AddDownload (item);
 					}
 				}
 			}
