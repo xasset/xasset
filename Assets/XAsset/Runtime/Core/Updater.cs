@@ -363,7 +363,7 @@ namespace libx
 			float speed = totalSize / duration; 
 			if (speed >= 1024 * 1024) {
 				return string.Format ("{0:f2}MB/s", speed * BYTES_2_MB);
-			} else if (speed > 1024) {
+			} else if (speed >= 1024) {
 				return string.Format ("{0:f2}KB/s", speed / 1024);
 			} else {
 				return string.Format ("{0:f2}B/s", speed);
