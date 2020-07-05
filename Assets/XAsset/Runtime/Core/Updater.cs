@@ -364,14 +364,16 @@ namespace libx
 			float unitSize;
 			const float kb = 1024f;
 			const float mb = kb * kb;
-			if (totalSize < mb) {
+			if (totalSize >= mb) {
+				unitSize = totalSize / mb;
+				unit = "mb"; 
+			} else if (totalSize >= kb) {
 				unit = "kb";
 				unitSize = totalSize / kb;
 			} else {
-				unitSize = totalSize / mb;
-				unit = "mb";
-			}
-
+				unit = "bytes";
+				unitSize = totalSize;
+			} 
 			return string.Format ("{0:f2} {1}/s", unitSize / duration, unit);
 		}
 
