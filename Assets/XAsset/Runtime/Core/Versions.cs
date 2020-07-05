@@ -41,7 +41,7 @@ namespace libx
 	{
 		public const string Dataname = "data.bin";
 		public const string Filename = "ver";
-		public static VerifyBy verifyBy = VerifyBy.Hash;
+		public static VerifyBy verifyBy = VerifyBy.Hash; 
 
 		private static VDisk _disk = new VDisk ();
 		private static Dictionary<string, VFile> _updateData = new Dictionary<string, VFile> ();

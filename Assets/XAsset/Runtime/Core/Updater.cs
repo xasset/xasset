@@ -54,6 +54,7 @@ namespace libx
 		[SerializeField] private string downloadUrl = "http://127.0.0.1:7888/";
 		[SerializeField] private string gameScene = "Game.unity";
 		[SerializeField] private int maxDownloads = 3; 
+		[SerializeField] private bool enabledVDisk;
 
 		private string _savePath;
 		private List<Download> _downloads = new List<Download> (); 
@@ -62,7 +63,6 @@ namespace libx
 		private VDisk _disk = new VDisk (); 
 		private int _downloadIndex;
 		private int _finishedIndex;
-		private bool _completed;
 
 		private const float BYTES_2_MB = 1f / (1024 * 1024);
 
@@ -127,6 +127,28 @@ namespace libx
 			_downloads.Add (download);
 		}
 
+		long PrepareDownloads ()
+		{
+			var size = 0L;
+			if (enabledVDisk && !File.Exists (_savePath + Versions.Dataname)) {
+				AddDownload (_versions [0]);
+				size += _versions [0].len;
+			}
+			else {
+				if (enabledVDisk) {
+					Versions.LoadDisk (_savePath + Versions.Dataname);
+				}
+				for (var i = 1; i < _versions.Count; i++) {
+					var item = _versions [i];
+					if (Versions.IsNew (_savePath + item.name, item.len, item.hash)) {
+						AddDownload (item);
+						size += item.len;
+					}
+				}
+			}
+			return size;
+		}
+
 		private IEnumerator Checking ()
 		{
 			if (!Directory.Exists (_savePath)) {
@@ -154,45 +176,30 @@ namespace libx
 			
 			OnMessage ("正在检查版本信息...");
 			_downloads.Clear ();
-			_disk.Clear ();
+			if (enabledVDisk) {
+				_disk.Clear ();
+			}
 			
 			_versions = Versions.LoadVersions (_savePath + Versions.Filename, true); 
-			if (_versions.Count == 0) {
-				OnComplete ();
-			} else {
-				if (!File.Exists (_savePath + Versions.Dataname)) {
-					AddDownload (_versions [0]);
-				} else {
-					Versions.LoadDisk (_savePath + Versions.Dataname);  
-					for (var i = 1; i < _versions.Count; i++) {
-						var item = _versions [i];
-						if (Versions.IsNew (_savePath + item.name, item.len, item.hash)) {
-							AddDownload (item);
-						} 
-					}
-				} 
-				if (_downloads.Count > 0) {
-					var totalSize = 0L;
-					foreach (var item in _downloads) {
-						totalSize += item.len;
-					} 
+			if (_versions.Count > 0) {
+				var totalSize = PrepareDownloads (); 
+				if (totalSize > 0) { 
 					var tips = string.Format ("检查到有{0}个文件需要更新，总计需要下载{1}（Bytes）内容", _downloads.Count, totalSize);
 					var mb = MessageBox.Show ("提示", tips, "下载", "跳过");
 					yield return mb;
 					if (mb.isOk) {
-						StartCoroutine (UpdateDownloads (totalSize));
-					}
-				} else {
-					OnComplete (); 
-				}
+						yield return UpdateDownloads (totalSize);
+					} 
+				}  
 			}
+
+			OnComplete (); 
 		}
 
 		private IEnumerator UpdateDownloads (long totalSize)
 		{
 			_downloadIndex = 0;
 			_prepareToDownload.Clear ();
-			_completed = false;
 			_finishedIndex = 0;
 			for (var i = 0; i < _downloads.Count; i++) {
 				if (i < maxDownloads) {
@@ -219,7 +226,6 @@ namespace libx
 				OnProgress (downloadSize * 1f / totalSize);
 				yield return null;
 			}
-			OnComplete (); 
 		}
 
 		private long GetDownloadSize ()
@@ -243,7 +249,7 @@ namespace libx
 				File.Copy (download.tempPath, path, true);
 				File.Delete (download.tempPath);   
 				Debug.Log (string.Format ("Copy {0} to {1}.", download.tempPath, path));
-				if (!filename.Equals (Versions.Dataname)) {
+				if (!filename.Equals (Versions.Dataname) && enabledVDisk) {
 					_disk.AddFile (path, download.len, download.hash); 
 				} 
 				_finishedIndex ++;
@@ -286,8 +292,6 @@ namespace libx
 				} else {
 					Versions.LoadVersions (path);
 				}
-			} else {
-				Log (string.Format ("{0} 加载失败：{1}", request.url, request.error));
 			} 
 			request.Dispose ();
 		}
@@ -337,43 +341,41 @@ namespace libx
 		}
 
 		private void OnComplete ()
-		{ 
-			if (_completed) {
-				return;
-			}
-			var dataPath = _savePath + Versions.Dataname; 
-			if (_disk.Exists ()) {
-				OnMessage ("更新本地版本信息"); 
-				if (File.Exists (dataPath)) {
-					var files = Versions.GetActivedFiles (); 
-					var buffers = new byte[1024 * 4]; 
-					using (var stream = File.OpenRead (dataPath)) {
-						foreach (var item in files) {
-							var path = _savePath + item.name;
-							if (_disk.GetFile (path, item.hash) != null) {
-								continue;
-							} 
-							using (var fs = File.OpenWrite (path)) { 
-								stream.Seek (item.offset, SeekOrigin.Begin);
-								var count = 0L;
-								var len = item.len;
-								while (count < len) {
-									var read = (int)Math.Min (len - count, buffers.Length);
-									stream.Read (buffers, 0, read);
-									fs.Write (buffers, 0, read);
-									count += read;
+		{  
+			if (enabledVDisk) {			
+				var dataPath = _savePath + Versions.Dataname; 
+				if (_disk.Exists ()) {
+					OnMessage ("更新本地版本信息"); 
+					if (File.Exists (dataPath)) {
+						var files = Versions.GetActivedFiles (); 
+						var buffers = new byte[1024 * 4]; 
+						using (var stream = File.OpenRead (dataPath)) {
+							foreach (var item in files) {
+								var path = _savePath + item.name;
+								if (_disk.GetFile (path, item.hash) != null) {
+									continue;
+								} 
+								using (var fs = File.OpenWrite (path)) { 
+									stream.Seek (item.offset, SeekOrigin.Begin);
+									var count = 0L;
+									var len = item.len;
+									while (count < len) {
+										var read = (int)Math.Min (len - count, buffers.Length);
+										stream.Read (buffers, 0, read);
+										fs.Write (buffers, 0, read);
+										count += read;
+									}
 								}
+								_disk.AddFile (path, item.len, item.hash);  
 							}
-							_disk.AddFile (path, item.len, item.hash);  
-						}
-					} 
-					File.Delete (dataPath); 
-					_disk.name = dataPath;
-					_disk.Save (true);    
-				}  
-			}   
-			Versions.LoadDisk (dataPath);
-			_completed = true;
+						} 
+						File.Delete (dataPath); 
+						_disk.name = dataPath;
+						_disk.Save (true);    
+					}  
+				}   
+				Versions.LoadDisk (dataPath); 
+			} 
 			OnProgress (1);
 			OnMessage ("更新完成");
 			var version = Versions.LoadVersion (_savePath + Versions.Filename);

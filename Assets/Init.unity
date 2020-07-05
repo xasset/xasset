@@ -618,6 +618,7 @@ MonoBehaviour:
   downloadUrl: http://127.0.0.1:7888/Bundles/
   gameScene: Game.unity
   maxDownloads: 3
+  enabledVDisk: 1
 --- !u!1 &597280430
 GameObject:
   m_ObjectHideFlags: 0

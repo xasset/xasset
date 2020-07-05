@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#define LOG_ENABLE
+//#define LOG_ENABLE
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

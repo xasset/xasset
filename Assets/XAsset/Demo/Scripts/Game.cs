@@ -29,21 +29,31 @@ public class Game : MonoBehaviour
 	}
 
 	public void OnLoadAll ()
+	{ 
+		StartCoroutine (LoadAll (_assets.Length));
+	}
+
+	IEnumerator LoadAll (int size)
 	{
-		var count = 0;
-		const int max = 10;
+		var count = 0; 
+		List<AssetRequest> list = new List<AssetRequest> ();
 		for (int i = _optionIndex; i < _assets.Length; i++) {
 			var asset = _assets [i];
 			var ext = Path.GetExtension (asset);
-			if (count >= max) {
+			if (count >= size) {
 				_optionIndex = i; 
 				break;
 			}
 			if (ext.Equals (".png", StringComparison.OrdinalIgnoreCase)) {
-				LoadSprite (asset).completed += OnCompleted;  
+				var request = LoadSprite (asset);
+				request.completed += OnCompleted;  
+				list.Add (request); 
 				count++;
 			}
 		}
+		yield return new WaitUntil (() => list.TrueForAll (o => {
+			return o.isDone;
+		}));
 	}
 
 	private void OnCompleted (AssetRequest request)
