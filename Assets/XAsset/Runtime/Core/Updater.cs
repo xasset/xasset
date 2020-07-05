@@ -360,21 +360,14 @@ namespace libx
 
 		private static string GetSpeed (long totalSize, float duration)
 		{
-			string unit;
-			float unitSize;
-			const float kb = 1024f;
-			const float mb = kb * kb;
-			if (totalSize >= mb) {
-				unitSize = totalSize / mb;
-				unit = "mb"; 
-			} else if (totalSize >= kb) {
-				unit = "kb";
-				unitSize = totalSize / kb;
+			float speed = totalSize / duration; 
+			if (speed >= 1024 * 1024) {
+				return string.Format ("{0:f2}MB/s", speed * BYTES_2_MB);
+			} else if (speed > 1024) {
+				return string.Format ("{0:f2}KB/s", speed / 1024);
 			} else {
-				unit = "bytes";
-				unitSize = totalSize;
-			} 
-			return string.Format ("{0:f2} {1}/s", unitSize / duration, unit);
+				return string.Format ("{0:f2}B/s", speed);
+			}  
 		}
 
 		private void OnComplete ()
