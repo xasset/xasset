@@ -904,7 +904,7 @@ Prefab:
     - target: {fileID: 114790240625461938, guid: 6780fcbd475514944b4ce5b4de2f9e23,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224333763141273064, guid: 6780fcbd475514944b4ce5b4de2f9e23,
         type: 2}
@@ -1005,7 +1005,7 @@ Prefab:
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1749070869}
     - target: {fileID: 114179253019511620, guid: 6780fcbd475514944b4ce5b4de2f9e23,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -1102,6 +1102,7 @@ GameObject:
   - component: {fileID: 625042989}
   - component: {fileID: 625042993}
   - component: {fileID: 625042994}
+  - component: {fileID: 625042995}
   m_Layer: 5
   m_Name: SplashScreen
   m_TagString: Untagged
@@ -1218,6 +1219,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deactiveSelf: 1
   target: {fileID: 1205832335}
+--- !u!225 &625042995
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 625042988}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &648277903
 GameObject:
   m_ObjectHideFlags: 0
@@ -1489,7 +1501,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 721588944}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1749070869}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &721588944
