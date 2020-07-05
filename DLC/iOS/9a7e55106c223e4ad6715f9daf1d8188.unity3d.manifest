@@ -1,0 +1,19 @@
+ManifestFileVersion: 0
+CRC: 3419813137
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: d0fb7978463c270b3aeb148484b420e7
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/20GameOver/GAME OVER.png
+- Assets/XAsset/Demo/UI/20GameOver/GameOver.png
+Dependencies: []

@@ -1,0 +1,40 @@
+ManifestFileVersion: 0
+CRC: 3296630371
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 9bce4dd3955acecd4acf54f1573b1422
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/16Victory1/Icon_Ring.png
+- Assets/XAsset/Demo/UI/16Victory1/Btn_Next_h.png
+- Assets/XAsset/Demo/UI/16Victory1/Btn_Next_n.png
+- Assets/XAsset/Demo/UI/16Victory1/Icon_Shield.png
+- Assets/XAsset/Demo/UI/16Victory1/bg_Victory2.png
+- Assets/XAsset/Demo/UI/16Victory1/Light line.png
+- Assets/XAsset/Demo/UI/16Victory1/Icon_SmallStar_Gray.png
+- Assets/XAsset/Demo/UI/16Victory1/Btn_Restart_p.png
+- Assets/XAsset/Demo/UI/16Victory1/Icon_Potion.png
+- Assets/XAsset/Demo/UI/16Victory1/Icon_SmallStar_Light.png
+- Assets/XAsset/Demo/UI/16Victory1/bg_Victory1.png
+- Assets/XAsset/Demo/UI/16Victory1/bg_ProgressLv.png
+- Assets/XAsset/Demo/UI/16Victory1/Lights1.png
+- Assets/XAsset/Demo/UI/16Victory1/title_Victory.png
+- Assets/XAsset/Demo/UI/16Victory1/Btn_Restart_h.png
+- Assets/XAsset/Demo/UI/16Victory1/Icon_star1_gray.png
+- Assets/XAsset/Demo/UI/16Victory1/Btn_Next_p.png
+- Assets/XAsset/Demo/UI/16Victory1/bg_block.png
+- Assets/XAsset/Demo/UI/16Victory1/Btn_Restart_n.png
+- Assets/XAsset/Demo/UI/16Victory1/Icon_reward.png
+- Assets/XAsset/Demo/UI/16Victory1/ProgressLv.png
+- Assets/XAsset/Demo/UI/16Victory1/Lights2.png
+- Assets/XAsset/Demo/UI/16Victory1/Icon_star1_light.png
+Dependencies: []

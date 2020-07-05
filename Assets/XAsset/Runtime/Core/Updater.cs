@@ -51,16 +51,17 @@ namespace libx
 			Debug.Log (string.Format ("[{0}]{1}", TAG, s));
 		}
 
-		[SerializeField] private string downloadUrl = "http://127.0.0.1:7888/";
+		[SerializeField] private string baseURL = "http://127.0.0.1:7888/";
 		[SerializeField] private string gameScene = "Game.unity";
-		[SerializeField] private int maxDownloads = 3; 
-		[SerializeField] private bool enabledVDisk;
+		[SerializeField] private int maxDownloads = 3;
+		[SerializeField] private bool enableVFS;
 
+		private string _platform;
 		private string _savePath;
-		private List<Download> _downloads = new List<Download> (); 
+		private List<Download> _downloads = new List<Download> ();
 		private List<Download> _prepareToDownload = new List<Download> ();
 		private List<VFile> _versions = new List<VFile> ();
-		private VDisk _disk = new VDisk (); 
+		private VDisk _disk = new VDisk ();
 		private int _downloadIndex;
 		private int _finishedIndex;
 
@@ -94,6 +95,7 @@ namespace libx
 		{
 			_savePath = Application.persistentDataPath + '/';
 			Assets.updatePath = _savePath;
+			_platform = GetPlatformForAssetBundles (Application.platform);
 			DontDestroyOnLoad (gameObject);
 		}
 
@@ -119,7 +121,7 @@ namespace libx
 		void AddDownload (VFile item)
 		{
 			var download = new Download {
-				url = downloadUrl + item.name,
+				url = GetDownloadURL (item.name),
 				hash = item.hash,
 				len = item.len,
 				completed = OnFinished
@@ -130,12 +132,11 @@ namespace libx
 		long PrepareDownloads ()
 		{
 			var size = 0L;
-			if (enabledVDisk && !File.Exists (_savePath + Versions.Dataname)) {
+			if (enableVFS && !File.Exists (_savePath + Versions.Dataname)) {
 				AddDownload (_versions [0]);
 				size += _versions [0].len;
-			}
-			else {
-				if (enabledVDisk) {
+			} else {
+				if (enableVFS) {
 					Versions.LoadDisk (_savePath + Versions.Dataname);
 				}
 				for (var i = 1; i < _versions.Count; i++) {
@@ -149,16 +150,50 @@ namespace libx
 			return size;
 		}
 
+		IEnumerator RequestVFS ()
+		{
+			var mb = MessageBox.Show ("提示", "是否开启VFS？开启有助于提升IO性能和数据安全。", "开启");
+			yield return mb;
+			enableVFS = mb.isOk;
+		}
+
+		private static string GetPlatformForAssetBundles (RuntimePlatform target)
+		{
+			// ReSharper disable once SwitchStatementMissingSomeCases
+			switch (target) {
+			case RuntimePlatform.Android:
+				return "Android";
+			case RuntimePlatform.IPhonePlayer:
+				return "iOS";
+			case RuntimePlatform.WebGLPlayer:
+				return "WebGL";
+			case RuntimePlatform.WindowsPlayer:
+			case RuntimePlatform.WindowsEditor:
+				return "Windows";
+			case RuntimePlatform.OSXEditor:
+			case RuntimePlatform.OSXPlayer:
+				return "OSX"; 
+			default:
+				return null;
+			}
+		}
+
+		private string GetDownloadURL (string filename)
+		{
+			return string.Format ("{0}{1}/{2}", baseURL, _platform, filename);
+		}
+
 		private IEnumerator Checking ()
 		{
 			if (!Directory.Exists (_savePath)) {
 				Directory.CreateDirectory (_savePath);
 			}
 
-			yield return RequestCopy (); 
+			yield return RequestVFS (); 
+			yield return RequestCopy ();  
 
 			OnMessage ("正在获取服务器版本信息..."); 
-			var request = UnityWebRequest.Get (downloadUrl + Versions.Filename);
+			var request = UnityWebRequest.Get (GetDownloadURL (Versions.Filename));
 			request.downloadHandler = new DownloadHandlerFile (_savePath + Versions.Filename);
 			yield return request.SendWebRequest ();
 			if (!string.IsNullOrEmpty (request.error)) {
@@ -176,7 +211,7 @@ namespace libx
 			
 			OnMessage ("正在检查版本信息...");
 			_downloads.Clear ();
-			if (enabledVDisk) {
+			if (enableVFS) {
 				_disk.Clear ();
 			}
 			
@@ -194,70 +229,6 @@ namespace libx
 			}
 
 			OnComplete (); 
-		}
-
-		private IEnumerator UpdateDownloads (long totalSize)
-		{
-			_downloadIndex = 0;
-			_prepareToDownload.Clear ();
-			_finishedIndex = 0;
-			for (var i = 0; i < _downloads.Count; i++) {
-				if (i < maxDownloads) {
-					var item = _downloads [i];
-					_prepareToDownload.Add (item);
-					_downloadIndex++;
-				} 
-			} 
-			var startTime = Time.realtimeSinceStartup; 
-			while (_finishedIndex < _downloads.Count) {
-				if (_prepareToDownload.Count > 0) {
-					for (var i = 0; i < Math.Min (maxDownloads, _prepareToDownload.Count); i++) {
-						var item = _prepareToDownload [i];
-						item.Start ();
-						Log ("Start Download：" + item.url);
-						_prepareToDownload.RemoveAt (i);
-						i--;
-					}
-				}
-				var downloadSize = GetDownloadSize(); 
-				var elapsed = Time.realtimeSinceStartup - startTime;
-				var speed = GetSpeed (totalSize, elapsed);  
-				OnMessage (string.Format ("下载中...{0}/{1}, 速度：{2}", downloadSize, totalSize, speed));
-				OnProgress (downloadSize * 1f / totalSize);
-				yield return null;
-			}
-		}
-
-		private long GetDownloadSize ()
-		{
-			var downloadSize = 0L;
-			foreach (var download in _downloads) {
-				downloadSize += download.position;
-			} 
-			return downloadSize;
-		}
-
-		private void OnFinished (Download download)
-		{
-			if (!string.IsNullOrEmpty (download.error)) {
-				Log ((string.Format ("{0} 下载失败:{1}, 开始重新下载。", download, download.error)));
-				File.Delete (download.tempPath);
-				_prepareToDownload.Add (download);
-			} else {
-				var filename = Path.GetFileName (download.url);
-				var path = string.Format ("{0}{1}", _savePath, filename);
-				File.Copy (download.tempPath, path, true);
-				File.Delete (download.tempPath);   
-				Debug.Log (string.Format ("Copy {0} to {1}.", download.tempPath, path));
-				if (!filename.Equals (Versions.Dataname) && enabledVDisk) {
-					_disk.AddFile (path, download.len, download.hash); 
-				} 
-				_finishedIndex ++;
-				if (_downloadIndex < _downloads.Count) {
-					_prepareToDownload.Add (_downloads [_downloadIndex]);
-					_downloadIndex++;
-				}  
-			}
 		}
 
 		private string GetStreamingAssetsPath ()
@@ -323,6 +294,70 @@ namespace libx
 			}
 		}
 
+		private IEnumerator UpdateDownloads (long totalSize)
+		{
+			_downloadIndex = 0;
+			_prepareToDownload.Clear ();
+			_finishedIndex = 0;
+			for (var i = 0; i < _downloads.Count; i++) {
+				if (i < maxDownloads) {
+					var item = _downloads [i];
+					_prepareToDownload.Add (item);
+					_downloadIndex++;
+				} 
+			} 
+			var startTime = Time.realtimeSinceStartup; 
+			while (_finishedIndex < _downloads.Count) {
+				if (_prepareToDownload.Count > 0) {
+					for (var i = 0; i < Math.Min (maxDownloads, _prepareToDownload.Count); i++) {
+						var item = _prepareToDownload [i];
+						item.Start ();
+						Log ("Start Download：" + item.url);
+						_prepareToDownload.RemoveAt (i);
+						i--;
+					}
+				}
+				var downloadSize = GetDownloadSize (); 
+				var elapsed = Time.realtimeSinceStartup - startTime;
+				var speed = GetSpeed (totalSize, elapsed);  
+				OnMessage (string.Format ("下载中...{0}/{1}, 速度：{2}", downloadSize, totalSize, speed));
+				OnProgress (downloadSize * 1f / totalSize);
+				yield return null;
+			}
+		}
+
+		private long GetDownloadSize ()
+		{
+			var downloadSize = 0L;
+			foreach (var download in _downloads) {
+				downloadSize += download.position;
+			} 
+			return downloadSize;
+		}
+
+		private void OnFinished (Download download)
+		{
+			if (!string.IsNullOrEmpty (download.error)) {
+				Log ((string.Format ("{0} 下载失败:{1}, 开始重新下载。", download, download.error)));
+				File.Delete (download.tempPath);
+				_prepareToDownload.Add (download);
+			} else {
+				var filename = Path.GetFileName (download.url);
+				var path = string.Format ("{0}{1}", _savePath, filename);
+				File.Copy (download.tempPath, path, true);
+				File.Delete (download.tempPath);   
+				Debug.Log (string.Format ("Copy {0} to {1}.", download.tempPath, path));
+				if (!filename.Equals (Versions.Dataname) && enableVFS) {
+					_disk.AddFile (path, download.len, download.hash); 
+				} 
+				_finishedIndex++;
+				if (_downloadIndex < _downloads.Count) {
+					_prepareToDownload.Add (_downloads [_downloadIndex]);
+					_downloadIndex++;
+				}  
+			}
+		}
+
 		private static string GetSpeed (long totalSize, float duration)
 		{
 			string unit;
@@ -342,7 +377,7 @@ namespace libx
 
 		private void OnComplete ()
 		{  
-			if (enabledVDisk) {			
+			if (enableVFS) {			
 				var dataPath = _savePath + Versions.Dataname; 
 				if (_disk.Exists ()) {
 					OnMessage ("更新本地版本信息"); 

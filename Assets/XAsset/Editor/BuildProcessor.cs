@@ -65,7 +65,7 @@ namespace libx
 
         public void OnPreprocessBuild(BuildTarget target, string path)
         {
-			BuildScript.CopyAssetBundlesTo (Application.streamingAssetsPath);
+//			BuildScript.CopyAssetBundlesTo (Application.streamingAssetsPath);
         }
 
         public int callbackOrder

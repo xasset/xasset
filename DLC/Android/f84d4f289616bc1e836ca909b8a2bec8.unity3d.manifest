@@ -1,0 +1,32 @@
+ManifestFileVersion: 0
+CRC: 447238894
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 0e0a269bfc966b7bfb106998f610e5d9
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/12Recharge/Icon_Coins.png
+- Assets/XAsset/Demo/UI/12Recharge/Btn_Buy2_p.png
+- Assets/XAsset/Demo/UI/12Recharge/Btn_Buy2_h.png
+- Assets/XAsset/Demo/UI/12Recharge/Btn_Buy2_n.png
+- Assets/XAsset/Demo/UI/12Recharge/Btn_Buy_Yellow_n.png
+- Assets/XAsset/Demo/UI/12Recharge/Icon_Gems.png
+- Assets/XAsset/Demo/UI/12Recharge/bg_BuyCoins.png
+- Assets/XAsset/Demo/UI/12Recharge/Radiated light2.png
+- Assets/XAsset/Demo/UI/12Recharge/Icon_Emerald.png
+- Assets/XAsset/Demo/UI/12Recharge/bg_BuyCoins2.png
+- Assets/XAsset/Demo/UI/12Recharge/Icon_Sale.png
+- Assets/XAsset/Demo/UI/12Recharge/Icon_dolor.png
+- Assets/XAsset/Demo/UI/12Recharge/Radiated light1.png
+- Assets/XAsset/Demo/UI/12Recharge/Btn_Buy_Yellow_h.png
+- Assets/XAsset/Demo/UI/12Recharge/Btn_Buy_Yellow_p.png
+Dependencies: []

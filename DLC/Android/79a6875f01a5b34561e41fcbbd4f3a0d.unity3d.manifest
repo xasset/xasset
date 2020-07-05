@@ -1,0 +1,22 @@
+ManifestFileVersion: 0
+CRC: 2218566894
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 82e34f3dd835ff2eabf3155e7d9bbee4
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/11NotEnoughMoney/bg_black.png
+- Assets/XAsset/Demo/UI/11NotEnoughMoney/Btn_Buy_n.png
+- Assets/XAsset/Demo/UI/11NotEnoughMoney/Btn_Buy_p.png
+- Assets/XAsset/Demo/UI/11NotEnoughMoney/bg_NotEnoughMoney.png
+- Assets/XAsset/Demo/UI/11NotEnoughMoney/Btn_Buy_h.png
+Dependencies: []

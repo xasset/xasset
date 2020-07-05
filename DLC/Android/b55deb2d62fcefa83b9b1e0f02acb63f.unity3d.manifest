@@ -1,0 +1,107 @@
+ManifestFileVersion: 0
+CRC: 575278273
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 6e816f87effd63ad10349c8fa84cdf62
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Circle2_01.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Line4_bg.png
+- Assets/XAsset/Demo/UI/Components9/Btn_nextpage_p.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Line3_bg.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Circle2_02.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Front sight7.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Line1.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Prostrate.png
+- Assets/XAsset/Demo/UI/Components9/Hp_Red.png
+- Assets/XAsset/Demo/UI/Components9/Btn_left_p.png
+- Assets/XAsset/Demo/UI/Components9/Btn_left_h.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Line2.png
+- Assets/XAsset/Demo/UI/Components9/Btn_up_n.png
+- Assets/XAsset/Demo/UI/Components9/bg_Direction2.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Circle5.png
+- Assets/XAsset/Demo/UI/Components9/Btn_down_n .png
+- Assets/XAsset/Demo/UI/Components9/Btn_Back_p.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Previouspage_h.png
+- Assets/XAsset/Demo/UI/Components9/Btn_nextpage_h.png
+- Assets/XAsset/Demo/UI/Components9/Icon_GreenPoint.png
+- Assets/XAsset/Demo/UI/Components9/Icon_RedPoint.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Front sight3.png
+- Assets/XAsset/Demo/UI/Components9/bg_CircleMap.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Right_n.png
+- Assets/XAsset/Demo/UI/Components9/Hp_Green_bg.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Circle1.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Line1_bg.png
+- Assets/XAsset/Demo/UI/Components9/Btn_exit_n.png
+- Assets/XAsset/Demo/UI/Components9/Hp_Green.png
+- Assets/XAsset/Demo/UI/Components9/bg_Direction1.png
+- Assets/XAsset/Demo/UI/Components9/Sci-fi-Mouse-cursor_b2.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Circle2.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Line3.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Attack0_p.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Circle3_bg.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Attack1_p.png
+- Assets/XAsset/Demo/UI/Components9/Sci-fi-Mouse-cursor_b4.png
+- Assets/XAsset/Demo/UI/Components9/Sci-fi-Mouse-cursor_b3.png
+- Assets/XAsset/Demo/UI/Components9/Icon_target.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Attack0.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Line2_bg.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Jump .png
+- Assets/XAsset/Demo/UI/Components9/Btn_left_n .png
+- Assets/XAsset/Demo/UI/Components9/Icon_Front sight6.png
+- Assets/XAsset/Demo/UI/Components9/Btn_exit_h.png
+- Assets/XAsset/Demo/UI/Components9/bg_toolbox.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Attack0_n.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Front sight1.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Right_h .png
+- Assets/XAsset/Demo/UI/Components9/Btn_up_h.png
+- Assets/XAsset/Demo/UI/Components9/Sci-fi-Mouse-cursor_a1.png
+- Assets/XAsset/Demo/UI/Components9/Hp_Blue.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Range.png
+- Assets/XAsset/Demo/UI/Components9/Btn_down_h.png
+- Assets/XAsset/Demo/UI/Components9/Btn_tool_h.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Previouspage_gray.png
+- Assets/XAsset/Demo/UI/Components9/Progress2.png
+- Assets/XAsset/Demo/UI/Components9/Btn_down_p.png
+- Assets/XAsset/Demo/UI/Components9/Btn_tool_n.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Front sight2.png
+- Assets/XAsset/Demo/UI/Components9/Sci-fi-Mouse-cursor_b1.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Attack1_n.png
+- Assets/XAsset/Demo/UI/Components9/Btn_nextpage_gray.png
+- Assets/XAsset/Demo/UI/Components9/Sci-fi-Mouse-cursor_a2.png
+- Assets/XAsset/Demo/UI/Components9/Btn_nextpage_n.png
+- Assets/XAsset/Demo/UI/Components9/Hp_Yellow.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Right_p .png
+- Assets/XAsset/Demo/UI/Components9/Btn_up_p.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Front sight4.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Circle2_03.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Back_n.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Back_h.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Line4.png
+- Assets/XAsset/Demo/UI/Components9/Hp_Yellow_bg.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Exit.png
+- Assets/XAsset/Demo/UI/Components9/Btn_tool_p.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Run .png
+- Assets/XAsset/Demo/UI/Components9/Icon_back.png
+- Assets/XAsset/Demo/UI/Components9/Sci-fi-Mouse-cursor_a4.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Circle4_bg.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Previouspage_p.png
+- Assets/XAsset/Demo/UI/Components9/Btn_exit_p.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Circle1_Ball.png
+- Assets/XAsset/Demo/UI/Components9/Btn_Previouspage_n.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Circle4.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Spanner.png
+- Assets/XAsset/Demo/UI/Components9/Sci-fi-Mouse-cursor_a3.png
+- Assets/XAsset/Demo/UI/Components9/Icon_YellowPoint.png
+- Assets/XAsset/Demo/UI/Components9/Icon_Front sight5.png
+- Assets/XAsset/Demo/UI/Components9/ProgressBar_Circle3.png
+Dependencies: []

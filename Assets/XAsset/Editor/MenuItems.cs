@@ -38,7 +38,6 @@ namespace libx
         public const string KRuntimeMode = "Assets/Bundles/Enable RuntimeMode";
         private const string KApplyBuildRules = "Assets/Bundles/Build Rules";
         private const string KBuildAssetBundles = "Assets/Bundles/Build Bundles";
-        private const string KBuildVersions = "Assets/Bundles/Build Versions";
         private const string KBuildPlayer = "Assets/Bundles/Build Player";
 		private const string KViewDataPath = "Assets/Bundles/View Bundles";
         private const string KCopyBundles = "Assets/Bundles/Copy Bundles";
@@ -137,13 +136,7 @@ namespace libx
             BuildScript.BuildAssetBundles();
             watch.Stop();
             Debug.Log("BuildAssetBundles " + watch.ElapsedMilliseconds + " ms.");
-        }
-
-        [MenuItem(KBuildVersions)]
-        private static void BuildVersions()
-        {
-            Versions.BuildVersions(BuildScript.outputPath, BuildScript.GetBuildRules().AddVersion());
-        }
+        } 
 
         [MenuItem(KBuildPlayer)]
         private static void BuildStandalonePlayer()

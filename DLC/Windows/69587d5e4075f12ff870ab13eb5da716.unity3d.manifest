@@ -1,0 +1,51 @@
+ManifestFileVersion: 0
+CRC: 3082245475
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: c080dae1f0c87ff106b5c115e9ad6f25
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/15Opotions/switch01-on.png
+- Assets/XAsset/Demo/UI/15Opotions/switch01-off.png
+- Assets/XAsset/Demo/UI/15Opotions/checkbox_normal.png
+- Assets/XAsset/Demo/UI/15Opotions/bg_Title line.png
+- Assets/XAsset/Demo/UI/15Opotions/Dropdown_Btn_n.png
+- Assets/XAsset/Demo/UI/15Opotions/Dropdown_Btn_p.png
+- Assets/XAsset/Demo/UI/15Opotions/Slider2_bg.png
+- Assets/XAsset/Demo/UI/15Opotions/switch02-off.png
+- Assets/XAsset/Demo/UI/15Opotions/bg_LeftTab.png
+- Assets/XAsset/Demo/UI/15Opotions/bg_black.png
+- Assets/XAsset/Demo/UI/15Opotions/Dropdown_menu_bg.png
+- Assets/XAsset/Demo/UI/15Opotions/Icon_Sound.png
+- Assets/XAsset/Demo/UI/15Opotions/switch02-on.png
+- Assets/XAsset/Demo/UI/15Opotions/Window_Settings.png
+- Assets/XAsset/Demo/UI/15Opotions/Partition line.png
+- Assets/XAsset/Demo/UI/15Opotions/Btn_Previous1_n.png
+- Assets/XAsset/Demo/UI/15Opotions/Radio_null.png
+- Assets/XAsset/Demo/UI/15Opotions/Icon_Music.png
+- Assets/XAsset/Demo/UI/15Opotions/Slider2.png
+- Assets/XAsset/Demo/UI/15Opotions/Dropdown_Btn_h.png
+- Assets/XAsset/Demo/UI/15Opotions/Btn_slider1.png
+- Assets/XAsset/Demo/UI/15Opotions/Dropdown_bg_n.png
+- Assets/XAsset/Demo/UI/15Opotions/checkbox_select.png
+- Assets/XAsset/Demo/UI/15Opotions/Slider2_Btn.png
+- Assets/XAsset/Demo/UI/15Opotions/bg_slider1.png
+- Assets/XAsset/Demo/UI/15Opotions/Btn_Tab1_n.png
+- Assets/XAsset/Demo/UI/15Opotions/slider1.png
+- Assets/XAsset/Demo/UI/15Opotions/Radio_selected.png
+- Assets/XAsset/Demo/UI/15Opotions/Btn_Previous1_p.png
+- Assets/XAsset/Demo/UI/15Opotions/bg_SettingsTitle.png
+- Assets/XAsset/Demo/UI/15Opotions/Dropdown_bg_s.png
+- Assets/XAsset/Demo/UI/15Opotions/Btn_Previous1_h.png
+- Assets/XAsset/Demo/UI/15Opotions/Dropdown_menu.png
+- Assets/XAsset/Demo/UI/15Opotions/Btn_Tab1_s.png
+Dependencies: []

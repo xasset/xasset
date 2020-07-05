@@ -34,7 +34,7 @@ namespace libx
 {
 	public static class BuildScript
 	{
-		public static string outputPath  = "Bundles";
+		public static string outputPath  = "DLC/" + GetPlatformName(); 
 
 		public static void ClearAssetBundles ()
 		{
@@ -47,8 +47,7 @@ namespace libx
 					break;
 
 				AssetDatabase.RemoveAssetBundleName (text, true);
-			}
-
+			} 
 			EditorUtility.ClearProgressBar ();
 		}
 
@@ -64,10 +63,7 @@ namespace libx
 		} 
 
 		public static void CopyAssetBundlesTo (string outputPath)
-		{
-			if (!Directory.Exists (outputPath)) {
-				Directory.CreateDirectory (outputPath);
-			} 
+		{ 
 			var files = new[] {
 				Versions.Dataname,
 				Versions.Filename,
@@ -77,10 +73,12 @@ namespace libx
 				if (File.Exists (dest)) {
 					File.Delete (dest);
 				}
-			}
-
+			} 
 			var settings = BuildScript.GetSettings ();
 			if (settings.copyToStreamingAssets) {
+				if (!Directory.Exists (outputPath)) {
+					Directory.CreateDirectory (outputPath);
+				} 
 				foreach (var item in files) {
 					var src = outputPath + "/" + item;
 					var dest = Application.streamingAssetsPath + "/" + item;
@@ -138,7 +136,7 @@ namespace libx
 
 		private static string GetAssetBundleManifestFilePath ()
 		{
-			var relativeAssetBundlesOutputPathForPlatform = Path.Combine (BuildScript.outputPath, GetPlatformName ());
+			var relativeAssetBundlesOutputPathForPlatform = Path.Combine ("Asset", GetPlatformName ());
 			return Path.Combine (relativeAssetBundlesOutputPathForPlatform, GetPlatformName ()) + ".manifest";
 		}
 
@@ -178,7 +176,6 @@ namespace libx
 		public static string CreateAssetBundleDirectory ()
 		{
 			// Choose the output path according to the build target.
-			var outputPath = Path.Combine ("Output", GetPlatformName ());
 			if (!Directory.Exists (outputPath))
 				Directory.CreateDirectory (outputPath);
 
@@ -246,10 +243,10 @@ namespace libx
 			manifest.dirs = dirs.ToArray ();
 			manifest.assets = assets.ToArray ();
 			manifest.bundles = bundleRefs.ToArray ();
+
 			EditorUtility.SetDirty (manifest);
 			AssetDatabase.SaveAssets ();
 			AssetDatabase.Refresh ();
-
 
 			var manifestBundleName = "manifest.unity3d";
 			builds = new[] {
@@ -260,37 +257,22 @@ namespace libx
 			};
 
 			BuildPipeline.BuildAssetBundles (outputPath, builds, options, targetPlatform);
-			ArrayUtility.Add (ref bundles, manifestBundleName);
+			ArrayUtility.Add (ref bundles, manifestBundleName);  
 
-			if (Directory.Exists (rules.outputPath)) {
-				var files = Directory.GetFiles (rules.outputPath);
-				foreach (var file in files) {
-					File.Delete (file);
-				}
-			} else {
-				Directory.CreateDirectory (rules.outputPath);
-			}
-
-			foreach (var item in bundles) {
-				var sourceFileName = string.Format ("{0}/{1}", outputPath, item);
-				var destFileName = string.Format ("{0}/{1}", rules.outputPath, item);
-				File.Copy (sourceFileName, destFileName, true);
-			}
-
-			Versions.BuildVersions (rules.outputPath, GetBuildRules ().AddVersion ());
+			Versions.BuildVersions (outputPath, bundles, GetBuildRules ().AddVersion ());
 		}
 
 		private static string GetBuildTargetName (BuildTarget target)
 		{
 			var time = DateTime.Now.ToString ("yyyyMMdd-HHmmss");
-			var name = PlayerSettings.productName + "-v" + PlayerSettings.bundleVersion + "-" + time;
+			var name = PlayerSettings.productName + "-v" + PlayerSettings.bundleVersion + ".";
 			switch (target) {
 			case BuildTarget.Android:
-				return "/" + name + PlayerSettings.Android.bundleVersionCode + ".apk";
+				return string.Format ("/{0}{1}-{2}.apk", name, GetBuildRules().version, time);
 
 			case BuildTarget.StandaloneWindows:
 			case BuildTarget.StandaloneWindows64:
-				return "/" + name + PlayerSettings.Android.bundleVersionCode + ".exe";
+				return string.Format ("/{0}{1}-{2}.exe", name, GetBuildRules().version, time);
 
 #if UNITY_2017_3_OR_NEWER
 			case BuildTarget.StandaloneOSX:

@@ -1,0 +1,53 @@
+ManifestFileVersion: 0
+CRC: 560668578
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 10152dbf47195af6fc6ebc73d7ad063e
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/Components8/Btn_Next_c .png
+- Assets/XAsset/Demo/UI/Components8/Point_Yellow.png
+- Assets/XAsset/Demo/UI/Components8/Icon_Go1.png
+- Assets/XAsset/Demo/UI/Components8/5.png
+- Assets/XAsset/Demo/UI/Components8/Btn1_c.png
+- Assets/XAsset/Demo/UI/Components8/Icon_pause.png
+- Assets/XAsset/Demo/UI/Components8/3.png
+- Assets/XAsset/Demo/UI/Components8/Point_Red.png
+- Assets/XAsset/Demo/UI/Components8/0.png
+- Assets/XAsset/Demo/UI/Components8/1.png
+- Assets/XAsset/Demo/UI/Components8/4.png
+- Assets/XAsset/Demo/UI/Components8/Point_Color2.png
+- Assets/XAsset/Demo/UI/Components8/Btn1_h.png
+- Assets/XAsset/Demo/UI/Components8/6.png
+- Assets/XAsset/Demo/UI/Components8/Btn_Next_n.png
+- Assets/XAsset/Demo/UI/Components8/Btn_Previous_h.png
+- Assets/XAsset/Demo/UI/Components8/Btn1_n.png
+- Assets/XAsset/Demo/UI/Components8/Point_Green.png
+- Assets/XAsset/Demo/UI/Components8/Circle.png
+- Assets/XAsset/Demo/UI/Components8/2.png
+- Assets/XAsset/Demo/UI/Components8/Icon_YouWin1.png
+- Assets/XAsset/Demo/UI/Components8/Icon_Defeat1.png
+- Assets/XAsset/Demo/UI/Components8/Btn_Previous_c.png
+- Assets/XAsset/Demo/UI/Components8/8.png
+- Assets/XAsset/Demo/UI/Components8/Icon_Victory1.png
+- Assets/XAsset/Demo/UI/Components8/Line0.png
+- Assets/XAsset/Demo/UI/Components8/9.png
+- Assets/XAsset/Demo/UI/Components8/Icon_Level up1.png
+- Assets/XAsset/Demo/UI/Components8/Prop.png
+- Assets/XAsset/Demo/UI/Components8/Btn_Next_h.png
+- Assets/XAsset/Demo/UI/Components8/Icon_Start1.png
+- Assets/XAsset/Demo/UI/Components8/7.png
+- Assets/XAsset/Demo/UI/Components8/Icon_You lose2.png
+- Assets/XAsset/Demo/UI/Components8/Icon_Complete1.png
+- Assets/XAsset/Demo/UI/Components8/Btn_Previous_n.png
+- Assets/XAsset/Demo/UI/Components8/Icon_GameOver2.png
+Dependencies: []

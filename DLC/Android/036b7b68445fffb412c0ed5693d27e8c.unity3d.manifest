@@ -1,0 +1,23 @@
+ManifestFileVersion: 0
+CRC: 2736539804
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 8b6f7df2a11bea08423932bfe8002e60
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/18Warning/bg_Warning_Red.png
+- Assets/XAsset/Demo/UI/18Warning/Btn_RedOk_h.png
+- Assets/XAsset/Demo/UI/18Warning/bg_WarningTitle.png
+- Assets/XAsset/Demo/UI/18Warning/Btn_RedOk_n.png
+- Assets/XAsset/Demo/UI/18Warning/Btn_RedOk_p.png
+- Assets/XAsset/Demo/UI/18Warning/bg_Warning.png
+Dependencies: []

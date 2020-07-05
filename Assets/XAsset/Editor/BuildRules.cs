@@ -108,7 +108,6 @@ namespace libx
 		public string searchPatternPrefab = "*.prefab";
 		public string searchPatternScene = "*.unity";
 		public string searchPatternText = "*.txt,*.bytes,*.json,*.csv,*.xml,*htm,*.html,*.yaml,*.fnt";
-		public string outputPath = "Bundles";
 		[Tooltip("构建的版本号")]
 		[Header("Builds")] 
         public int version;

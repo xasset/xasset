@@ -1,0 +1,33 @@
+ManifestFileVersion: 0
+CRC: 1200413355
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 6045f1bc72de9e391c043c615e6ec3a2
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/Components7/textbox02_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/middle panel03_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/small panel05_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/textbox01_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/textbox03_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/middle panel02_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/textbox05_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/middle panel04_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/small panel01_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/small panel02_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/middle panel01_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/small panel04 _Opaque.png
+- Assets/XAsset/Demo/UI/Components7/bg_Title_small panel03_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/bg_Title_textbox01_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/small panel03_Opaque.png
+- Assets/XAsset/Demo/UI/Components7/textbox04_Opaque.png
+Dependencies: []

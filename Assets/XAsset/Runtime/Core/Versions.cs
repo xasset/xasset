@@ -39,9 +39,9 @@ namespace libx
 
 	public static class Versions
 	{
-		public const string Dataname = "data.bin";
+		public const string Dataname = "res";
 		public const string Filename = "ver";
-		public static VerifyBy verifyBy = VerifyBy.Hash; 
+		public static VerifyBy verifyBy = VerifyBy.Hash;
 
 		private static VDisk _disk = new VDisk ();
 		private static Dictionary<string, VFile> _updateData = new Dictionary<string, VFile> ();
@@ -81,25 +81,24 @@ namespace libx
 			return AssetBundle.LoadFromFileAsync (url);
 		}
 
-		public static void BuildVersions (string outputPath, int version)
+		public static void BuildVersions (string outputPath, string[] bundles, int version)
 		{
 			var path = outputPath + "/" + Filename;
 			if (File.Exists (path)) {
 				File.Delete (path);
-			}
-
+			} 
 			var dataPath = outputPath + "/" + Dataname;
 			if (File.Exists (dataPath)) {
 				File.Delete (dataPath);
-			} 
+			}  
 
-			var getFiles = Directory.GetFiles (outputPath, "*.unity3d");
 			var disk = new VDisk (); 
-			foreach (var file in getFiles) {
-				using (var fs = File.OpenRead (file)) {
+			foreach (var file in bundles) {
+				using (var fs = File.OpenRead (outputPath + "/" + file)) {
 					disk.AddFile (file, fs.Length, Utility.GetCRC32Hash (fs));
 				}
 			} 
+
 			disk.name = dataPath;
 			disk.Save ();   
 

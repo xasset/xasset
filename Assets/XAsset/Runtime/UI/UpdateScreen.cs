@@ -40,7 +40,7 @@ namespace libx
             version.text = "1";
 			var updater = FindObjectOfType<Updater> ();
 			updater.listener = this;
-			updater.StartUpdate ();
+//			updater.StartUpdate ();
         }
 
         #region IUpdateManager implementation

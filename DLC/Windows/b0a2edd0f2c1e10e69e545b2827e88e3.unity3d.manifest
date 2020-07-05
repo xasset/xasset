@@ -1,0 +1,54 @@
+ManifestFileVersion: 0
+CRC: 475019664
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: d01cd95814062af417a47609a0fc9c44
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/9Store/Btn_Previous_n.png
+- Assets/XAsset/Demo/UI/9Store/Icon_Gun.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Back1_h.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Previous_h.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Title_p.png
+- Assets/XAsset/Demo/UI/9Store/Icon_OrangeDiamond.png
+- Assets/XAsset/Demo/UI/9Store/Radio_null.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Previous_p.png
+- Assets/XAsset/Demo/UI/9Store/bg_Title.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Title_n.png
+- Assets/XAsset/Demo/UI/9Store/Title spacer.png
+- Assets/XAsset/Demo/UI/9Store/bg_SHOP.png
+- Assets/XAsset/Demo/UI/9Store/Parting line.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Next_n.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Back_p.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Next_p.png
+- Assets/XAsset/Demo/UI/9Store/bg_Black Mask2.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Back_n.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Back1_n.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Next_h.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Home_p .png
+- Assets/XAsset/Demo/UI/9Store/Btn_Buy_h.png
+- Assets/XAsset/Demo/UI/9Store/Icon_Back.png
+- Assets/XAsset/Demo/UI/9Store/bg_GoodsTitle.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Home_n.png
+- Assets/XAsset/Demo/UI/9Store/bg_Good.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Title_h.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Back1_p.png
+- Assets/XAsset/Demo/UI/9Store/Icon_Silver.png
+- Assets/XAsset/Demo/UI/9Store/Icon_LargeLocked.png
+- Assets/XAsset/Demo/UI/9Store/Radio_select.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Buy_n.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Home_h .png
+- Assets/XAsset/Demo/UI/9Store/Icon_Money.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Buy_p.png
+- Assets/XAsset/Demo/UI/9Store/Icon_Trigonometry.png
+- Assets/XAsset/Demo/UI/9Store/Btn_Back_h.png
+Dependencies: []

@@ -1,0 +1,18 @@
+ManifestFileVersion: 0
+CRC: 3513793582
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 38e624445aeb4f54142c7a943d3660a2
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/19Died/Icon_Died.png
+Dependencies: []

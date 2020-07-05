@@ -1,0 +1,31 @@
+ManifestFileVersion: 0
+CRC: 1254666105
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: b1234c907f40fba927b1e46d1e09c8f0
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/3StageSelect/bg_Stage1_01.png
+- Assets/XAsset/Demo/UI/3StageSelect/Radio1_null.png
+- Assets/XAsset/Demo/UI/3StageSelect/Radio1_select.png
+- Assets/XAsset/Demo/UI/3StageSelect/Btn_Next_n.png
+- Assets/XAsset/Demo/UI/3StageSelect/Battlefield 2.png
+- Assets/XAsset/Demo/UI/3StageSelect/bg_Stage2_02.png
+- Assets/XAsset/Demo/UI/3StageSelect/Btn_Next_h.png
+- Assets/XAsset/Demo/UI/3StageSelect/bg_Stage2_01.png
+- Assets/XAsset/Demo/UI/3StageSelect/bg_Stage1_02.png
+- Assets/XAsset/Demo/UI/3StageSelect/Btn_Previous_n.png
+- Assets/XAsset/Demo/UI/3StageSelect/Btn_Next_p.png
+- Assets/XAsset/Demo/UI/3StageSelect/Btn_Previous_h.png
+- Assets/XAsset/Demo/UI/3StageSelect/Btn_Previous_p.png
+- Assets/XAsset/Demo/UI/3StageSelect/bg_Name1.png
+Dependencies: []

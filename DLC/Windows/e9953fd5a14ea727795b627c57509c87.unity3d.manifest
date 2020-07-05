@@ -1,0 +1,70 @@
+ManifestFileVersion: 0
+CRC: 3992281088
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: ad3674af4cfb4ed133d67dc92b61e0e9
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 460b4f5d62b6facbccf7c01637df8f00
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/XAsset/Demo/UI/7Scence1/Icon_AtackTarget.png
+- Assets/XAsset/Demo/UI/7Scence1/bg_MoneyBar2.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Down_n.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Left_p.png
+- Assets/XAsset/Demo/UI/7Scence1/Circle_Progress.png
+- Assets/XAsset/Demo/UI/7Scence1/bg_Direction1.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Attack_n.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Skill_n.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Add_n.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Sword1.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Guns_n.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Light.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Left_h.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Down_h.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Diamond.png
+- Assets/XAsset/Demo/UI/7Scence1/Bullet.png
+- Assets/XAsset/Demo/UI/7Scence1/Circle_Black Mask.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Skill_h.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Add_h.png
+- Assets/XAsset/Demo/UI/7Scence1/Tips.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Left_n.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_DistanceTarget.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Skill1.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Add1.png
+- Assets/XAsset/Demo/UI/7Scence1/bg_MoneyBar1.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Up_n.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Skill3.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Right_h.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Sword.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Diamond1.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_pause_h.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Attack_h.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Down_p.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Up_h.png
+- Assets/XAsset/Demo/UI/7Scence1/TargetGreen.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_pause_n.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Skill2.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Money.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Right_n.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Money1.png
+- Assets/XAsset/Demo/UI/7Scence1/TargetRed.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Up_p.png
+- Assets/XAsset/Demo/UI/7Scence1/bg_Direction2.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Target.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_OpenArrow.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Guns_s.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Skill_p.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Attack_p.png
+- Assets/XAsset/Demo/UI/7Scence1/bg_Map.png
+- Assets/XAsset/Demo/UI/7Scence1/Icon_Gun1.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_pause_p.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Add_p.png
+- Assets/XAsset/Demo/UI/7Scence1/Btn_Right_p.png
+Dependencies: []
