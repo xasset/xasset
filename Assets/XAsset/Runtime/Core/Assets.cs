@@ -35,502 +35,523 @@ using Object = UnityEngine.Object;
 
 namespace libx
 {
-	public sealed class Assets : MonoBehaviour
-	{
-		public static readonly string AssetBundles = "Bundles";
-		public static readonly string ManifestAsset = "Assets/Manifest.asset";
-		public static readonly string Extension = ".unity3d";
+    public sealed class Assets : MonoBehaviour
+    {
+        public static readonly string AssetBundles = "Bundles";
+        public static readonly string ManifestAsset = "Assets/Manifest.asset";
+        public static readonly string Extension = ".unity3d";
 
-		public static bool runtimeMode = false;
-		public static Func<string, Type, Object> loadDelegate = null;
-		private static readonly string TAG = "[Assets]";
+        public static bool runtimeMode = false;
+        public static Func<string, Type, Object> loadDelegate = null;
+        private static readonly string TAG = "[Assets]";
 
-		[Conditional ("LOG_ENABLE")]
-		private static void Log (string s)
-		{
-			Debug.Log (string.Format ("{0}{1}", TAG, s));
-		}
+        [Conditional("LOG_ENABLE")]
+        private static void Log(string s)
+        {
+            Debug.Log(string.Format("{0}{1}", TAG, s));
+        }
 
-		#region API
+        #region API
 
-		/// <summary>
-		/// 读取所有资源路径
-		/// </summary>
-		/// <returns></returns>
-		public static string[] GetAllAssetPaths ()
-		{
-			var assets = new List<string> ();
-			assets.AddRange (_assetToBundles.Keys);
-			return assets.ToArray ();
-		}
+        /// <summary>
+        /// 读取所有资源路径
+        /// </summary>
+        /// <returns></returns>
+        public static string[] GetAllAssetPaths()
+        {
+            var assets = new List<string>();
+            assets.AddRange(_assetToBundles.Keys);
+            return assets.ToArray();
+        }
 
-		/// <summary>
-		/// 基础路径：编辑器或运行时首包的加载路径
-		/// </summary>
-		public static string basePath { get; set; }
+        public static string basePath { get; set; }
 
-		/// <summary>
-		/// 更新路径：读取的更新资源的路径
-		/// </summary>
-		public static string updatePath { get; set; }
-
-		/// <summary>
-		/// 添加搜索路径，用来索引加载资源时的完整路径，如果资源的完整路径为 Assets/Demo.unity, 并把 Assets 添加到了搜索路径，那么加载该资源的时候用 LoadAsset("Demo.unity") 也能正常加载。
-		/// </summary>
-		/// <param name="path"></param>
-		public static void AddSearchPath (string path)
-		{
-			if (!path.EndsWith ("/")) {
-				path += "/";
-			}
-
-			_searchPaths.Add (path);
-		}
-
-		/// <summary>
-		/// 初始化
-		/// </summary>
-		/// <returns></returns>
-		public static ManifestRequest Initialize ()
-		{
-			var instance = FindObjectOfType<Assets> ();
-			if (instance == null) {
-				instance = new GameObject ("Assets").AddComponent<Assets> ();
-				DontDestroyOnLoad (instance.gameObject);
-			}
+        public static string updatePath { get; set; }
 
 
-			if (string.IsNullOrEmpty (basePath)) {
-				basePath = Application.streamingAssetsPath;
-			}
+        public static void AddSearchPath(string path)
+        {
+            if (!path.EndsWith("/"))
+            {
+                path += "/";
+            }
 
-			dataPath = Path.Combine (basePath, AssetBundles) + Path.DirectorySeparatorChar;
-			if (string.IsNullOrEmpty (updatePath)) {
-				updatePath = Path.Combine (Application.persistentDataPath, AssetBundles) + Path.DirectorySeparatorChar;
-			}
+            _searchPaths.Add(path);
+        }
 
-			RemoveUnusedAssets ();
+        public static ManifestRequest Initialize()
+        {
+            var instance = FindObjectOfType<Assets>();
+            if (instance == null)
+            {
+                instance = new GameObject("Assets").AddComponent<Assets>();
+                DontDestroyOnLoad(instance.gameObject);
+            }
 
-			_searchPaths.Clear ();
-			_activeVariants.Clear ();
-			_assetToBundles.Clear ();
-			_bundleToDependencies.Clear ();
+            if (string.IsNullOrEmpty(basePath))
+            {
+                basePath = Application.streamingAssetsPath + Path.DirectorySeparatorChar;
+            }
 
-			Log (string.Format (
-				"Initialize with: runtimeMode={0}\nbasePath：{1}\nupdatePath={2}\ndataPath={3}",
-				runtimeMode, basePath, updatePath, dataPath));
+            if (string.IsNullOrEmpty(updatePath))
+            {
+                updatePath = Application.persistentDataPath + Path.DirectorySeparatorChar;
+            }
 
-			var request = new ManifestRequest { url = ManifestAsset };
-			AddAssetRequest (request);
-			return request;
-		}
+            RemoveUnusedAssets();
 
-		public static SceneAssetRequest LoadSceneAsync (string path, bool additive)
-		{
-			if (string.IsNullOrEmpty (path)) {
-				Debug.LogError ("invalid path");
-				return null;
-			}
+            _searchPaths.Clear();
+            _activeVariants.Clear();
+            _assetToBundles.Clear();
+            _bundleToDependencies.Clear();
 
-			path = GetExistPath (path);
-			var asset = new SceneAssetAsyncRequest (path, additive);
-			asset.Load ();
-			asset.Retain ();
-			_scenes.Add (asset);
-			Log (string.Format ("LoadScene:{0}", path));
-			return asset;
-		}
+            Log(string.Format(
+                "Initialize with: runtimeMode={0}\nbasePath：{1}\nupdatePath={2}",
+                runtimeMode, basePath, updatePath));
 
-		public static void UnloadScene (SceneAssetRequest scene)
-		{
-			scene.Release ();
-		}
+            var request = new ManifestRequest {url = ManifestAsset};
+            AddAssetRequest(request);
+            return request;
+        }
 
-		public static AssetRequest LoadAssetAsync (string path, Type type)
-		{
-			return LoadAsset (path, type, true);
-		}
+        public static SceneAssetRequest LoadSceneAsync(string path, bool additive)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                Debug.LogError("invalid path");
+                return null;
+            }
 
-		public static AssetRequest LoadAsset (string path, Type type)
-		{
-			return LoadAsset (path, type, false);
-		}
+            path = GetExistPath(path);
+            var asset = new SceneAssetAsyncRequest(path, additive);
+            asset.Load();
+            asset.Retain();
+            _scenes.Add(asset);
+            Log(string.Format("LoadScene:{0}", path));
+            return asset;
+        }
 
-		public static void UnloadAsset (AssetRequest asset)
-		{
-			asset.Release ();
-		}
+        public static void UnloadScene(SceneAssetRequest scene)
+        {
+            scene.Release();
+        }
 
-		public static void RemoveUnusedAssets ()
-		{
-			foreach (var item in _assets) {
-				if (item.Value.isDone && item.Value.IsUnused ()) {
-					_unusedAssets.Add (item.Value);
-				}
-			}
+        public static AssetRequest LoadAssetAsync(string path, Type type)
+        {
+            return LoadAsset(path, type, true);
+        }
 
-			foreach (var item in _bundles) {
-				if (item.Value.isDone && item.Value.IsUnused ()) {
-					_unusedBundles.Add (item.Value);
-				}
-			}
-		}
+        public static AssetRequest LoadAsset(string path, Type type)
+        {
+            return LoadAsset(path, type, false);
+        }
 
-		#endregion
+        public static void UnloadAsset(AssetRequest asset)
+        {
+            asset.Release();
+        }
 
-		#region Private
+        public static void RemoveUnusedAssets()
+        {
+            foreach (var item in _assets)
+            {
+                if (item.Value.isDone && item.Value.IsUnused())
+                {
+                    _unusedAssets.Add(item.Value);
+                }
+            }
 
-		internal static void OnLoadManifest (Manifest manifest)
-		{
-			_activeVariants.AddRange (manifest.activeVariants);
-			_searchPaths.AddRange (manifest.searchDirs);
+            foreach (var item in _bundles)
+            {
+                if (item.Value.isDone && item.Value.IsUnused())
+                {
+                    _unusedBundles.Add(item.Value);
+                }
+            }
+        }
 
-			var assets = manifest.assets;
-			var dirs = manifest.dirs;
-			var bundles = manifest.bundles;
+        #endregion
 
-			foreach (var item in bundles)
-				_bundleToDependencies [item.name] = Array.ConvertAll (item.deps, id => bundles [id].name);
+        #region Private
 
-			foreach (var item in assets) {
-				var path = string.Format ("{0}/{1}", dirs [item.dir], item.name);
-				if (item.bundle >= 0 && item.bundle < bundles.Length) {
-					_assetToBundles [path] = bundles [item.bundle].name;
-				} else {
-					Debug.LogError (string.Format ("{0} bundle {1} not exist.", path, item.bundle));
-				}
-			}
-		}
+        internal static void OnLoadManifest(Manifest manifest)
+        {
+            _activeVariants.AddRange(manifest.activeVariants);
+            _searchPaths.AddRange(manifest.searchDirs);
 
-		private static Dictionary<string, AssetRequest> _assets = new Dictionary<string, AssetRequest> ();
+            var assets = manifest.assets;
+            var dirs = manifest.dirs;
+            var bundles = manifest.bundles;
 
-		private static List<AssetRequest> _loadingAssets = new List<AssetRequest> ();
+            foreach (var item in bundles)
+                _bundleToDependencies[item.name] = Array.ConvertAll(item.deps, id => bundles[id].name);
 
-		private static List<SceneAssetRequest> _scenes = new List<SceneAssetRequest> ();
+            foreach (var item in assets)
+            {
+                var path = string.Format("{0}/{1}", dirs[item.dir], item.name);
+                if (item.bundle >= 0 && item.bundle < bundles.Length)
+                {
+                    _assetToBundles[path] = bundles[item.bundle].name;
+                }
+                else
+                {
+                    Debug.LogError(string.Format("{0} bundle {1} not exist.", path, item.bundle));
+                }
+            }
+        }
 
-		private static List<AssetRequest> _unusedAssets = new List<AssetRequest> ();
+        private static Dictionary<string, AssetRequest> _assets = new Dictionary<string, AssetRequest>();
 
-		private void Update ()
-		{
-			UpdateAssets ();
-			UpdateBundles ();
-		}
+        private static List<AssetRequest> _loadingAssets = new List<AssetRequest>();
 
-		private static void UpdateAssets ()
-		{
-			for (var i = 0; i < _loadingAssets.Count; ++i) {
-				var request = _loadingAssets [i];
-				if (request.Update ())
-					continue;
-				_loadingAssets.RemoveAt (i);
-				--i;
-			}
+        private static List<SceneAssetRequest> _scenes = new List<SceneAssetRequest>();
 
-			if (_unusedAssets.Count > 0) {
-				for (var i = 0; i < _unusedAssets.Count; ++i) {
-					var request = _unusedAssets [i];
-					_assets.Remove (request.url);
-					Log (string.Format ("UnloadAsset:{0}", request.url));
-					request.Unload ();
-				}
+        private static List<AssetRequest> _unusedAssets = new List<AssetRequest>();
 
-				_unusedAssets.Clear ();
-			}
+        private void Update()
+        {
+            UpdateAssets();
+            UpdateBundles();
+        }
 
-			for (var i = 0; i < _scenes.Count; ++i) {
-				var request = _scenes [i];
-				if (request.Update () || !request.IsUnused ())
-					continue;
-				_scenes.RemoveAt (i);
-				Log (string.Format ("UnloadScene:{0}", request.url));
-				request.Unload ();
-				RemoveUnusedAssets ();
-				--i;
-			}
-		}
+        private static void UpdateAssets()
+        {
+            for (var i = 0; i < _loadingAssets.Count; ++i)
+            {
+                var request = _loadingAssets[i];
+                if (request.Update())
+                    continue;
+                _loadingAssets.RemoveAt(i);
+                --i;
+            }
 
-		private static void AddAssetRequest (AssetRequest request)
-		{
-			_assets.Add (request.url, request);
-			_loadingAssets.Add (request);
-			request.Load ();
-		}
+            if (_unusedAssets.Count > 0)
+            {
+                for (var i = 0; i < _unusedAssets.Count; ++i)
+                {
+                    var request = _unusedAssets[i];
+                    _assets.Remove(request.url);
+                    Log(string.Format("UnloadAsset:{0}", request.url));
+                    request.Unload();
+                }
 
-		private static AssetRequest LoadAsset (string path, Type type, bool async)
-		{
-			if (string.IsNullOrEmpty (path)) {
-				Debug.LogError ("invalid path");
-				return null;
-			}
+                _unusedAssets.Clear();
+            }
 
-			path = GetExistPath (path);
+            for (var i = 0; i < _scenes.Count; ++i)
+            {
+                var request = _scenes[i];
+                if (request.Update() || !request.IsUnused())
+                    continue;
+                _scenes.RemoveAt(i);
+                Log(string.Format("UnloadScene:{0}", request.url));
+                request.Unload();
+                RemoveUnusedAssets();
+                --i;
+            }
+        }
 
-			AssetRequest request;
-			if (_assets.TryGetValue (path, out request)) { 
-				request.Retain ();
-				_loadingAssets.Add (request);
-				return request;
-			}
+        private static void AddAssetRequest(AssetRequest request)
+        {
+            _assets.Add(request.url, request);
+            _loadingAssets.Add(request);
+            request.Load();
+        }
 
-			string assetBundleName;
-			if (GetAssetBundleName (path, out assetBundleName)) {
-				request = async
-                    ? new BundleAssetAsyncRequest (assetBundleName)
-                    : new BundleAssetRequest (assetBundleName);
-			} else {
-				if (path.StartsWith ("http://", StringComparison.Ordinal) ||
-				                path.StartsWith ("https://", StringComparison.Ordinal) ||
-				                path.StartsWith ("file://", StringComparison.Ordinal) ||
-				                path.StartsWith ("ftp://", StringComparison.Ordinal) ||
-				                path.StartsWith ("jar:file://", StringComparison.Ordinal))
-					request = new WebAssetRequest ();
-				else
-					request = new AssetRequest ();
-			}
+        private static AssetRequest LoadAsset(string path, Type type, bool async)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                Debug.LogError("invalid path");
+                return null;
+            }
 
-			request.url = path;
-			request.assetType = type;
-			AddAssetRequest (request);
-			request.Retain ();
-			Log (string.Format ("LoadAsset:{0}", path));
-			return request;
-		}
+            path = GetExistPath(path);
 
-		#endregion
+            AssetRequest request;
+            if (_assets.TryGetValue(path, out request))
+            {
+                request.Retain();
+                _loadingAssets.Add(request);
+                return request;
+            }
 
-		#region Paths
+            string assetBundleName;
+            if (GetAssetBundleName(path, out assetBundleName))
+            {
+                request = async
+                    ? new BundleAssetAsyncRequest(assetBundleName)
+                    : new BundleAssetRequest(assetBundleName);
+            }
+            else
+            {
+                if (path.StartsWith("http://", StringComparison.Ordinal) ||
+                    path.StartsWith("https://", StringComparison.Ordinal) ||
+                    path.StartsWith("file://", StringComparison.Ordinal) ||
+                    path.StartsWith("ftp://", StringComparison.Ordinal) ||
+                    path.StartsWith("jar:file://", StringComparison.Ordinal))
+                    request = new WebAssetRequest();
+                else
+                    request = new AssetRequest();
+            }
 
-		private static List<string> _searchPaths = new List<string> ();
+            request.url = path;
+            request.assetType = type;
+            AddAssetRequest(request);
+            request.Retain();
+            Log(string.Format("LoadAsset:{0}", path));
+            return request;
+        }
 
-		private static string dataPath { get; set; }
+        #endregion
 
-		private static string GetExistPath (string path)
-		{
+        #region Paths
+
+        private static List<string> _searchPaths = new List<string>();
+
+        private static string GetExistPath(string path)
+        {
 #if UNITY_EDITOR
-			if (!runtimeMode) {
-				if (File.Exists (path))
-					return path;
+            if (!runtimeMode)
+            {
+                if (File.Exists(path))
+                    return path;
 
-				foreach (var item in _searchPaths) {
-					var existPath = string.Format ("{0}/{1}", item, path);
-					if (File.Exists (existPath))
-						return existPath;
-				}
+                foreach (var item in _searchPaths)
+                {
+                    var existPath = string.Format("{0}/{1}", item, path);
+                    if (File.Exists(existPath))
+                        return existPath;
+                }
 
-				Debug.LogError ("找不到资源路径" + path);
-				return path;
-			}
+                Debug.LogError("找不到资源路径" + path);
+                return path;
+            }
 #endif
-			if (_assetToBundles.ContainsKey (path))
-				return path;
+            if (_assetToBundles.ContainsKey(path))
+                return path;
 
-			foreach (var item in _searchPaths) {
-				var existPath = string.Format ("{0}/{1}", item, path);
-				if (_assetToBundles.ContainsKey (existPath))
-					return existPath;
-			}
+            foreach (var item in _searchPaths)
+            {
+                var existPath = string.Format("{0}/{1}", item, path);
+                if (_assetToBundles.ContainsKey(existPath))
+                    return existPath;
+            }
 
-			Debug.LogError ("资源没有收集打包" + path);
-			return path;
-		}
+            Debug.LogError("资源没有收集打包" + path);
+            return path;
+        }
 
-		#endregion
+        #endregion
 
-		#region Bundles
+        #region Bundles
 
-		private static readonly int MAX_BUNDLES_PERFRAME = 0;
+        private static readonly int MAX_BUNDLES_PERFRAME = 0;
 
-		private static Dictionary<string, BundleRequest> _bundles = new Dictionary<string, BundleRequest> ();
+        private static Dictionary<string, BundleRequest> _bundles = new Dictionary<string, BundleRequest>();
 
-		private static List<BundleRequest> _loadingBundles = new List<BundleRequest> ();
+        private static List<BundleRequest> _loadingBundles = new List<BundleRequest>();
 
-		private static List<BundleRequest> _unusedBundles = new List<BundleRequest> ();
+        private static List<BundleRequest> _unusedBundles = new List<BundleRequest>();
 
-		private static List<BundleRequest> _toloadBundles = new List<BundleRequest> ();
+        private static List<BundleRequest> _toloadBundles = new List<BundleRequest>();
 
-		private static List<string> _activeVariants = new List<string> ();
+        private static List<string> _activeVariants = new List<string>();
 
-		private static Dictionary<string, string> _assetToBundles = new Dictionary<string, string> ();
+        private static Dictionary<string, string> _assetToBundles = new Dictionary<string, string>();
 
-		private static Dictionary<string, string[]> _bundleToDependencies = new Dictionary<string, string[]> ();
+        private static Dictionary<string, string[]> _bundleToDependencies = new Dictionary<string, string[]>();
 
-		internal static bool GetAssetBundleName (string path, out string assetBundleName)
-		{
-			return _assetToBundles.TryGetValue (path, out assetBundleName);
-		}
+        internal static bool GetAssetBundleName(string path, out string assetBundleName)
+        {
+            return _assetToBundles.TryGetValue(path, out assetBundleName);
+        }
 
-		private static string[] GetAllDependencies (string bundle)
-		{
-			string[] deps;
-			if (_bundleToDependencies.TryGetValue (bundle, out deps))
-				return deps;
+        private static string[] GetAllDependencies(string bundle)
+        {
+            string[] deps;
+            if (_bundleToDependencies.TryGetValue(bundle, out deps))
+                return deps;
 
-			return new string[0];
-		}
+            return new string[0];
+        }
 
-		internal static BundleRequest LoadBundle (string assetBundleName)
-		{
-			return LoadBundle (assetBundleName, false);
-		}
+        internal static BundleRequest LoadBundle(string assetBundleName)
+        {
+            return LoadBundle(assetBundleName, false);
+        }
 
-		internal static BundleRequest LoadBundleAsync (string assetBundleName)
-		{
-			return LoadBundle (assetBundleName, true);
-		}
+        internal static BundleRequest LoadBundleAsync(string assetBundleName)
+        {
+            return LoadBundle(assetBundleName, true);
+        }
 
-		internal static void UnloadBundle (BundleRequest bundle)
-		{
-			bundle.Release ();
-		}
+        internal static void UnloadBundle(BundleRequest bundle)
+        {
+            bundle.Release();
+        }
 
-		private static void UnloadDependencies (BundleRequest bundle)
-		{
-			for (var i = 0; i < bundle.dependencies.Count; i++) {
-				var item = bundle.dependencies [i];
-				item.Release ();
-			}
+        private static void UnloadDependencies(BundleRequest bundle)
+        {
+            for (var i = 0; i < bundle.dependencies.Count; i++)
+            {
+                var item = bundle.dependencies[i];
+                item.Release();
+            }
 
-			bundle.dependencies.Clear ();
-		}
+            bundle.dependencies.Clear();
+        }
 
-		private static void LoadDependencies (BundleRequest bundle, string assetBundleName, bool asyncRequest)
-		{
-			var dependencies = GetAllDependencies (assetBundleName);
-			if (dependencies.Length <= 0)
-				return;
-			for (var i = 0; i < dependencies.Length; i++) {
-				var item = dependencies [i];
-				bundle.dependencies.Add (LoadBundle (item, asyncRequest));
-			}
-		}
+        private static void LoadDependencies(BundleRequest bundle, string assetBundleName, bool asyncRequest)
+        {
+            var dependencies = GetAllDependencies(assetBundleName);
+            if (dependencies.Length <= 0)
+                return;
+            for (var i = 0; i < dependencies.Length; i++)
+            {
+                var item = dependencies[i];
+                bundle.dependencies.Add(LoadBundle(item, asyncRequest));
+            }
+        }
 
-		internal static BundleRequest LoadBundle (string assetBundleName, bool asyncMode)
-		{
-			if (string.IsNullOrEmpty (assetBundleName)) {
-				Debug.LogError ("assetBundleName == null");
-				return null;
-			}
+        internal static BundleRequest LoadBundle(string assetBundleName, bool asyncMode)
+        {
+            if (string.IsNullOrEmpty(assetBundleName))
+            {
+                Debug.LogError("assetBundleName == null");
+                return null;
+            }
 
-			assetBundleName = RemapVariantName (assetBundleName);
-			var url = GetDataPath (assetBundleName) + assetBundleName;
+            assetBundleName = RemapVariantName(assetBundleName);
+            var url = GetDataPath(assetBundleName) + assetBundleName;
 
-			BundleRequest bundle;
+            BundleRequest bundle;
 
-			if (_bundles.TryGetValue (url, out bundle)) {
-				bundle.Retain ();
-				_loadingBundles.Add (bundle);
-				return bundle;
-			}
+            if (_bundles.TryGetValue(url, out bundle))
+            {
+                bundle.Retain();
+                _loadingBundles.Add(bundle);
+                return bundle;
+            }
 
-			if (url.StartsWith ("http://", StringComparison.Ordinal) ||
-			             url.StartsWith ("https://", StringComparison.Ordinal) ||
-			             url.StartsWith ("file://", StringComparison.Ordinal) ||
-			             url.StartsWith ("ftp://", StringComparison.Ordinal))
-				bundle = new WebBundleRequest ();
-			else
-				bundle = asyncMode ? new BundleAsyncRequest () : new BundleRequest ();
+            if (url.StartsWith("http://", StringComparison.Ordinal) ||
+                url.StartsWith("https://", StringComparison.Ordinal) ||
+                url.StartsWith("file://", StringComparison.Ordinal) ||
+                url.StartsWith("ftp://", StringComparison.Ordinal))
+                bundle = new WebBundleRequest();
+            else
+                bundle = asyncMode ? new BundleAsyncRequest() : new BundleRequest();
 
-			bundle.url = url;
-			_bundles.Add (url, bundle);
+            bundle.url = url;
+            _bundles.Add(url, bundle);
 
-			if (MAX_BUNDLES_PERFRAME > 0 && (bundle is BundleAsyncRequest || bundle is WebBundleRequest)) {
-				_toloadBundles.Add (bundle);
-			} else {
-				bundle.Load ();
-				_loadingBundles.Add (bundle);
-				Log ("LoadBundle: " + url);
-			}
+            if (MAX_BUNDLES_PERFRAME > 0 && (bundle is BundleAsyncRequest || bundle is WebBundleRequest))
+            {
+                _toloadBundles.Add(bundle);
+            }
+            else
+            {
+                bundle.Load();
+                _loadingBundles.Add(bundle);
+                Log("LoadBundle: " + url);
+            }
 
-			LoadDependencies (bundle, assetBundleName, asyncMode);
+            LoadDependencies(bundle, assetBundleName, asyncMode);
 
-			bundle.Retain ();
-			return bundle;
-		}
+            bundle.Retain();
+            return bundle;
+        }
 
-		private static string GetDataPath (string bundleName)
-		{
-			if (string.IsNullOrEmpty (updatePath))
-				return dataPath;
+        private static string GetDataPath(string bundleName)
+        {
+            if (string.IsNullOrEmpty(updatePath))
+                return basePath;
 
-			if (File.Exists (updatePath + bundleName))
-				return updatePath;
+            if (File.Exists(updatePath + bundleName))
+                return updatePath;
 
-			return dataPath;
-		}
+            return basePath;
+        }
 
-		private static void UpdateBundles ()
-		{
-			var max = MAX_BUNDLES_PERFRAME;
-			if (_toloadBundles.Count > 0 && max > 0 && _loadingBundles.Count < max)
-				for (var i = 0; i < Math.Min (max - _loadingBundles.Count, _toloadBundles.Count); ++i) {
-					var item = _toloadBundles [i];
-					if (item.loadState == LoadState.Init) {
-						item.Load ();
-						_loadingBundles.Add (item);
-						_toloadBundles.RemoveAt (i);
-						--i;
-					}
-				}
-                    
+        private static void UpdateBundles()
+        {
+            var max = MAX_BUNDLES_PERFRAME;
+            if (_toloadBundles.Count > 0 && max > 0 && _loadingBundles.Count < max)
+                for (var i = 0; i < Math.Min(max - _loadingBundles.Count, _toloadBundles.Count); ++i)
+                {
+                    var item = _toloadBundles[i];
+                    if (item.loadState == LoadState.Init)
+                    {
+                        item.Load();
+                        _loadingBundles.Add(item);
+                        _toloadBundles.RemoveAt(i);
+                        --i;
+                    }
+                }
 
-			for (var i = 0; i < _loadingBundles.Count; i++) {
-				var item = _loadingBundles [i];
-				if (item.Update ())
-					continue;
-				_loadingBundles.RemoveAt (i);
-				--i;
-			}
 
-			if (_unusedBundles.Count > 0) {
-				for (var i = 0; i < _unusedBundles.Count; i++) {
-					var item = _unusedBundles [i];
-					_bundles.Remove (item.url);
-					UnloadDependencies (item);
-					item.Unload ();
-					Log ("UnloadBundle: " + item.url);
-				}
+            for (var i = 0; i < _loadingBundles.Count; i++)
+            {
+                var item = _loadingBundles[i];
+                if (item.Update())
+                    continue;
+                _loadingBundles.RemoveAt(i);
+                --i;
+            }
 
-				_unusedBundles.Clear ();
-			}
-		}
+            if (_unusedBundles.Count > 0)
+            {
+                for (var i = 0; i < _unusedBundles.Count; i++)
+                {
+                    var item = _unusedBundles[i];
+                    _bundles.Remove(item.url);
+                    UnloadDependencies(item);
+                    item.Unload();
+                    Log("UnloadBundle: " + item.url);
+                }
 
-		private static string RemapVariantName (string assetBundleName)
-		{
-			var bundlesWithVariant = _activeVariants;
-			// Get base bundle name
-			var baseName = assetBundleName.Split ('.') [0];
+                _unusedBundles.Clear();
+            }
+        }
 
-			var bestFit = int.MaxValue;
-			var bestFitIndex = -1;
-			// Loop all the assetBundles with variant to find the best fit variant assetBundle.
-			for (var i = 0; i < bundlesWithVariant.Count; i++) {
-				var curSplit = bundlesWithVariant [i].Split ('.');
-				var curBaseName = curSplit [0];
-				var curVariant = curSplit [1];
+        private static string RemapVariantName(string assetBundleName)
+        {
+            var bundlesWithVariant = _activeVariants;
+            // Get base bundle path
+            var baseName = assetBundleName.Split('.')[0];
 
-				if (curBaseName != baseName)
-					continue;
+            var bestFit = int.MaxValue;
+            var bestFitIndex = -1;
+            // Loop all the assetBundles with variant to find the best fit variant assetBundle.
+            for (var i = 0; i < bundlesWithVariant.Count; i++)
+            {
+                var curSplit = bundlesWithVariant[i].Split('.');
+                var curBaseName = curSplit[0];
+                var curVariant = curSplit[1];
 
-				var found = bundlesWithVariant.IndexOf (curVariant);
+                if (curBaseName != baseName)
+                    continue;
 
-				// If there is no active variant found. We still want to use the first
-				if (found == -1)
-					found = int.MaxValue - 1;
+                var found = bundlesWithVariant.IndexOf(curVariant);
 
-				if (found >= bestFit)
-					continue;
-				bestFit = found;
-				bestFitIndex = i;
-			}
+                // If there is no active variant found. We still want to use the first
+                if (found == -1)
+                    found = int.MaxValue - 1;
 
-			if (bestFit == int.MaxValue - 1)
-				Debug.LogWarning (
-					"Ambiguous asset bundle variant chosen because there was no matching active variant: " +
-					bundlesWithVariant [bestFitIndex]);
+                if (found >= bestFit)
+                    continue;
+                bestFit = found;
+                bestFitIndex = i;
+            }
 
-			return bestFitIndex != -1 ? bundlesWithVariant [bestFitIndex] : assetBundleName;
-		}
+            if (bestFit == int.MaxValue - 1)
+                Debug.LogWarning(
+                    "Ambiguous asset bundle variant chosen because there was no matching active variant: " +
+                    bundlesWithVariant[bestFitIndex]);
 
-		#endregion
-	}
+            return bestFitIndex != -1 ? bundlesWithVariant[bestFitIndex] : assetBundleName;
+        }
+
+        #endregion
+    }
 }

@@ -24,188 +24,176 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
 namespace libx
 {
-    public class FileVersion
-    {
-        public string name;
-        public uint crc;
-        public long len;
-        public long offset;
+	public enum VerifyBy
+	{
+		Size,
+		Hash,
+	}
 
-        public override string ToString()
-        {
-            return string.Format("{0},{1},{2},{3}", name, crc, len, offset);
-        }
+	public static class Versions
+	{
+		public const string Dataname = "data.bin";
+		public const string Filename = "ver";
+		public static VerifyBy verifyBy = VerifyBy.Hash;
 
-        public bool FromString(string s)
-        {
-            var fields = s.Split(',');
-            if (fields.Length > 3)
-            {
-                name = fields[0];
-                len = fields[2].UIntValue();
-                crc = fields[1].UIntValue();
-                offset = fields[3].UIntValue();
-                return true;
-            }
-            else if (fields.Length > 2)
-            {
-                name = fields[0];
-                len = fields[2].UIntValue();
-                crc = fields[1].UIntValue();
-                offset = 0;
-                return true;
-            }
+		private static VDisk _disk = new VDisk ();
+		private static Dictionary<string, VFile> _updateData = new Dictionary<string, VFile> ();
+		private static Dictionary<string, VFile> _baseData = new Dictionary<string, VFile> ();
 
-            return false;
-        }
-    }
+		public static AssetBundle LoadAssetBundleFromFile (string url)
+		{
+			if (!File.Exists (url)) {
+				if (_disk != null) {
+					var name = Path.GetFileName (url);
+					VFile file;
+					_updateData.TryGetValue (name, out file);
+					if (file == null) {
+						_baseData.TryGetValue (name, out file);
+					}
 
-    public enum VerifyBy
-    {
-        Size,
-        Hash,
-    }
+					file = _disk.GetFile (file.name, file.hash);
+					if (file != null) {
+						return AssetBundle.LoadFromFile (_disk.name, 0, (ulong)file.offset);
+					}	 
+				}
+			}  
+			return AssetBundle.LoadFromFile (url);
+		}
 
-    public static class Versions
-    {
-        public const string Dataname = "data.bin";
-        public const string Filename = "versions.unity3d";
-        public const string BuildVersion = "build_version.unity3d";
-        public static VerifyBy verifyBy = VerifyBy.Hash;
-        private static readonly Dictionary<string, FileVersion> _data = new Dictionary<string, FileVersion>();
-        public static bool useBin = false;
+		public static AssetBundleCreateRequest LoadAssetBundleFromFileAsync (string url)
+		{
+			if (!File.Exists (url)) {
+				if (_disk != null) {
+					var name = Path.GetFileName (url);
+					var file = _disk.GetFile (name, string.Empty);
+					if (file != null) {
+						return AssetBundle.LoadFromFileAsync (_disk.name, 0, (ulong)file.offset);
+					}
+				}	
+			} 
+			return AssetBundle.LoadFromFileAsync (url);
+		}
 
-        private static FileVersion GetVersion(string name)
-        {
-            FileVersion ver;
-            if (_data.TryGetValue(name, out ver))
-            {
-                return ver;
-            }
+		public static void BuildVersions (string outputPath, int version)
+		{
+			var path = outputPath + "/" + Filename;
+			if (File.Exists (path)) {
+				File.Delete (path);
+			}
 
-            return null;
-        }
+			var dataPath = outputPath + "/" + Dataname;
+			if (File.Exists (dataPath)) {
+				File.Delete (dataPath);
+			} 
 
-        public static AssetBundle LoadAssetBundleFromFile(string url)
-        {
-            var name = Path.GetFileName(url);
-            var version = GetVersion(name);
-            if (useBin && version.offset >= 0)
-            {
-                var file = url.Replace(name, Versions.Dataname);
-                return AssetBundle.LoadFromFile(file, 0, (ulong) version.offset);
-            }
-            else
-            {
-                return AssetBundle.LoadFromFile(url);
-            }
-        }
+			var getFiles = Directory.GetFiles (outputPath, "*.unity3d");
+			var disk = new VDisk (); 
+			foreach (var file in getFiles) {
+				using (var fs = File.OpenRead (file)) {
+					disk.AddFile (file, fs.Length, Utility.GetCRC32Hash (fs));
+				}
+			} 
+			disk.name = dataPath;
+			disk.Save ();   
 
-        public static AssetBundleCreateRequest LoadAssetBundleFromFileAsync(string url)
-        {
-            var name = Path.GetFileName(url);
-            var version = GetVersion(name);
-            if (useBin && version.offset >= 0)
-            {
-                var file = url.Replace(name, Versions.Dataname);
-                return AssetBundle.LoadFromFileAsync(file, 0, (ulong) version.offset);
-            }
-            else
-            {
-                return AssetBundle.LoadFromFileAsync(url);
-            }
-        }
+			using (var stream = File.OpenWrite (path)) {
+				var writer = new BinaryWriter (stream);
+				writer.Write (version);
+				writer.Write (disk.files.Count + 1);
+				using (var fs = File.OpenRead (dataPath)) {
+					var file = new VFile { name = Dataname, len = fs.Length, hash = Utility.GetCRC32Hash (fs) };
+					file.Serialize (writer);
+				} 
+				foreach (var file in disk.files) {
+					file.Serialize (writer);
+				}
+			}
+		}
 
-        public static void BuildVersions(string outputPath)
-        {
-            var path = outputPath + "/" + Filename;
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
+		public static int LoadVersion (string filename)
+		{
+			if (!File.Exists (filename))
+				return -1;
+			using (var stream = File.OpenRead (filename)) {
+				var reader = new BinaryReader (stream);
+				return reader.ReadInt32 ();
+			}
+		}
 
-            var binPath = outputPath + "/" + Dataname;
-            if (File.Exists(binPath))
-            {
-                File.Delete(binPath);
-            }
+		public static List<VFile> LoadVersions (string filename, bool update = false)
+		{
+			var data = update ? _updateData : _baseData;
+			data.Clear ();
+			using (var stream = File.OpenRead (filename)) {
+				var reader = new BinaryReader (stream);
+				var list = new List<VFile> ();
+				var verion = reader.ReadInt32 ();
+				Debug.Log ("LoadVesions:" + verion);
+				var count = reader.ReadInt32 ();
+				for (var i = 0; i < count; i++) {
+					var version = new VFile ();
+					version.Deserialize (reader);
+					list.Add (version);
+					data [version.name] = version;
+				} 
+				return list;
+			}
+		}
 
-            var versions = new List<FileVersion>();
-            var getFiles = Directory.GetFiles(outputPath, "*");
-            using (var writer = new BinaryWriter(File.OpenWrite(binPath)))
-            {
-                var position = 0L;
-                foreach (var file in getFiles)
-                {
-                    var name = Path.GetFileName(file);
-                    var bytes = File.ReadAllBytes(file);
-                    var len = bytes.Length;
-                    var crc = Utility.GetCrc(bytes);
-                    var version = new FileVersion {name = name, len = len, offset = position, crc = crc};
-                    versions.Add(version);
-                    position += len;
-                    writer.Write(bytes);
-                }
+		public static bool LoadDisk (string filename)
+		{
+			return _disk.Load (filename);
+		}
 
-                writer.Flush();
-            }
+		public static bool IsNew (string path, long len, string hash)
+		{
+			VFile file;
+			var key = Path.GetFileName (path);
+			if (_baseData.TryGetValue (key, out file)) {
+				if (key.Equals (Dataname) ||
+				    file.len == len && file.hash.Equals (hash, StringComparison.OrdinalIgnoreCase)) {
+					return false;
+				}
+			}
 
-            {
-                var bytes = File.ReadAllBytes(binPath);
-                var crc = Utility.GetCrc(File.ReadAllBytes(binPath));
-                var version = new FileVersion {name = Dataname, len = bytes.Length, offset = -1L, crc = crc};
-                versions.Add(version);
-            }
+			if (_disk.Exists ()) {
+				var vdf = _disk.GetFile (path, hash);
+				if (vdf != null && vdf.len == len && vdf.hash.Equals (hash, StringComparison.OrdinalIgnoreCase)) {
+					return false;
+				}
+			}
 
-            using (var writer = new StreamWriter(File.OpenWrite(path)))
-            {
-                foreach (var record in versions)
-                {
-                    writer.WriteLine(record.ToString());
-                }
-            }
-        }
+			if (!File.Exists (path)) {
+				return true;
+			}
 
-        public static List<FileVersion> LoadVersions(Stream s)
-        {
-            _data.Clear();
-            using (var reader = new StreamReader(s))
-            {
-                var records = new List<FileVersion>();
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    if (string.IsNullOrEmpty(line))
-                    {
-                        continue;
-                    }
+			using (var stream = File.OpenRead (path)) {
+				if (stream.Length != len) {
+					return true;
+				} 
+				if (verifyBy != VerifyBy.Hash)
+					return false;
+				return !Utility.GetCRC32Hash (stream).Equals (hash, StringComparison.OrdinalIgnoreCase);
+			}
+		}
 
-                    var record = new FileVersion();
-                    if (!record.FromString(line))
-                    {
-                        continue;
-                    }
-
-                    records.Add(record);
-                    _data[record.name] = record;
-                }
-
-                return records;
-            }
-        }
-
-        public static List<FileVersion> LoadVersions(string filename)
-        {
-            using (var stream = File.OpenRead(filename))
-            {
-                return LoadVersions(stream);
-            }
-        }
-    }
+		public static List<VFile> GetActivedFiles ()
+		{
+			var list = new List<VFile> ();
+			var files = _disk.files;
+			foreach (var file in files) {
+				if (_updateData.ContainsKey (file.name)) {
+					list.Add (file);
+				}
+			}
+			return list;
+		}
+	}
 }

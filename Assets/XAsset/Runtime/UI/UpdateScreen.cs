@@ -1,10 +1,10 @@
 //
-// UpdateManager.cs
+// UpdateScreen.cs
 //
 // Author:
 //       fjy <jiyuan.feng@live.com>
 //
-// Copyright (c) 2019 fjy
+// Copyright (c) 2020 fjy
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,18 +29,18 @@ using UnityEngine.UI;
 
 namespace libx
 {
-    public class UpdateScreen : MonoBehaviour, IUpdateManager
+    public class UpdateScreen : MonoBehaviour, IUpdater
     {
-        public Text appVersion;
-        public Text buildVersion;
+        public Text version;
         public Slider progressBar;
         public Text progressText;
 
         private void Start()
         {
-            appVersion.text = Application.version;
-            buildVersion.text = "1";
-            FindObjectOfType<UpdateManager>().listener = this;
+            version.text = "1";
+			var updater = FindObjectOfType<Updater> ();
+			updater.listener = this;
+			updater.StartUpdate ();
         }
 
         #region IUpdateManager implementation
@@ -57,7 +57,7 @@ namespace libx
 
         public void OnVersion(string ver)
         {
-            buildVersion.text = ver;
+            version.text = ver;
         }
 
         #endregion

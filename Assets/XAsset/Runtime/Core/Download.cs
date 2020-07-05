@@ -33,19 +33,18 @@ namespace libx
 {
     public class Download : DownloadHandlerScript, System.Collections.IEnumerator
     {
-        private static readonly byte[] preallocatedBuffer = new byte[1024 * 1024 * 4];
-        
-        public string error
+        private static readonly byte[] PreallocatedBuffer = new byte[1024 * 1024 * 4]; 
+        public string error { get; private set; }
+        public long len { get; set; }
+        public string hash { get; set; }
+        public string url { get; set; }
+        public long position { get; private set; }
+
+        public string tempPath
         {
-            get { return _request == null ? null : _request.error; }
+            get { return Application.persistentDataPath + "/temp_" + hash; }
         }
 
-        public long len { get; set; }
-        public uint crc { get; set; }
-        public string url { get; set; }
-        public long position { get; private set; } 
-
-        public string tempPath { get { return Application.persistentDataPath + "/temp/" + crc; } } 
         public Action<Download> completed { get; set; }
         private UnityWebRequest _request;
         private FileStream _stream;
@@ -55,7 +54,7 @@ namespace libx
         {
             return position * 1f / len;
         }
-        
+
         protected override byte[] GetData()
         {
             return null;
@@ -67,7 +66,12 @@ namespace libx
 
         protected override bool ReceiveData(byte[] buffer, int dataLength)
         {
-            if (!string.IsNullOrEmpty(error)) return false;
+            if (!string.IsNullOrEmpty(_request.error))
+            {
+                error = _request.error;
+                return true;
+            }
+
             _stream.Write(buffer, 0, dataLength);
             position += dataLength;
             return _downloading;
@@ -78,9 +82,13 @@ namespace libx
             Complete();
         }
 
-        public Download() : base(preallocatedBuffer)
+        public Download() : base(PreallocatedBuffer)
         {
-            
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}, size:{1}, hash:{2}", url, len, hash);
         }
 
         public void Start()
@@ -116,6 +124,33 @@ namespace libx
             {
                 _request.Dispose();
                 _request = null;
+            }
+
+            if (string.IsNullOrEmpty(error))
+            {
+                if (File.Exists(tempPath))
+                {
+                    using (var fs = File.OpenRead(tempPath))
+                    {
+                        if (fs.Length != len)
+                        {
+                            error = "下载文件长度异常:" + fs.Length;
+                        }
+
+                        if (Versions.verifyBy == VerifyBy.Hash)
+                        {
+                            var compare = StringComparison.OrdinalIgnoreCase;
+                            if (!hash.Equals(Utility.GetCRC32Hash(fs), compare))
+                            {
+                                error = "下载文件哈希异常:" + hash;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    error = "保存下载失败";
+                }
             }
 
             if (completed == null) return;

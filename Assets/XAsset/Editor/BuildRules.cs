@@ -50,7 +50,7 @@ namespace libx
     [Serializable]
     public class RuleBundle
     {
-		public string name; 
+        public string name;
         public string[] assets;
     }
 
@@ -99,22 +99,33 @@ namespace libx
         private readonly Dictionary<string, string[]> _conflicted = new Dictionary<string, string[]>();
         private readonly List<string> _duplicated = new List<string>();
         private readonly Dictionary<string, HashSet<string>> _tracker = new Dictionary<string, HashSet<string>>();
-        public int buildNumber;
-		[Tooltip("BuildPlayer 的时候被打包的场景")]
-		public UnityEngine.Object[] scenes = new UnityEngine.Object[0];
-        public RuleAsset[] ruleAssets = new RuleAsset[0];
-        public RuleBundle[] ruleBundles = new RuleBundle[0];
-        public BuildRule[] rules = new BuildRule[0];
-        public string searchPatternAsset = "*.asset";
-        public string searchPatternController = "*.controller";
-        public string searchPatternDir = "*";
-        public string searchPatternMaterial = "*.mat";
-        public string searchPatternPng = "*.png";
-        public string searchPatternPrefab = "*.prefab";
-        public string searchPatternScene = "*.unity";
-        public string searchPatternText = "*.txt,*.bytes,*.json,*.csv,*.xml,*htm,*.html,*.yaml,*.fnt";
-        public string outputPath = "Bundles";
+		[Header("Patterns")]
+		public string searchPatternAsset = "*.asset";
+		public string searchPatternController = "*.controller";
+		public string searchPatternDir = "*";
+		public string searchPatternMaterial = "*.mat";
+		public string searchPatternPng = "*.png";
+		public string searchPatternPrefab = "*.prefab";
+		public string searchPatternScene = "*.unity";
+		public string searchPatternText = "*.txt,*.bytes,*.json,*.csv,*.xml,*htm,*.html,*.yaml,*.fnt";
+		public string outputPath = "Bundles";
+		[Tooltip("构建的版本号")]
+		[Header("Builds")] 
+        public int version;
+        [Tooltip("BuildPlayer 的时候被打包的场景")] public UnityEngine.Object[] scenes = new UnityEngine.Object[0]; 
+        public BuildRule[] rules = new BuildRule[0]; 
+		[Header("Assets")]
+		public RuleAsset[] ruleAssets = new RuleAsset[0];
+		public RuleBundle[] ruleBundles = new RuleBundle[0];
         #region API
+
+        public int AddVersion()
+        {
+            version = version + 1;
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssets();
+            return version;
+        }
 
         public void Apply()
         {
@@ -135,7 +146,8 @@ namespace libx
                     assetNames = bundle.assets,
                     assetBundleName = bundle.name
                 });
-            } 
+            }
+
             return builds.ToArray();
         }
 
@@ -158,25 +170,26 @@ namespace libx
 
         private static string RuledAssetBundleName(string name)
         {
-            return Utility.GetMd5Hash(name) + Assets.Extension;
+            return Utility.GetMD5Hash(name) + Assets.Extension;
         }
 
         private void Track(string asset, string bundle)
         {
             HashSet<string> assets;
-            if (! _tracker.TryGetValue(asset, out assets))
+            if (!_tracker.TryGetValue(asset, out assets))
             {
-                assets = new HashSet<string>(); 
+                assets = new HashSet<string>();
                 _tracker.Add(asset, assets);
             }
-            assets.Add(bundle);  
+
+            assets.Add(bundle);
             if (assets.Count > 1)
             {
                 string bundleName;
                 _asset2Bundles.TryGetValue(asset, out bundleName);
                 if (string.IsNullOrEmpty(bundleName))
                 {
-                    _duplicated.Add(asset); 
+                    _duplicated.Add(asset);
                 }
             }
         }
@@ -206,7 +219,7 @@ namespace libx
             _duplicated.Clear();
             _conflicted.Clear();
             _asset2Bundles.Clear();
-        } 
+        }
 
         private void Save()
         {
@@ -225,7 +238,7 @@ namespace libx
 
             EditorUtility.ClearProgressBar();
             EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssets(); 
+            AssetDatabase.SaveAssets();
         }
 
         private void OptimizeAssets()
@@ -348,49 +361,7 @@ namespace libx
                     throw new ArgumentOutOfRangeException();
             }
         }
- 
+
         #endregion
-    }
-
-    [CustomEditor(typeof(BuildRules))]
-    public class BuildRulesEditor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            var rules = target as BuildRules;
-            if (rules != null)
-            {
-                EditorGUILayout.HelpBox("【操作提示】" +
-                                        "\n    - 编辑器菜单中 Assets/Apply Rule 可以针对 Project 视图中选中的文件夹快速创建目标规则：" +
-                                        "\n     - Text：" + rules.searchPatternText +
-                                        "\n     - Prefab" + rules.searchPatternPrefab +
-                                        "\n     - Png" + rules.searchPatternPng +
-                                        "\n     - Material" + rules.searchPatternMaterial +
-                                        "\n     - Controller" + rules.searchPatternController +
-                                        "\n     - Asset" + rules.searchPatternAsset +
-                                        "\n     - Scene" + rules.searchPatternScene +
-                                        "\n【注意事项】：" +
-                                        "\n    - 所有shader放到一个包" +
-                                        "\n    - 场景文件不可以和非场景文件放到一个包" +
-                                        "\n    - 预知体通常单个文件一个包" +
-                                        "\n    - 资源冗余可以自行集成 AssetBundle-Browser 查看" +
-                                        "\n作者:fjy" +
-                                        "\n邮箱:xasset@qq.com", MessageType.None);
-
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    GUILayout.Space(16);
-                    if (GUILayout.Button("清理"))
-                        if (EditorUtility.DisplayDialog("提示", "是否确定清理？", "确定"))
-                            rules.rules = new BuildRule[0];
-
-                    if (GUILayout.Button("执行")) rules.Apply();
-
-                    GUILayout.Space(16);
-                }
-            }
-
-            base.OnInspectorGUI();
-        }
     }
 }
