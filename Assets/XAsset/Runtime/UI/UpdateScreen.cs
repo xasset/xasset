@@ -34,6 +34,7 @@ namespace libx
         public Text version;
         public Slider progressBar;
         public Text progressText;
+        public Button buttonStart;
 
         private void Start()
         {
@@ -44,6 +45,11 @@ namespace libx
         }
 
         #region IUpdateManager implementation
+
+        public void OnStart()
+        {
+            buttonStart.gameObject.SetActive(false);
+        }
 
         public void OnMessage(string msg)
         {
@@ -60,6 +66,11 @@ namespace libx
             version.text = ver;
         }
 
+
+        public void OnClear()
+        {
+            buttonStart.gameObject.SetActive(true);
+        } 
         #endregion
     }
 }

@@ -1636,6 +1636,7 @@ MonoBehaviour:
   version: {fileID: 245034301}
   progressBar: {fileID: 899531260}
   progressText: {fileID: 219888295}
+  buttonStart: {fileID: 281226889}
 --- !u!1 &1224521633
 GameObject:
   m_ObjectHideFlags: 0

@@ -35,11 +35,15 @@ namespace libx
 {
     public interface IUpdater
     {
+        void OnStart();
+
         void OnMessage(string msg);
 
         void OnProgress(float progress);
 
         void OnVersion(string ver);
+
+        void OnClear();
     }
 
     public class Updater : MonoBehaviour, IUpdater
@@ -115,13 +119,40 @@ namespace libx
                 }
 
                 OnMessage("数据清除完毕");
-                StartUpdate();
+                OnClear();
             };
         }
 
+        public void OnClear()
+        {
+            if (listener != null)
+            {
+                listener.OnClear();
+            }
+        }
+
+        public void OnStart()
+        {
+            if (listener != null)
+            {
+                listener.OnStart();
+            }
+        }
+
+        IEnumerator checking = null;
+
         public void StartUpdate()
         {
-            StartCoroutine(Checking());
+            OnStart();
+
+            if (checking != null)
+            {
+                StopCoroutine(checking);
+            }
+
+            checking = Checking();
+
+            StartCoroutine(checking);
         }
 
         long AddDownload(VFile item)
