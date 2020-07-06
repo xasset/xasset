@@ -110,7 +110,7 @@ namespace libx
             }
         }
 
-        private void Complete()
+        public void Complete(bool broken = false)
         {
             _downloading = false;
             if (_stream != null)
@@ -124,6 +124,11 @@ namespace libx
             {
                 _request.Dispose();
                 _request = null;
+            }
+
+            if (broken)
+            {
+                return;   
             }
 
             if (string.IsNullOrEmpty(error))
@@ -152,6 +157,7 @@ namespace libx
                     error = "保存下载失败";
                 }
             }
+
 
             if (completed == null) return;
             completed.Invoke(this);
