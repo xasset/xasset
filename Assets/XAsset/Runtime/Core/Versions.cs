@@ -41,29 +41,22 @@ namespace libx
 	{
 		public const string Dataname = "res";
 		public const string Filename = "ver";
-		public static VerifyBy verifyBy = VerifyBy.Hash;
-
-		private static VDisk _disk = new VDisk ();
-		private static Dictionary<string, VFile> _updateData = new Dictionary<string, VFile> ();
-		private static Dictionary<string, VFile> _baseData = new Dictionary<string, VFile> ();
+		public static  readonly  VerifyBy verifyBy = VerifyBy.Hash;
+		private static readonly VDisk _disk = new VDisk ();
+		private static readonly Dictionary<string, VFile> _updateData = new Dictionary<string, VFile> ();
+		private static readonly Dictionary<string, VFile> _baseData = new Dictionary<string, VFile> ();
 
 		public static AssetBundle LoadAssetBundleFromFile (string url)
 		{
 			if (!File.Exists (url)) {
 				if (_disk != null) {
 					var name = Path.GetFileName (url);
-					VFile file;
-					_updateData.TryGetValue (name, out file);
-					if (file == null) {
-						_baseData.TryGetValue (name, out file);
-					}
-
-					file = _disk.GetFile (file.name, file.hash);
+					var file = _disk.GetFile (name, string.Empty);
 					if (file != null) {
 						return AssetBundle.LoadFromFile (_disk.name, 0, (ulong)file.offset);
-					}	 
-				}
-			}  
+					}
+				}	
+			}   
 			return AssetBundle.LoadFromFile (url);
 		}
 
@@ -133,8 +126,8 @@ namespace libx
 			using (var stream = File.OpenRead (filename)) {
 				var reader = new BinaryReader (stream);
 				var list = new List<VFile> ();
-				var verion = reader.ReadInt32 ();
-				Debug.Log ("LoadVesions:" + verion);
+				var ver = reader.ReadInt32 ();
+				Debug.Log ("LoadVersions:" + ver);
 				var count = reader.ReadInt32 ();
 				for (var i = 0; i < count; i++) {
 					var version = new VFile ();
@@ -144,6 +137,17 @@ namespace libx
 				} 
 				return list;
 			}
+		} 
+		public static void UpdateDisk(string savePath, List<VFile> newFiles)
+		{
+			var saveFiles = new List<VFile> ();
+			var files = _disk.files;
+			foreach (var file in files) {
+				if (_updateData.ContainsKey (file.name)) {
+					saveFiles.Add (file);
+				}
+			}  
+			_disk.Update(savePath, newFiles, saveFiles);
 		}
 
 		public static bool LoadDisk (string filename)
@@ -181,18 +185,6 @@ namespace libx
 					return false;
 				return !Utility.GetCRC32Hash (stream).Equals (hash, StringComparison.OrdinalIgnoreCase);
 			}
-		}
-
-		public static List<VFile> GetActivedFiles ()
-		{
-			var list = new List<VFile> ();
-			var files = _disk.files;
-			foreach (var file in files) {
-				if (_updateData.ContainsKey (file.name)) {
-					list.Add (file);
-				}
-			}
-			return list;
-		}
+		} 
 	}
 }

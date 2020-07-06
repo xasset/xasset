@@ -31,8 +31,8 @@ namespace libx
 {
     public class ScrollContent : MonoBehaviour
     {
-        [SerializeField] private ScrollRect scroll = null;
-        [SerializeField] private float speed = 0f;
+        [SerializeField] private ScrollRect scroll;
+        [SerializeField] private float speed;
 
         private void LateUpdate()
         {
@@ -40,11 +40,9 @@ namespace libx
             var viewSize = scroll.viewport.rect.size;
             var len = size.y - viewSize.y;
             var pos = scroll.content.anchoredPosition;
-            if (pos.y < len)
-            {
-                pos.y += speed * Time.deltaTime;
-                scroll.content.anchoredPosition = pos;
-            }
+            if (!(pos.y < len)) return;
+            pos.y += speed * Time.deltaTime;
+            scroll.content.anchoredPosition = pos;
         }
     }
 }

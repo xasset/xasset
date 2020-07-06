@@ -45,6 +45,8 @@ namespace libx
             get { return Application.persistentDataPath + "/temp_" + hash; }
         }
 
+        public string savePath;
+
         public Action<Download> completed { get; set; }
         private UnityWebRequest _request;
         private FileStream _stream;
@@ -178,4 +180,5 @@ namespace libx
             get { return null; }
         }
     }
+
 }

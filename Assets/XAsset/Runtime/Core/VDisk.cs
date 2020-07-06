@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using UnityEngine;
 
 namespace libx
@@ -152,7 +153,53 @@ namespace libx
 			return file;
 		}
 
-		public void Save (bool delete = false)
+		public void Update(string dataPath, List<VFile> newFiles, List<VFile> saveFiles)
+		{
+			var dir = Path.GetDirectoryName(dataPath); 
+			using (var stream = File.OpenRead(dataPath))
+			{
+				foreach (var item in saveFiles)
+				{
+					var path = string.Format("{0}/{1}", dir, item.name);
+					if (File.Exists(path)) { continue; }  
+					stream.Seek(item.offset, SeekOrigin.Begin); 
+					using (var fs = File.OpenWrite(path))
+					{
+						var count = 0L;
+						var len = item.len;
+						while (count < len)
+						{
+							var read = (int) Math.Min(len - count, _buffers.Length);
+							stream.Read(_buffers, 0, read);
+							fs.Write(_buffers, 0, read);
+							count += read;
+						}
+					}    
+					newFiles.Add(item);
+				}
+			}
+
+			if (File.Exists(dataPath))
+			{
+				File.Delete(dataPath);
+			}
+			
+			using (var stream = File.OpenWrite (dataPath)) {
+				var writer = new BinaryWriter (stream);
+				writer.Write (newFiles.Count);
+				foreach (var item in newFiles) {
+					item.Serialize (writer);
+				}  
+				foreach (var item in newFiles) {
+					var path = string.Format("{0}/{1}", dir, item.name);
+					WriteFile (path, writer);
+					File.Delete (path);
+					Debug.Log ("Delete:" + path);
+				} 
+			} 
+		}
+
+		public void Save ()
 		{
 			var dir = Path.GetDirectoryName (name);   
 			using (var stream = File.OpenWrite (name)) {
@@ -161,19 +208,10 @@ namespace libx
 				foreach (var item in files) {
 					item.Serialize (writer);
 				}  
-				if (delete) {
-					foreach (var item in files) {
-						var path = dir + "/" + item.name;
-						WriteFile (path, writer);
-						File.Delete (path);
-						Debug.Log ("Delete:" + path);
-					}
-				} else {
-					foreach (var item in files) {
-						var path = dir + "/" + item.name;
-						WriteFile (path, writer);
-					}
-				} 
+				foreach (var item in files) {
+					var path = dir + "/" + item.name;
+					WriteFile (path, writer);
+				}
 			} 
 		}
 
