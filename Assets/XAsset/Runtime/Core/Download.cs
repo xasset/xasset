@@ -39,7 +39,6 @@ namespace libx
         public string hash { get; set; }
         public string url { get; set; }
         public long position { get; private set; }
-
         public string tempPath
         {
             get { return Application.persistentDataPath + "/temp_" + hash; }
@@ -50,7 +49,8 @@ namespace libx
         public Action<Download> completed { get; set; }
         private UnityWebRequest _request;
         private FileStream _stream;
-        private bool _downloading;
+        private bool _running;
+        private bool _finished = false;
 
         protected override float GetProgress()
         {
@@ -71,12 +71,13 @@ namespace libx
             if (!string.IsNullOrEmpty(_request.error))
             {
                 error = _request.error;
+                Complete();
                 return true;
             }
 
             _stream.Write(buffer, 0, dataLength);
             position += dataLength;
-            return _downloading;
+            return _running;
         }
 
         protected override void CompleteContent()
@@ -95,7 +96,14 @@ namespace libx
 
         public void Start()
         {
-            _downloading = true;
+            if (_running)
+            {
+                return;
+            }
+
+            error = null;
+            finished = false;
+            _running = true;
             _stream = new FileStream(tempPath, FileMode.OpenOrCreate, FileAccess.Write);
             position = _stream.Length;
             if (position < len)
@@ -105,6 +113,7 @@ namespace libx
                 _request.SetRequestHeader("Range", "bytes=" + position + "-");
                 _request.downloadHandler = this;
                 _request.SendWebRequest();
+                Debug.Log("Start Download：" + url); 
             }
             else
             {
@@ -112,27 +121,48 @@ namespace libx
             }
         }
 
-        public void Complete(bool broken = false)
+        public void Update()
         {
-            _downloading = false;
+            if (_running)
+            {
+                if (_request.isDone && _request.downloadedBytes < (ulong)len)
+                {
+                    error = "unknown error: downloadedBytes < len";
+                }
+                if (! string.IsNullOrEmpty(_request.error))
+                {
+                    error = _request.error;
+                } 
+            }
+        }
+
+        public void Complete(bool stop = false)
+        {
+            _running = false;
             if (_stream != null)
             {
                 _stream.Close();
                 _stream.Dispose();
                 _stream = null;
-            }
-
+            } 
             if (_request != null)
             {
                 _request.Dispose();
                 _request = null;
-            }
-
-            if (broken)
+            }  
+            
+            Dispose();
+            
+            if (stop)
             {
                 return;   
-            }
+            } 
+            CheckError();
+            finished = true;
+        }
 
+        private void CheckError()
+        {
             if (string.IsNullOrEmpty(error))
             {
                 if (File.Exists(tempPath))
@@ -152,18 +182,33 @@ namespace libx
                                 error = "下载文件哈希异常:" + hash;
                             }
                         }
+                    } 
+                    if (string.IsNullOrEmpty(error))
+                    {
+                        File.Copy(tempPath, savePath, true);
+                        File.Delete(tempPath); 
+                        Debug.Log("Complete Download：" + url);
+                        if (completed == null) return;
+                        completed.Invoke(this);
+                        completed = null; 
                     }
                 }
                 else
                 {
-                    error = "保存下载失败";
+                    error = "文件不存在"; 
                 }
+            }   
+        }
+
+        public void Retry()
+        {
+            Complete(true);
+            if (File.Exists(tempPath))
+            {
+                File.Delete(tempPath);
             }
-
-
-            if (completed == null) return;
-            completed.Invoke(this);
-            completed = null;
+            Debug.Log((string.Format("{0} 下载失败:{1}, 开始重新下载。", url, error)));
+            Start();
         }
 
         public bool MoveNext()
@@ -178,6 +223,12 @@ namespace libx
         public object Current
         {
             get { return null; }
+        }
+
+        public bool finished
+        {
+            get { return _finished; }
+            private set { _finished = value; }
         }
     }
 

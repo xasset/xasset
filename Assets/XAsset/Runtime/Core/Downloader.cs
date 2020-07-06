@@ -33,12 +33,13 @@ namespace libx
 {  
     public class Downloader : MonoBehaviour
     {
-        public const float BYTES_2_MB = 1f / 1024 * 1024;
+        private const float BYTES_2_MB = 1f / (1024 * 1024);
         
         public int maxDownloads = 3;
         
         private readonly List<Download> _downloads = new List<Download>();
         private readonly List<Download> _tostart = new List<Download>();
+        private readonly List<Download> _progressing = new List<Download>();
         public Action<long, long, float> onUpdate;
         public Action onFinished;
 
@@ -83,10 +84,25 @@ namespace libx
             _lastTime = 0f;
             _lastSize = 0L;
             _startTime = Time.realtimeSinceStartup;
+            _started = true;
         }
 
         public void Clear()
         {
+            size = 0;
+            position = 0;
+            
+            _downloadIndex = 0;
+            _finishedIndex = 0;
+            _lastTime = 0f;
+            _lastSize = 0L;
+            _startTime = 0;
+            _started = false;
+
+            foreach (var item in _downloads)
+            {
+                item.Complete(true);
+            }
             _downloads.Clear();
             _tostart.Clear();
         }
@@ -107,37 +123,27 @@ namespace libx
             {
                 size += len - info.Length; 
             }
-            size += len; 
+            else
+            {
+                size += len; 
+            }
         }
 
         private void OnFinished(Download download)
         {
-            if (!string.IsNullOrEmpty(download.error))
+            if (_downloadIndex < _downloads.Count)
             {
-                Debug.Log((string.Format("{0} 下载失败:{1}, 开始重新下载。", download, download.error)));
-                File.Delete(download.tempPath);
-                _tostart.Add(download);
-            }
-            else
+                _tostart.Add(_downloads[_downloadIndex]);
+                _downloadIndex++;    
+            } 
+            _finishedIndex++;
+            if (_finishedIndex == downloads.Count)
             {
-                var filename = Path.GetFileName(download.url);
-                var path = string.Format("{0}{1}", download.savePath, filename);
-                File.Copy(download.tempPath, path, true);
-                File.Delete(download.tempPath);    
-                _finishedIndex++;
-                if (_downloadIndex < _downloads.Count)
+                if (onFinished != null)
                 {
-                    _tostart.Add(_downloads[_downloadIndex]);
-                    _downloadIndex++;    
-                }
-                else
-                {
-                    if (onFinished != null)
-                    {
-                        onFinished.Invoke(); 
-                    } 
-                    _started = false;
-                }
+                    onFinished.Invoke(); 
+                } 
+                _started = false;
             }
         }
 
@@ -147,33 +153,25 @@ namespace libx
             {
                 return string.Format("{0:f2}MB/s", downloadSpeed * BYTES_2_MB);
             }
-            else if (downloadSpeed >= 1024)
+            if (downloadSpeed >= 1024)
             {
                 return string.Format("{0:f2}KB/s", downloadSpeed / 1024);
             }
-            else
-            {
-                return string.Format("{0:f2}B/s", downloadSpeed);
-            }  
+            return string.Format("{0:f2}B/s", downloadSpeed);
         }
-        
-        public void OnApplicationFocus(bool focus)
+
+        public static string GetDisplaySize(long downloadSize)
         {
-            if (focus)
+            if (downloadSize >= 1024 * 1024)
             {
-                for (var i = _finishedIndex; i < Math.Min(maxDownloads, _downloads.Count); i++)
-                {
-                    _downloads[i].Start();
-                }
+                return string.Format("{0:f2}MB", downloadSize * BYTES_2_MB);
             }
-            else
+            if (downloadSize >= 1024)
             {
-                for (var i = _finishedIndex; i < Math.Min(maxDownloads, _downloads.Count); i++)
-                {
-                    _downloads[i].Complete(true);
-                }
+                return string.Format("{0:f2}KB", downloadSize / 1024);
             }
-        }
+            return string.Format("{0:f2}B", downloadSize);
+        } 
         
         private void Update()
         {
@@ -185,12 +183,30 @@ namespace libx
                 {
                     var item = _tostart[i];
                     item.Start();
-                    Debug.Log("Start Download：" + item.url);
                     _tostart.RemoveAt(i);
+                    _progressing.Add(item);
                     i--;
                 }
             }
-            
+
+            for (var index = 0; index < _progressing.Count; index++)
+            {
+                var download = _progressing[index];
+                download.Update();
+                if (!string.IsNullOrEmpty(download.error))
+                {
+                    download.Retry();
+                }
+                else
+                {
+                    if (download.finished)
+                    {
+                        _progressing.RemoveAt(index);
+                        index--;
+                    }
+                }
+            }
+
             position = GetDownloadSize(); 
             
             var elapsed = Time.realtimeSinceStartup - _startTime;

@@ -37,13 +37,12 @@ namespace libx
 {
     public sealed class Assets : MonoBehaviour
     {
-        public static readonly string AssetBundles = "Bundles";
         public static readonly string ManifestAsset = "Assets/Manifest.asset";
         public static readonly string Extension = ".unity3d";
 
         public static bool runtimeMode = false;
         public static Func<string, Type, Object> loadDelegate = null;
-        private static readonly string TAG = "[Assets]";
+        private const string TAG = "[Assets]";
 
         [Conditional("LOG_ENABLE")]
         private static void Log(string s)

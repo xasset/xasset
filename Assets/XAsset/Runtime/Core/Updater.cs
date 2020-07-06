@@ -4,7 +4,7 @@
 // Author:
 //       fjy <jiyuan.feng@live.com>
 //
-// Copyright (c) 2019 fjy
+// Copyright (c) 2020 fjy
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -46,18 +46,15 @@ namespace libx
     }
 
     public class Updater : MonoBehaviour, IUpdater
-    { 
+    {
         [SerializeField] private string baseURL = "http://127.0.0.1:7888/";
         [SerializeField] private string gameScene = "Game.unity";
         [SerializeField] private bool enableVFS;
-
-        private string _platform;
-        private string _savePath; 
-        private List<VFile> _versions = new List<VFile>();
-        private int _downloadIndex;
-        private int _finishedIndex;
-
         public IUpdater listener { get; set; }
+        private Downloader _downloader;
+        private string _platform;
+        private string _savePath;
+        private List<VFile> _versions = new List<VFile>();
 
         public void OnMessage(string msg)
         {
@@ -65,8 +62,6 @@ namespace libx
             {
                 listener.OnMessage(msg);
             }
-
-            Debug.Log(msg);
         }
 
         public void OnProgress(float progress)
@@ -85,29 +80,22 @@ namespace libx
             }
         }
 
-        private Downloader _downloader;
-
         private void Start()
         {
             _downloader = gameObject.AddComponent<Downloader>();
             _downloader.onUpdate = OnUpdate;
             _downloader.onFinished = OnComplete;
-            
+
             _savePath = Application.persistentDataPath + '/';
-            
             Assets.updatePath = _savePath;
             _platform = GetPlatformForAssetBundles(Application.platform);
-            DontDestroyOnLoad(gameObject);
         }
 
-        private void OnUpdate(long arg1, long arg2, float arg3)
+        private void OnUpdate(long progress, long size, float speed)
         {
-            var speed = Downloader.GetDisplaySpeed(_downloader.speed);
-            var pos = _downloader.position;
-            var size = _downloader.size;
-            OnMessage(string.Format("下载中...{0}/{1}, {2:f4}MB 速度：{3}", pos, size,
-                pos * Downloader.BYTES_2_MB, speed));
-            OnProgress(pos * 1f / size); 
+            OnMessage(string.Format("下载中...{0}/{1}, {2} 速度：{3}", progress, size,
+                Downloader.GetDisplaySize(progress), Downloader.GetDisplaySpeed(speed)));
+            OnProgress(progress * 1f / size);
         }
 
         public void Clear()
@@ -116,18 +104,21 @@ namespace libx
             {
                 if (id != MessageBox.EventId.Ok)
                     return;
-                if (Directory.Exists(_savePath))
-                {
-                    Directory.Delete(_savePath, true);
-                }
-
-                OnMessage("数据清除完毕");
                 OnClear();
             };
         }
 
         public void OnClear()
         {
+            if (Directory.Exists(_savePath))
+            {
+                Directory.Delete(_savePath, true);
+            }
+
+            OnMessage("数据清除完毕");
+            OnProgress(0);
+            _versions.Clear();
+            _downloader.Clear();
             if (listener != null)
             {
                 listener.OnClear();
@@ -167,21 +158,23 @@ namespace libx
         {
             if (enableVFS)
             {
-                if (! File.Exists(_savePath + Versions.Dataname))
+                var path = string.Format("{0}{1}", _savePath, Versions.Dataname);
+                if (!File.Exists(path))
                 {
-                    AddDownload(_versions[0]); 
-                }
-                Versions.LoadDisk(_savePath + Versions.Dataname);
+                    AddDownload(_versions[0]);
+                    return;
+                } 
+                Versions.LoadDisk(path);
             }
-            
+
             for (var i = 1; i < _versions.Count; i++)
             {
                 var item = _versions[i];
-                if (Versions.IsNew(_savePath + item.name, item.len, item.hash))
+                if (Versions.IsNew(string.Format("{0}{1}", _savePath, item.name), item.len, item.hash))
                 {
                     AddDownload(item);
                 }
-            }   
+            }
         }
 
         private IEnumerator RequestVFS()
@@ -207,7 +200,7 @@ namespace libx
                     return "Windows";
                 case RuntimePlatform.OSXEditor:
                 case RuntimePlatform.OSXPlayer:
-                    return "OSX";
+                    return "iOS"; // OSX
                 default:
                     return null;
             }
@@ -223,13 +216,33 @@ namespace libx
             if (!Directory.Exists(_savePath))
             {
                 Directory.CreateDirectory(_savePath);
-            }
-
+            } 
             yield return RequestVFS();
-            yield return RequestCopy();
+            yield return RequestCopy(); 
+            yield return RequestVersions(); 
+            if (_versions.Count > 0)
+            {
+                OnMessage("正在检查版本信息..."); 
+                PrepareDownloads();
+                var totalSize = _downloader.size;
+                if (totalSize > 0)
+                {
+                    var tips = string.Format("发现内容更新，总计需要下载 {0} 内容", Downloader.GetDisplaySize(totalSize));
+                    var mb = MessageBox.Show("提示", tips, "下载", "跳过");
+                    yield return mb;
+                    if (mb.isOk)
+                    {
+                        _downloader.StartDownload();
+                        yield break;
+                    }
+                }
+            }
+            OnComplete();  
+        }
 
-            OnMessage("正在获取服务器版本信息...");
-            
+        private IEnumerator RequestVersions()
+        {
+            OnMessage("正在获取版本信息...");
             var request = UnityWebRequest.Get(GetDownloadURL(Versions.Filename));
             request.downloadHandler = new DownloadHandlerFile(_savePath + Versions.Filename);
             yield return request.SendWebRequest();
@@ -246,33 +259,11 @@ namespace libx
                     Quit();
                     MessageBox.Dispose();
                 } 
-                yield break;
-            }
-
-            request.Dispose();
-
-            OnMessage("正在检查版本信息...");  
-
-            _versions = Versions.LoadVersions(_savePath + Versions.Filename, true); 
-            if (_versions.Count > 0)
-            {
-                PrepareDownloads();
-                var totalSize = _downloader.size;
-                if (totalSize > 0)
-                {
-                    var tips = string.Format("发现内容更新，总计需要下载 {0}（B）内容", totalSize);
-                    var mb = MessageBox.Show("提示", tips, "下载", "跳过");
-                    yield return mb;
-                    if (mb.isOk)
-                    {
-                        _downloader.StartDownload(); 
-                        yield break;
-                    }
-                }
+                yield break; // yield break;
             } 
-            
-            OnComplete();
-        } 
+            request.Dispose();
+            _versions = Versions.LoadVersions(_savePath + Versions.Filename, true);
+        }
 
         private static string GetStreamingAssetsPath()
         {
@@ -280,15 +271,14 @@ namespace libx
             {
                 return Application.streamingAssetsPath;
             }
-            else if (Application.platform == RuntimePlatform.WindowsPlayer ||
-                     Application.platform == RuntimePlatform.WindowsEditor)
+
+            if (Application.platform == RuntimePlatform.WindowsPlayer ||
+                Application.platform == RuntimePlatform.WindowsEditor)
             {
                 return "file:///" + Application.streamingAssetsPath;
             }
-            else
-            {
-                return "file://" + Application.streamingAssetsPath;
-            }
+
+            return "file://" + Application.streamingAssetsPath;
         }
 
         private IEnumerator RequestCopy()
@@ -351,7 +341,7 @@ namespace libx
                     OnProgress(index * 1f / versions.Count);
                 }
             }
-        } 
+        }
 
         private void OnComplete()
         {
@@ -372,8 +362,10 @@ namespace libx
                             len = download.len,
                         });
                     }
-                    Versions.UpdateDisk(dataPath, files); 
-                } 
+
+                    Versions.UpdateDisk(dataPath, files);
+                }
+
                 Versions.LoadDisk(dataPath);
             }
 
@@ -414,7 +406,7 @@ namespace libx
         }
 
         private void Quit()
-        { 
+        {
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
