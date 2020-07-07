@@ -208,6 +208,8 @@ namespace libx
                 else
                 {
                     Assets.OnLoadManifest(manifest);
+                    _request.assetBundle.Unload(true);
+                    _request.assetBundle = null;
                 }
             }
 
@@ -357,7 +359,7 @@ namespace libx
 
     public class SceneAssetRequest : AssetRequest
     {
-        protected readonly LoadSceneMode loadSceneMode;
+        public readonly LoadSceneMode loadSceneMode;
         protected readonly string sceneName;
         public string assetBundleName;
         protected BundleRequest bundle;

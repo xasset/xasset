@@ -361,9 +361,12 @@ namespace libx
                             hash = download.hash,
                             len = download.len,
                         });
+                    } 
+                    var file = files[0];
+                    if (!file.name.Equals(Versions.Dataname))
+                    {
+                        Versions.UpdateDisk(dataPath, files);
                     }
-
-                    Versions.UpdateDisk(dataPath, files);
                 }
 
                 Versions.LoadDisk(dataPath);
@@ -385,9 +388,10 @@ namespace libx
             OnMessage("正在初始化");
             Assets.runtimeMode = true;
             var init = Assets.Initialize();
-            yield return init;
+            yield return init;  
             if (string.IsNullOrEmpty(init.error))
             {
+                init.Release(); 
                 OnProgress(0);
                 OnMessage("加载游戏场景");
                 var scene = Assets.LoadSceneAsync(gameScene, false);
@@ -399,10 +403,16 @@ namespace libx
             }
             else
             {
+                init.Release();
                 var mb = MessageBox.Show("提示", "初始化异常错误：" + init.error + "请联系技术支持");
                 yield return mb;
                 Quit();
             }
+        }
+
+        private void OnDestroy()
+        {
+            MessageBox.Dispose();
         }
 
         private void Quit()

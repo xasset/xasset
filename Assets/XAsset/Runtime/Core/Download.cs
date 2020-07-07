@@ -31,7 +31,7 @@ using UnityEngine.Networking;
 
 namespace libx
 {
-    public class Download : DownloadHandlerScript, System.Collections.IEnumerator
+    public class Download : DownloadHandlerScript, IDisposable
     {
         private static readonly byte[] PreallocatedBuffer = new byte[1024 * 1024 * 4]; 
         public string error { get; private set; }
@@ -136,9 +136,8 @@ namespace libx
             }
         }
 
-        public void Complete(bool stop = false)
+        public new void Dispose()
         {
-            _running = false;
             if (_stream != null)
             {
                 _stream.Close();
@@ -150,80 +149,68 @@ namespace libx
                 _request.Dispose();
                 _request = null;
             }  
-            
-            Dispose();
-            
+            base.Dispose();
+            _running = false;
+            finished = true;
+        }
+
+        public void Complete(bool stop = false)
+        {
+            Dispose(); 
             if (stop)
             {
                 return;   
             } 
             CheckError();
-            finished = true;
         }
 
         private void CheckError()
         {
-            if (string.IsNullOrEmpty(error))
+            if (File.Exists(tempPath))
             {
-                if (File.Exists(tempPath))
+                if (string.IsNullOrEmpty(error))
                 {
                     using (var fs = File.OpenRead(tempPath))
                     {
                         if (fs.Length != len)
                         {
                             error = "下载文件长度异常:" + fs.Length;
-                        }
-
+                        } 
                         if (Versions.verifyBy == VerifyBy.Hash)
                         {
-                            var compare = StringComparison.OrdinalIgnoreCase;
+                            const StringComparison compare = StringComparison.OrdinalIgnoreCase;
                             if (!hash.Equals(Utility.GetCRC32Hash(fs), compare))
                             {
                                 error = "下载文件哈希异常:" + hash;
                             }
                         }
-                    } 
-                    if (string.IsNullOrEmpty(error))
-                    {
-                        File.Copy(tempPath, savePath, true);
-                        File.Delete(tempPath); 
-                        Debug.Log("Complete Download：" + url);
-                        if (completed == null) return;
-                        completed.Invoke(this);
-                        completed = null; 
-                    }
+                    }  
+                } 
+                if (string.IsNullOrEmpty(error))
+                {
+                    File.Copy(tempPath, savePath, true);
+                    File.Delete(tempPath); 
+                    Debug.Log("Complete Download：" + url);
+                    if (completed == null) return;
+                    completed.Invoke(this);
+                    completed = null; 
                 }
                 else
                 {
-                    error = "文件不存在"; 
-                }
-            }   
+                    File.Delete(tempPath);
+                } 
+            }
+            else
+            {
+                error = "文件不存在"; 
+            }
         }
 
         public void Retry()
         {
-            Complete(true);
-            if (File.Exists(tempPath))
-            {
-                File.Delete(tempPath);
-            }
-            Debug.Log((string.Format("{0} 下载失败:{1}, 开始重新下载。", url, error)));
+            Dispose(); 
             Start();
-        }
-
-        public bool MoveNext()
-        {
-            return !isDone;
-        }
-
-        public void Reset()
-        {
-        }
-
-        public object Current
-        {
-            get { return null; }
-        }
+        } 
 
         public bool finished
         {

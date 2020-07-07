@@ -70,21 +70,25 @@ namespace libx
         
         public void StartDownload()
         {
-            _tostart.Clear();
+            _tostart.Clear(); 
+            _finishedIndex = 0; 
+            Restart();
+        }
 
-            for (var i = 0; i < Math.Min(_downloads.Count, maxDownloads); i++)
-            {
-                var item = _downloads[i];
-                _tostart.Add(item);
-                _downloadIndex++;
-            } 
-            
-            _downloadIndex = 0;
-            _finishedIndex = 0;
+        private void Restart()
+        {
             _lastTime = 0f;
             _lastSize = 0L;
             _startTime = Time.realtimeSinceStartup;
             _started = true;
+            _downloadIndex = _finishedIndex;
+            var max = Math.Min(_downloads.Count, maxDownloads);
+            for (var i = _finishedIndex; i < max; i++)
+            {
+                var item = _downloads[i];
+                _tostart.Add(item);
+                _downloadIndex++;
+            }
         }
 
         public void Clear()
@@ -137,14 +141,12 @@ namespace libx
                 _downloadIndex++;    
             } 
             _finishedIndex++;
-            if (_finishedIndex == downloads.Count)
+            if (_finishedIndex != downloads.Count) return;
+            if (onFinished != null)
             {
-                if (onFinished != null)
-                {
-                    onFinished.Invoke(); 
-                } 
-                _started = false;
-            }
+                onFinished.Invoke(); 
+            } 
+            _started = false;
         }
 
         public static string GetDisplaySpeed(float downloadSpeed)
@@ -171,8 +173,33 @@ namespace libx
                 return string.Format("{0:f2}KB", downloadSize / 1024);
             }
             return string.Format("{0:f2}B", downloadSize);
+        }
+
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (_downloads.Count <= 0) return;
+            if (hasFocus)
+            {
+                StopAll();
+            }
+            else
+            {
+                Restart();
+            }
         } 
-        
+
+        private void StopAll()
+        {
+            _tostart.Clear();
+            foreach (var download in _progressing)
+            {
+                download.Complete(true);
+            } 
+            _progressing.Clear();
+            _started = false;
+        }
+
         private void Update()
         {
             if (!_started) return;
@@ -193,18 +220,9 @@ namespace libx
             {
                 var download = _progressing[index];
                 download.Update();
-                if (!string.IsNullOrEmpty(download.error))
-                {
-                    download.Retry();
-                }
-                else
-                {
-                    if (download.finished)
-                    {
-                        _progressing.RemoveAt(index);
-                        index--;
-                    }
-                }
+                if (!download.finished) continue;
+                _progressing.RemoveAt(index);
+                index--;
             }
 
             position = GetDownloadSize(); 
@@ -212,8 +230,7 @@ namespace libx
             var elapsed = Time.realtimeSinceStartup - _startTime;
             if (!(elapsed - _lastTime > 0.5f)) return;
             
-            var deltaTime = elapsed - _lastTime;
-            
+            var deltaTime = elapsed - _lastTime; 
             speed = (position - _lastSize) / deltaTime;
             if (onUpdate != null)
             {

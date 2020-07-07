@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
@@ -65,8 +66,7 @@ namespace libx
 
         public static string basePath { get; set; }
 
-        public static string updatePath { get; set; }
-
+        public static string updatePath { get; set; } 
 
         public static void AddSearchPath(string path)
         {
@@ -85,7 +85,7 @@ namespace libx
             {
                 instance = new GameObject("Assets").AddComponent<Assets>();
                 DontDestroyOnLoad(instance.gameObject);
-            }
+            } 
 
             if (string.IsNullOrEmpty(basePath))
             {
@@ -97,7 +97,15 @@ namespace libx
                 updatePath = Application.persistentDataPath + Path.DirectorySeparatorChar;
             }
 
+            if (_runningScene != null)
+            {
+                _runningScene.Release();
+                _runningScene = null;
+            }
+
             RemoveUnusedAssets();
+            UpdateAssets();
+            UpdateBundles();
 
             _searchPaths.Clear();
             _activeVariants.Clear();
@@ -113,6 +121,8 @@ namespace libx
             return request;
         }
 
+        private static SceneAssetRequest _runningScene;
+        
         public static SceneAssetRequest LoadSceneAsync(string path, bool additive)
         {
             if (string.IsNullOrEmpty(path))
@@ -123,6 +133,15 @@ namespace libx
 
             path = GetExistPath(path);
             var asset = new SceneAssetAsyncRequest(path, additive);
+            if (! additive)
+            {
+                if (_runningScene != null)
+                {
+                    _runningScene.Release();;
+                    _runningScene = null;
+                }
+                _runningScene = asset;
+            }
             asset.Load();
             asset.Retain();
             _scenes.Add(asset);
@@ -154,18 +173,25 @@ namespace libx
         {
             foreach (var item in _assets)
             {
-                if (item.Value.isDone && item.Value.IsUnused())
+                if (item.Value.IsUnused())
                 {
-                    _unusedAssets.Add(item.Value);
+                    _unusedAssets.Add(item.Value);  
                 }
+            } 
+            foreach (var request in _unusedAssets)
+            {
+                _assets.Remove(request.url);
             }
-
             foreach (var item in _bundles)
             {
-                if (item.Value.isDone && item.Value.IsUnused())
+                if (item.Value.IsUnused())
                 {
                     _unusedBundles.Add(item.Value);
                 }
+            } 
+            foreach (var request in _unusedBundles)
+            {
+                _bundles.Remove(request.url);
             }
         }
 
@@ -229,12 +255,12 @@ namespace libx
                 for (var i = 0; i < _unusedAssets.Count; ++i)
                 {
                     var request = _unusedAssets[i];
-                    _assets.Remove(request.url);
+                    if (!request.isDone) continue;
                     Log(string.Format("UnloadAsset:{0}", request.url));
                     request.Unload();
-                }
-
-                _unusedAssets.Clear();
+                    _unusedAssets.RemoveAt(i);
+                    i--;
+                } 
             }
 
             for (var i = 0; i < _scenes.Count; ++i)
@@ -498,18 +524,20 @@ namespace libx
                 --i;
             }
 
-            if (_unusedBundles.Count > 0)
+            if (_unusedBundles.Count <= 0) return;
             {
                 for (var i = 0; i < _unusedBundles.Count; i++)
                 {
                     var item = _unusedBundles[i];
-                    _bundles.Remove(item.url);
-                    UnloadDependencies(item);
-                    item.Unload();
-                    Log("UnloadBundle: " + item.url);
+                    if (item.isDone)
+                    {
+                        UnloadDependencies(item);
+                        item.Unload();
+                        Log("UnloadBundle: " + item.url);
+                        _unusedBundles.RemoveAt(i);
+                        i--;
+                    }  
                 }
-
-                _unusedBundles.Clear();
             }
         }
 

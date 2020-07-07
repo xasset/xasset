@@ -62,9 +62,9 @@ public class MessageBox : IEnumerator
     private Text _textOk;
     private Text _textNo;
 
-    private static GameObject _prefab = Resources.Load<GameObject>("MessageBox");
-    private static List<MessageBox> _showed = new List<MessageBox>();
-    private static List<MessageBox> _hidden = new List<MessageBox>();
+    private static readonly GameObject _prefab = Resources.Load<GameObject>("MessageBox");
+    private static readonly List<MessageBox> _showed = new List<MessageBox>();
+    private static readonly List<MessageBox> _hidden = new List<MessageBox>();
 
     public static void Dispose()
     {
@@ -73,18 +73,14 @@ public class MessageBox : IEnumerator
             item.Destroy();
         }
 
-        _hidden.Clear();
-        _hidden = null;
+        _hidden.Clear(); 
 
         foreach (var item in _showed)
         {
             item.Destroy();
         }
 
-        _showed.Clear();
-        _showed = null;
-
-        _prefab = null;
+        _showed.Clear(); 
     }
 
     public static MessageBox Show(string title, string content, string ok = "确定", string no = "取消")
@@ -103,7 +99,7 @@ public class MessageBox : IEnumerator
         }
     }
 
-    public void Destroy()
+    private void Destroy()
     {
         _title = null;
         _textOk = null;
@@ -185,10 +181,8 @@ public class MessageBox : IEnumerator
 
         isOk = id == EventId.Ok;
 
-        if (onComplete != null)
-        {
-            onComplete(id);
-            onComplete = null;
-        }
+        if (onComplete == null) return;
+        onComplete(id);
+        onComplete = null;
     }
 }
