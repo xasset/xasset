@@ -30,7 +30,7 @@ using System.IO;
 using UnityEngine;
 
 namespace libx
-{  
+{
     public class Downloader : MonoBehaviour
     {
         private const float BYTES_2_MB = 1f / (1024 * 1024);
@@ -48,8 +48,11 @@ namespace libx
         private float _startTime;
         private float _lastTime;
         private long _lastSize;
+
         public long size { get; private set; }
+
         public long position { get; private set; }
+
         public float speed { get; private set; }
 
         public List<Download> downloads { get { return _downloads; } }
@@ -67,7 +70,7 @@ namespace libx
         }
 
         private bool _started;
-        
+
         public void StartDownload()
         {
             _tostart.Clear(); 
@@ -75,7 +78,7 @@ namespace libx
             Restart();
         }
 
-        private void Restart()
+        public void Restart()
         {
             _lastTime = 0f;
             _lastSize = 0L;
@@ -89,6 +92,19 @@ namespace libx
                 _tostart.Add(item);
                 _downloadIndex++;
             }
+        }
+
+        public void StopAll()
+        {
+            _tostart.Clear();
+            foreach (var download in _progressing)
+            {
+                download.Complete(true); 
+                _downloads[download.id] = download.Clone() as Download;
+
+            } 
+            _progressing.Clear();
+            _started = false;
         }
 
         public void Clear()
@@ -110,11 +126,12 @@ namespace libx
             _downloads.Clear();
             _tostart.Clear();
         }
-        
+
         public void AddDownload(string url, string savePath, string hash, long len)
         {
             var download = new Download
             {
+                id = _downloads.Count,
                 url = url,
                 hash = hash,
                 len = len,
@@ -141,7 +158,8 @@ namespace libx
                 _downloadIndex++;    
             } 
             _finishedIndex++;
-            if (_finishedIndex != downloads.Count) return;
+            if (_finishedIndex != downloads.Count)
+                return;
             if (onFinished != null)
             {
                 onFinished.Invoke(); 
@@ -178,31 +196,27 @@ namespace libx
 
         private void OnApplicationFocus(bool hasFocus)
         {
-            if (_downloads.Count <= 0) return;
+            if (_downloads.Count <= 0)
+                return;
+            #if UNITY_EDITOR
+            return;
+            #else
             if (hasFocus)
             {
-                StopAll();
+            StopAll();
             }
             else
             {
-                Restart();
+            Restart();
             }
-        } 
-
-        private void StopAll()
-        {
-            _tostart.Clear();
-            foreach (var download in _progressing)
-            {
-                download.Complete(true);
-            } 
-            _progressing.Clear();
-            _started = false;
+            #endif
         }
+
 
         private void Update()
         {
-            if (!_started) return;
+            if (!_started)
+                return;
             
             if (_tostart.Count > 0)
             {
@@ -220,7 +234,8 @@ namespace libx
             {
                 var download = _progressing[index];
                 download.Update();
-                if (!download.finished) continue;
+                if (!download.finished)
+                    continue;
                 _progressing.RemoveAt(index);
                 index--;
             }
@@ -228,7 +243,8 @@ namespace libx
             position = GetDownloadSize(); 
             
             var elapsed = Time.realtimeSinceStartup - _startTime;
-            if (!(elapsed - _lastTime > 0.5f)) return;
+            if (!(elapsed - _lastTime > 0.5f))
+                return;
             
             var deltaTime = elapsed - _lastTime; 
             speed = (position - _lastSize) / deltaTime;

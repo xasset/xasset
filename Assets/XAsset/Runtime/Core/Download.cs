@@ -31,9 +31,25 @@ using UnityEngine.Networking;
 
 namespace libx
 {
-    public class Download : DownloadHandlerScript, IDisposable
+    public class Download : DownloadHandlerScript, IDisposable, ICloneable
     {
-        private static readonly byte[] PreallocatedBuffer = new byte[1024 * 1024 * 4]; 
+        #region ICloneable implementation
+
+        public object Clone()
+        {
+            return new Download()
+            {
+                id = id,
+                hash = hash,
+                url = url,
+                len = len,
+                savePath = savePath
+            };
+        }
+
+        #endregion
+
+        public int id { get; set; }
         public string error { get; private set; }
         public long len { get; set; }
         public string hash { get; set; }
@@ -83,11 +99,7 @@ namespace libx
         protected override void CompleteContent()
         {
             Complete();
-        }
-
-        public Download() : base(PreallocatedBuffer)
-        {
-        }
+        } 
 
         public override string ToString()
         {
@@ -146,6 +158,7 @@ namespace libx
             } 
             if (_request != null)
             {
+                _request.Abort();
                 _request.Dispose();
                 _request = null;
             }  

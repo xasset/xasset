@@ -133,6 +133,16 @@ namespace libx
             }
         }
 
+        public void Stop()
+        {
+            _downloader.StopAll();
+        }
+
+        public void Restart()
+        {
+            _downloader.Restart();
+        }
+
         private IEnumerator checking;
 
         public void StartUpdate()
