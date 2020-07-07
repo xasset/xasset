@@ -197,19 +197,19 @@ namespace libx
         private void OnApplicationFocus(bool hasFocus)
         {
             if (_downloads.Count <= 0)
-                return;
-            #if UNITY_EDITOR
+                return; 
+#if UNITY_EDITOR
             return;
-            #else
+#else
             if (hasFocus)
             {
-            StopAll();
+            Restart(); 
             }
             else
             {
-            Restart();
+            StopAll();
             }
-            #endif
+#endif
         }
 
 
