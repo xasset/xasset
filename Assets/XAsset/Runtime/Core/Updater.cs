@@ -109,12 +109,7 @@ namespace libx
         }
 
         public void OnClear()
-        {
-            if (Directory.Exists(_savePath))
-            {
-                Directory.Delete(_savePath, true);
-            }
-
+        { 
             OnMessage("数据清除完毕");
             OnProgress(0);
             _versions.Clear();
@@ -123,6 +118,10 @@ namespace libx
             if (listener != null)
             {
                 listener.OnClear();
+            }
+            if (Directory.Exists(_savePath))
+            {
+                Directory.Delete(_savePath, true);
             }
         }
 
