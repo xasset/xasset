@@ -97,6 +97,19 @@ namespace libx
                 updatePath = Application.persistentDataPath + Path.DirectorySeparatorChar;
             }
 
+            Clear();
+
+            Log(string.Format(
+                "Initialize with: runtimeMode={0}\nbasePath：{1}\nupdatePath={2}",
+                runtimeMode, basePath, updatePath));
+
+            var request = new ManifestRequest {url = ManifestAsset};
+            AddAssetRequest(request);
+            return request;
+        }
+
+        public static void Clear()
+        {
             if (_runningScene != null)
             {
                 _runningScene.Release();
@@ -111,14 +124,6 @@ namespace libx
             _activeVariants.Clear();
             _assetToBundles.Clear();
             _bundleToDependencies.Clear();
-
-            Log(string.Format(
-                "Initialize with: runtimeMode={0}\nbasePath：{1}\nupdatePath={2}",
-                runtimeMode, basePath, updatePath));
-
-            var request = new ManifestRequest {url = ManifestAsset};
-            AddAssetRequest(request);
-            return request;
         }
 
         private static SceneAssetRequest _runningScene;

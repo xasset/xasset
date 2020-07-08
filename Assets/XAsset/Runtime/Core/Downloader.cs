@@ -117,12 +117,12 @@ namespace libx
             _lastTime = 0f;
             _lastSize = 0L;
             _startTime = 0;
-            _started = false;
-
-            foreach (var item in _downloads)
+            _started = false; 
+            foreach (var item in _progressing)
             {
                 item.Complete(true);
             }
+            _progressing.Clear();
             _downloads.Clear();
             _tostart.Clear();
         }

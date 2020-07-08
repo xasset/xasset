@@ -119,6 +119,7 @@ namespace libx
             OnProgress(0);
             _versions.Clear();
             _downloader.Clear();
+            Assets.Clear();
             if (listener != null)
             {
                 listener.OnClear();
