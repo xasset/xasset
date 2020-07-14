@@ -149,7 +149,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -320}
-  m_SizeDelta: {x: 0, y: 169.92001}
+  m_SizeDelta: {x: 0, y: 174}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &128105008
 MonoBehaviour:
@@ -388,11 +388,11 @@ RectTransform:
   m_Father: {fileID: 1205832339}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -18, y: 18}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 8, y: 8}
   m_SizeDelta: {x: 240, y: 30}
-  m_Pivot: {x: 1, y: 0}
+  m_Pivot: {x: 0, y: 0}
 --- !u!114 &245034301
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -415,18 +415,20 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 24
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
     m_MaxSize: 40
-    m_Alignment: 8
+    m_Alignment: 6
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: 'APP: 4.0
+
+    RES: 1'
 --- !u!222 &245034302
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -836,9 +838,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16b97ae374d27c0479dce9413bde907d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseURL: http://129.211.169.183:7888/DLC/
+  baseURL: http://192.168.1.111:7888/DLC/
   gameScene: Game.unity
-  maxDownloads: 3
   enableVFS: 0
 --- !u!1 &648277903
 GameObject:
@@ -1170,7 +1171,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 456.48}
+  m_SizeDelta: {x: 0, y: 505}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &898501504
 MonoBehaviour:
@@ -1219,9 +1220,12 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1.2
-  m_Text: "<b><size=48>XASSET 4.0</size></b>\n\u4E3A\u4F60\u63D0\u4F9B\u66F4\u7CBE\u7B80\u9AD8\u6548\u5B89\u5168\u7684Unity\u9879\u76EE\u8D44\u6E90\u7BA1\u7406\u65B9\u6848\n@2020
+  m_Text: "<b><size=48>XASSET 4.0</size></b>\n\u4E3A\u4F60\u63D0\u4F9B\u66F4\u7CBE\u7B80\u3001\u9AD8\u6548\u3001\u5B89\u5168\u7684Unity\u9879\u76EE\u8D44\u6E90\u7BA1\u7406\u65B9\u6848\n@2020
     XASSET, ALL RIGHT RESERVED.\n\n<b><size=36>\u65B0\u7279\u6027</size></b>\nVFS
-    \u8BA9IO\u6027\u80FD\u548C\u5B89\u5168\u6027\u5F97\u5230\u663E\u8457\u63D0\u5347\n\u5927\u5C0F\u5305\u7248\u672C\u66F4\u65B0\uFF0C\u6307\u7EB9\u6821\u9A8C\uFF0C\u5F02\u5E38\u5904\u7406\u66F4\u5B8C\u5584\u4E5F\u66F4\u7CBE\u70BC\n\u66F4\u667A\u80FD\u7684\u5BFB\u5740\u6A21\u5F0F\u4E0E\u66F4\u53EF\u63A7\u7684GC\n\n<b><size=36>\u8D21\u732E\u6210\u5458\uFF08\u6392\u540D\u4E0D\u5206\u5148\u540E\uFF09</size></b>"
+    \u8BA9\u8D44\u6E90\u7684IO\u6027\u80FD\u548C\u5B89\u5168\u6027\u5728Android\u8BBE\u5907\u4E0A\u5F97\u5230\u53EF\u89C2\u63D0\u5347\nVersions
+    \u652F\u6301\u5927\u5C0F\u5305\u7248\u672C\u66F4\u65B0\uFF0C\u8D44\u6E90\u4E0B\u8F7D\u65AD\u70B9\u7EED\u4F20\u3001\u7248\u672C\u6821\u9A8C\uFF0C\u5F02\u5E38\u590D\u539F\uFF0C\u53EF\u914D\u7F6E\u7684\u5E76\u53D1\u6570\u91CF\u7B49\nLazy
+    GC \u652F\u6301\u66F4\u53EF\u63A7\u7684\u6309\u9700\u56DE\u6536\u8D44\u6E90\u7B56\u7565\u5F00\u9500\u66F4\u5C11\u6027\u80FD\u66F4\u597D\nSearchPath
+    \u652F\u6301\u66F4\u667A\u80FD\u7684\u5BFB\u5740\u6A21\u5F0F\n\n<b><size=36>\u8D21\u732E\u6210\u5458\uFF08\u6392\u540D\u4E0D\u5206\u5148\u540E\uFF09</size></b>"
 --- !u!222 &898501506
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1904,7 +1908,7 @@ RectTransform:
   m_GameObject: {fileID: 1259287721}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0005001, y: 1.0005001, z: 1.0005001}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1205832339}
   m_RootOrder: 0
@@ -2228,7 +2232,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 597.60004}
+  m_SizeDelta: {x: 0, y: 652}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1816333687
 MonoBehaviour:
@@ -2311,7 +2315,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1.2
-  m_Text: "yusjoel\r\nhemingfei\r\nveboys\nwoshihuo12\r\nCatImmortal\r\nZhangDi\r\nQuinShuai\r\nsongtm\r\nwoodelfLee\r\nLostEarth\r\nCoeur\r\nXINCGer\r\n\u70DF\u96E8\u8FF7\u79BB\u534A\u4E16\u6B87\n\u571F\u8C46"
+  m_Text: "yusjoel\r\nhemingfei\r\nwoshihuo12\r\nCatImmortal\r\nQuinShuai\r\r\nwoodelfLee\r\nLostEarth\r\nCoeur\r\nsongtm\uFF08\u660E\u660E\uFF09\nveboys\uFF08\u7A7A\u6C14\u6709\u6BD2\uFF09\nZhangDi\r\uFF08\u732A\u603B\uFF09\n\u70DF\u96E8\u8FF7\u79BB\u534A\u4E16\u6B87\nXINCGer\r(\u9A6C\u4E09\u5C0F\u4F19\u513F)\ntdouguo\uFF08\u571F\u8C46\uFF09\nJasonXuDeveloper\uFF08\u5091\uFF09"
 --- !u!222 &1816333691
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -38,7 +38,7 @@ namespace libx
 
         private void Start()
         {
-            version.text = "1";
+            version.text = "APP: 4.0\nRES：1";
 			var updater = FindObjectOfType<Updater> ();
 			updater.listener = this; 
         }
@@ -62,7 +62,7 @@ namespace libx
 
         public void OnVersion(string ver)
         {
-            version.text = ver;
+            version.text = "APP: 4.0\nRES: " + ver;
         }
 
 

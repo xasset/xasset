@@ -228,7 +228,7 @@ namespace libx
 			for (var i = 0; i < rules.ruleAssets.Length; i++) {
 				var item = rules.ruleAssets [i];
 				var path = item.path;
-				var dir = Path.GetDirectoryName (path);
+				var dir = Path.GetDirectoryName (path).Replace("\\", "/");
 				var index = dirs.FindIndex (o => o.Equals (dir));
 				if (index == -1) {
 					index = dirs.Count;
