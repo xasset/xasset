@@ -114,8 +114,8 @@ namespace libx
         [Tooltip("BuildPlayer 的时候被打包的场景")] public UnityEngine.Object[] scenes = new UnityEngine.Object[0]; 
         public BuildRule[] rules = new BuildRule[0]; 
 		[Header("Assets")]
-		public RuleAsset[] ruleAssets = new RuleAsset[0];
-		public RuleBundle[] ruleBundles = new RuleBundle[0];
+		[HideInInspector]public RuleAsset[] ruleAssets = new RuleAsset[0];
+        [HideInInspector]public RuleBundle[] ruleBundles = new RuleBundle[0];
         #region API
 
         public int AddVersion()
