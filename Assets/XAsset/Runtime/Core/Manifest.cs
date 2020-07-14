@@ -51,7 +51,6 @@ namespace libx
     {
         public string[] activeVariants = new string[0];
         public string[] dirs = new string[0];
-        public string[] searchDirs = new string[0];
         public AssetRef[] assets = new AssetRef[0];
         public BundleRef[] bundles = new BundleRef[0];
     }

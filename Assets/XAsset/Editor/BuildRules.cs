@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace libx
 {
@@ -111,7 +112,7 @@ namespace libx
 		[Tooltip("构建的版本号")]
 		[Header("Builds")] 
         public int version;
-        [Tooltip("BuildPlayer 的时候被打包的场景")] public UnityEngine.Object[] scenes = new UnityEngine.Object[0]; 
+        [Tooltip("BuildPlayer 的时候被打包的场景")] public SceneAsset[] scenesInBuild = new SceneAsset[0]; 
         public BuildRule[] rules = new BuildRule[0]; 
 		[Header("Assets")]
 		[HideInInspector]public RuleAsset[] ruleAssets = new RuleAsset[0];

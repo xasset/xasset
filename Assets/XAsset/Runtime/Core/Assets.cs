@@ -206,9 +206,8 @@ namespace libx
 
         internal static void OnLoadManifest(Manifest manifest)
         {
-            _activeVariants.AddRange(manifest.activeVariants);
-            _searchPaths.AddRange(manifest.searchDirs);
-
+            _activeVariants.AddRange(manifest.activeVariants); 
+            
             var assets = manifest.assets;
             var dirs = manifest.dirs;
             var bundles = manifest.bundles;

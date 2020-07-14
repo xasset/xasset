@@ -27,6 +27,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor.Experimental.Build.AssetBundle;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -50,6 +51,7 @@ namespace libx
         [SerializeField] private string baseURL = "http://127.0.0.1:7888/";
         [SerializeField] private string gameScene = "Game.unity";
         [SerializeField] private bool enableVFS;
+        [SerializeField] private bool development;
         public IUpdater listener { get; set; }
         private Downloader _downloader;
         private string _platform;
@@ -147,6 +149,12 @@ namespace libx
 
         public void StartUpdate()
         {
+            if (development)
+            {
+                StartCoroutine(LoadGameScene());
+                return;
+            }
+            
             OnStart();
 
             if (checking != null)
@@ -222,7 +230,7 @@ namespace libx
         }
 
         private IEnumerator Checking()
-        {
+        { 
             if (!Directory.Exists(_savePath))
             {
                 Directory.CreateDirectory(_savePath);
@@ -396,8 +404,9 @@ namespace libx
         private IEnumerator LoadGameScene()
         {
             OnMessage("正在初始化");
-            Assets.runtimeMode = true;
+            Assets.runtimeMode = !development;
             var init = Assets.Initialize();
+            Assets.AddSearchPath("Assets/XAsset/Demo/Scenes");
             yield return init;  
             if (string.IsNullOrEmpty(init.error))
             {

@@ -124,7 +124,7 @@ namespace libx
 		private static string[] GetLevelsFromBuildSettings ()
 		{
 			List<string> scenes = new List<string> ();
-			foreach (var item in GetBuildRules().scenes) {
+			foreach (var item in GetBuildRules().scenesInBuild) {
 				var path = AssetDatabase.GetAssetPath (item);
 				if (!string.IsNullOrEmpty (path)) {
 					scenes.Add (path);
@@ -239,7 +239,6 @@ namespace libx
 				assets.Add (asset);
 			}
 
-			manifest.searchDirs = Array.ConvertAll (rules.rules, input => input.searchPath);
 			manifest.dirs = dirs.ToArray ();
 			manifest.assets = assets.ToArray ();
 			manifest.bundles = bundleRefs.ToArray ();
