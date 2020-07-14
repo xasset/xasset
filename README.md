@@ -21,7 +21,7 @@ A more streamlined, efficient and secure Unity Resource Management Solution for 
 - **Runtime Mode**: can be used in Unity Editor without building AssetBundles, which means there is no need to waste time on waiting builds while developing.
 - **Does not Depend on Coroutines**: compare to other solutions which highly depends coroutine, XAsset performs better, and developers can use less codes to write nicer and more efficient asynchronous parallel codes.
 - **Use reference counts to manage life cycle of object**: Avoid repeated loads and accidentally unload, which can properly handle life cycle of objects. It doesn't use weak reference, which is more convinient to use in multiple coding language environment, eg. avoid C# has to wait for Lua to call GC so it can recycle resource while cross-referencing in C# and Lua.
-- **Rule based strategy for assetBundles**: After set the rules, base-code will automatically collect all resources to build, and will analyse the redundancies and confilcts, then optimize automatically. It can effectively solve the redundancy of most non-built-in resources.
+- **Rule based strategy for Build AssetBundles**: After set the rules, base-code will automatically collect all resources to build, and will analyse the redundancies and confilcts, then optimize automatically. It can effectively solve the redundancy of most non-built-in resources.
 - **Non-generic API design**: more friendly to Lua, more convinient to use in multiple coding language environment.
 
 ## More About
