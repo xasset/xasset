@@ -46,6 +46,7 @@ namespace libx
         void OnClear();
     }
 
+    [RequireComponent(typeof(Downloader))]
     public class Updater : MonoBehaviour, IUpdater
     {
         [SerializeField] private string baseURL = "http://127.0.0.1:7888/";
@@ -84,7 +85,7 @@ namespace libx
 
         private void Start()
         {
-            _downloader = gameObject.AddComponent<Downloader>();
+            _downloader = gameObject.GetComponent<Downloader>(); 
             _downloader.onUpdate = OnUpdate;
             _downloader.onFinished = OnComplete;
 
