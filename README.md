@@ -1,6 +1,6 @@
 # XASSET 4.0
 
-An Unity Resource Management Solution which is more streamlined, efficient and secure for you.
+A more streamlined, efficient and secure Unity Resource Management Solution for you.
 - Official Website: <https://www.xasset.org>
 - Github: <https://github.com/xasset/xasset>
 - QQ Group: [693203087](https://jq.qq.com/?_wv=1027&k=5DyV09a)
