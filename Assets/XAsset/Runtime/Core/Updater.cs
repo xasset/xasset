@@ -27,7 +27,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor.Experimental.Build.AssetBundle;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -150,12 +149,14 @@ namespace libx
 
         public void StartUpdate()
         {
+#if UNITY_EDITOR
             if (development)
             {
+                Assets.runtimeMode = false;
                 StartCoroutine(LoadGameScene());
                 return;
             }
-            
+#endif
             OnStart();
 
             if (checking != null)
@@ -405,7 +406,6 @@ namespace libx
         private IEnumerator LoadGameScene()
         {
             OnMessage("正在初始化");
-            Assets.runtimeMode = !development;
             var init = Assets.Initialize();
             Assets.AddSearchPath("Assets/XAsset/Demo/Scenes");
             yield return init;  

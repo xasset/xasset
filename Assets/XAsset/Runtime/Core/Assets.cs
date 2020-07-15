@@ -30,7 +30,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
@@ -41,7 +40,7 @@ namespace libx
         public static readonly string ManifestAsset = "Assets/Manifest.asset";
         public static readonly string Extension = ".unity3d";
 
-        public static bool runtimeMode = false;
+        public static bool runtimeMode = true;
         public static Func<string, Type, Object> loadDelegate = null;
         private const string TAG = "[Assets]";
 
