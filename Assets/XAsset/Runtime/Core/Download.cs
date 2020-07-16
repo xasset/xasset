@@ -55,9 +55,13 @@ namespace libx
         public string hash { get; set; }
         public string url { get; set; }
         public long position { get; private set; }
+
         public string tempPath
         {
-            get { return Application.persistentDataPath + "/temp_" + hash; }
+            get { 
+				var dir = Path.GetDirectoryName(savePath);
+				return string.Format ("{0}/{1}", dir, hash);
+			}
         }
 
         public string savePath;

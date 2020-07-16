@@ -35,7 +35,6 @@ namespace libx
 {
     public static class MenuItems
     {
-        public const string KRuntimeMode = "Assets/Bundles/Enable RuntimeMode";
         private const string KApplyBuildRules = "Assets/Bundles/Build Rules";
         private const string KBuildAssetBundles = "Assets/Bundles/Build Bundles";
         private const string KBuildPlayer = "Assets/Bundles/Build Player";
@@ -154,23 +153,7 @@ namespace libx
         private static void CopyAssetBundles()
         {
             BuildScript.CopyAssetBundlesTo(Application.streamingAssetsPath);
-        }
-
-        [MenuItem(KRuntimeMode)]
-        private static void EnabledRuntimeMode()
-        {
-            var settings = BuildScript.GetSettings();
-            if (!Menu.GetChecked(KRuntimeMode))
-            {
-                Menu.SetChecked(KRuntimeMode, true);
-                settings.runtimeMode = true;
-            }
-            else
-            {
-                Menu.SetChecked(KRuntimeMode, false);
-                settings.runtimeMode = false;
-            }
-        }
+        } 
 
 #if !UNITY_2018_OR_NEWER
         private const string KCopyPath = "Assets/Copy Path";

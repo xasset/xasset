@@ -83,6 +83,17 @@ public class MessageBox : IEnumerator
         _showed.Clear(); 
     }
 
+    public static void CloseAll()
+    {
+        for (var index = 0; index < _showed.Count; index++)
+        {
+            var messageBox = _showed[index];
+            messageBox.Hide();
+            _hidden.Add(messageBox);
+        }
+        _showed.Clear();
+    }
+
     public static MessageBox Show(string title, string content, string ok = "确定", string no = "取消")
     {
         if (_hidden.Count > 0)
@@ -174,15 +185,25 @@ public class MessageBox : IEnumerator
                 throw new ArgumentOutOfRangeException("id", id, null);
         }
 
-        gameObject.SetActive(false);
-        _hidden.Add(this);
-        _showed.Remove(this);
-        _visible = false;
+        Close();
 
         isOk = id == EventId.Ok;
 
         if (onComplete == null) return;
         onComplete(id);
         onComplete = null;
+    }
+
+    public void Close()
+    {
+        Hide();
+        _hidden.Add(this);
+        _showed.Remove(this);
+    }
+
+    private void Hide()
+    {
+        gameObject.SetActive(false);
+        _visible = false;
     }
 }

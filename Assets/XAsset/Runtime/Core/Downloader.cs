@@ -70,19 +70,21 @@ namespace libx
         }
 
         private bool _started;
+        [SerializeField]private float sampleTime = 0.5f;
 
         public void StartDownload()
         {
             _tostart.Clear(); 
             _finishedIndex = 0; 
+            _lastSize = 0L;
             Restart();
         }
 
         public void Restart()
         {
-            _lastTime = 0f;
-            _lastSize = 0L;
+            Stop();  
             _startTime = Time.realtimeSinceStartup;
+            _lastTime = 0;
             _started = true;
             _downloadIndex = _finishedIndex;
             var max = Math.Min(_downloads.Count, maxDownloads);
@@ -94,7 +96,7 @@ namespace libx
             }
         }
 
-        public void StopAll()
+        public void Stop()
         {
             _tostart.Clear();
             foreach (var download in _progressing)
@@ -158,6 +160,7 @@ namespace libx
                 _downloadIndex++;    
             } 
             _finishedIndex++;
+			Debug.Log (string.Format ("OnFinished:{0}, {1}", _finishedIndex, _downloads.Count));
             if (_finishedIndex != downloads.Count)
                 return;
             if (onFinished != null)
@@ -191,32 +194,13 @@ namespace libx
                 return string.Format("{0:f2}KB", downloadSize / 1024);
             }
             return string.Format("{0:f2}B", downloadSize);
-        }
-
-
-        private void OnApplicationFocus(bool hasFocus)
-        {
-            if (_downloads.Count <= 0)
-                return; 
-#if UNITY_EDITOR
-            return;
-#else
-            if (hasFocus)
-            {
-            Restart(); 
-            }
-            else
-            {
-            StopAll();
-            }
-#endif
-        }
+        } 
 
 
         private void Update()
         {
             if (!_started)
-                return;
+                return; 
             
             if (_tostart.Count > 0)
             {
@@ -243,7 +227,7 @@ namespace libx
             position = GetDownloadSize(); 
             
             var elapsed = Time.realtimeSinceStartup - _startTime;
-            if (!(elapsed - _lastTime > 0.5f))
+            if (elapsed - _lastTime < sampleTime)
                 return;
             
             var deltaTime = elapsed - _lastTime; 
@@ -255,6 +239,6 @@ namespace libx
             
             _lastTime = elapsed;  
             _lastSize = position;
-        }
+        } 
     }
 }

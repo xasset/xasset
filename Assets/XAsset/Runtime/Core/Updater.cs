@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -46,17 +47,29 @@ namespace libx
     }
 
     [RequireComponent(typeof(Downloader))]
-    public class Updater : MonoBehaviour, IUpdater
+    [RequireComponent(typeof(NetworkMonitor))]
+    public class Updater : MonoBehaviour, IUpdater, INetworkMonitorListener
     {
+        public const int STEP_INVALID = -1;
+        public const int STEP_IDLE = 0;
+        public const int STEP_VFS = 1;
+        public const int STEP_COPY = 2;
+        public const int STEP_VERSIONS = 3;
+        public const int STEP_DOWNLOAD = 4;
+        public const int STEP_COMPLETE = 5;
+        private int _step;
+
         [SerializeField] private string baseURL = "http://127.0.0.1:7888/";
         [SerializeField] private string gameScene = "Game.unity";
         [SerializeField] private bool enableVFS;
         [SerializeField] private bool development;
         public IUpdater listener { get; set; }
         private Downloader _downloader;
+        private NetworkMonitor _monitor;
         private string _platform;
         private string _savePath;
         private List<VFile> _versions = new List<VFile>();
+
 
         public void OnMessage(string msg)
         {
@@ -84,19 +97,99 @@ namespace libx
 
         private void Start()
         {
-            _downloader = gameObject.GetComponent<Downloader>(); 
+            _downloader = gameObject.GetComponent<Downloader>();
             _downloader.onUpdate = OnUpdate;
             _downloader.onFinished = OnComplete;
 
-            _savePath = Application.persistentDataPath + '/';
+            _monitor = gameObject.GetComponent<NetworkMonitor>();
+            _monitor.listener = this;
+
+			_savePath = string.Format ("{0}/DLC/", Application.persistentDataPath);
             Assets.updatePath = _savePath;
             _platform = GetPlatformForAssetBundles(Application.platform);
+
+            _step = STEP_IDLE;
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (_reachabilityChanged)
+            {
+                return;
+            }
+#if !UNITY_EDITOR
+            if (_step < 4)
+            {
+                StartUpdate();
+            }
+            else if(_step == 4)
+            {
+                if (hasFocus)
+                {
+                    _downloader.Restart();
+                } 
+            }
+#endif
+        }
+
+        private bool _reachabilityChanged = false;
+        
+        public void OnNetworkReachablityChanged(NetworkReachability reachability)
+        {
+            
+            if (_step == 0)
+            {
+                return;
+            } 
+            _reachabilityChanged = true; 
+            if (_step == 4)
+            {
+                _downloader.Stop(); 
+            } 
+            if (reachability == NetworkReachability.NotReachable)
+            { 
+                MessageBox.Show("提示！", "找不到网络，请确保手机已经联网", "确定", "退出").onComplete += delegate(MessageBox.EventId id)
+                {
+                    if (id == MessageBox.EventId.Ok)
+                    {
+                        if (_step < 4)
+                        {
+                            StartUpdate();
+                        }
+                        else if (_step == 4)
+                        {
+                            _downloader.Restart();
+                        }
+                        _reachabilityChanged = false;
+                    }
+                    else
+                    {
+                        Quit();
+                    }
+                };
+            }
+            else
+            {
+                if (_step < 4)
+                {
+                    StartUpdate();
+                }
+                else if (_step == 4)
+                {
+                    _downloader.Restart();
+                }
+                _reachabilityChanged = false;
+                MessageBox.CloseAll(); 
+            }
         }
 
         private void OnUpdate(long progress, long size, float speed)
         {
-            OnMessage(string.Format("下载中...{0}/{1}, {2} 速度：{3}", progress, size,
-                Downloader.GetDisplaySize(progress), Downloader.GetDisplaySpeed(speed)));
+            OnMessage(string.Format("下载中...{0}/{1}, 速度：{2}",
+                Downloader.GetDisplaySize(progress),
+                Downloader.GetDisplaySize(size),
+                Downloader.GetDisplaySpeed(speed)));
+
             OnProgress(progress * 1f / size);
         }
 
@@ -111,16 +204,21 @@ namespace libx
         }
 
         public void OnClear()
-        { 
+        {
             OnMessage("数据清除完毕");
             OnProgress(0);
             _versions.Clear();
             _downloader.Clear();
+            _step = STEP_IDLE;
+            _reachabilityChanged = false;
+            
             Assets.Clear();
+            
             if (listener != null)
             {
                 listener.OnClear();
             }
+
             if (Directory.Exists(_savePath))
             {
                 Directory.Delete(_savePath, true);
@@ -137,7 +235,7 @@ namespace libx
 
         public void Stop()
         {
-            _downloader.StopAll();
+            _downloader.Stop();
         }
 
         public void Restart()
@@ -145,7 +243,7 @@ namespace libx
             _downloader.Restart();
         }
 
-        private IEnumerator checking;
+        private IEnumerator _checking;
 
         public void StartUpdate()
         {
@@ -159,14 +257,14 @@ namespace libx
 #endif
             OnStart();
 
-            if (checking != null)
+            if (_checking != null)
             {
-                StopCoroutine(checking);
+                StopCoroutine(_checking);
             }
 
-            checking = Checking();
+            _checking = Checking();
 
-            StartCoroutine(checking);
+            StartCoroutine(_checking);
         }
 
         private void AddDownload(VFile item)
@@ -183,7 +281,8 @@ namespace libx
                 {
                     AddDownload(_versions[0]);
                     return;
-                } 
+                }
+
                 Versions.LoadDisk(path);
             }
 
@@ -232,17 +331,32 @@ namespace libx
         }
 
         private IEnumerator Checking()
-        { 
+        {
             if (!Directory.Exists(_savePath))
             {
                 Directory.CreateDirectory(_savePath);
-            } 
-            yield return RequestVFS();
-            yield return RequestCopy(); 
-            yield return RequestVersions(); 
+            }
+
+            if (_step == STEP_IDLE)
+            {
+                yield return RequestVFS();
+                _step = STEP_COPY;
+            }
+
+            if (_step == STEP_COPY)
+            {
+                yield return RequestCopy();
+                _step = STEP_VERSIONS;
+            }
+
+            if (_step == STEP_VERSIONS)
+            {
+                yield return RequestVersions();
+            }
+
             if (_versions.Count > 0)
             {
-                OnMessage("正在检查版本信息..."); 
+                OnMessage("正在检查版本信息...");
                 PrepareDownloads();
                 var totalSize = _downloader.size;
                 if (totalSize > 0)
@@ -252,12 +366,14 @@ namespace libx
                     yield return mb;
                     if (mb.isOk)
                     {
+                        _step = STEP_DOWNLOAD;
                         _downloader.StartDownload();
                         yield break;
                     }
                 }
             }
-            OnComplete();  
+
+            OnComplete();
         }
 
         private IEnumerator RequestVersions()
@@ -277,12 +393,32 @@ namespace libx
                 else
                 {
                     Quit();
-                    MessageBox.Dispose();
-                } 
+                }
+
                 yield break; // yield break;
-            } 
+            }
+
             request.Dispose();
-            _versions = Versions.LoadVersions(_savePath + Versions.Filename, true);
+            try
+            {
+                _versions = Versions.LoadVersions(_savePath + Versions.Filename, true);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                MessageBox.Show("提示", "版本文件加载失败", "重试", "退出").onComplete +=
+                    delegate(MessageBox.EventId id)
+                    {
+                        if (id == MessageBox.EventId.Ok)
+                        {
+                            StartUpdate();
+                        }
+                        else
+                        {
+                            Quit(); 
+                        }
+                    };
+            }
         }
 
         private static string GetStreamingAssetsPath()
@@ -381,7 +517,8 @@ namespace libx
                             hash = download.hash,
                             len = download.len,
                         });
-                    } 
+                    }
+
                     var file = files[0];
                     if (!file.name.Equals(Versions.Dataname))
                     {
@@ -400,6 +537,8 @@ namespace libx
                 OnVersion(version.ToString());
             }
 
+            _step = STEP_COMPLETE;
+
             StartCoroutine(LoadGameScene());
         }
 
@@ -407,11 +546,11 @@ namespace libx
         {
             OnMessage("正在初始化");
             var init = Assets.Initialize();
-            Assets.AddSearchPath("Assets/XAsset/Demo/Scenes");
-            yield return init;  
+            yield return init;
             if (string.IsNullOrEmpty(init.error))
             {
-                init.Release(); 
+                Assets.AddSearchPath("Assets/XAsset/Demo/Scenes");  
+                init.Release();
                 OnProgress(0);
                 OnMessage("加载游戏场景");
                 var scene = Assets.LoadSceneAsync(gameScene, false);
@@ -436,7 +575,7 @@ namespace libx
         }
 
         private void Quit()
-        {
+        {  
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else

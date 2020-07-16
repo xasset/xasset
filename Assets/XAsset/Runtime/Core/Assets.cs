@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-//#define LOG_ENABLE
+#define LOG_ENABLE
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -68,12 +68,7 @@ namespace libx
         public static string updatePath { get; set; } 
 
         public static void AddSearchPath(string path)
-        {
-            if (!path.EndsWith("/"))
-            {
-                path += "/";
-            }
-
+        { 
             _searchPaths.Add(path);
         }
 

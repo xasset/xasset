@@ -62,29 +62,20 @@ namespace libx
 			return GetAsset<BuildRules> ("Assets/Rules.asset");
 		} 
 
-		public static void CopyAssetBundlesTo (string outputPath)
+		public static void CopyAssetBundlesTo (string path)
 		{ 
 			var files = new[] {
 				Versions.Dataname,
 				Versions.Filename,
-			};
-			foreach (var item in files) {
-				var dest = Application.streamingAssetsPath + "/" + item;
-				if (File.Exists (dest)) {
-					File.Delete (dest);
-				}
+			};  
+			if (!Directory.Exists (path)) {
+				Directory.CreateDirectory (path);
 			} 
-			var settings = BuildScript.GetSettings ();
-			if (settings.copyToStreamingAssets) {
-				if (!Directory.Exists (outputPath)) {
-					Directory.CreateDirectory (outputPath);
-				} 
-				foreach (var item in files) {
-					var src = outputPath + "/" + item;
-					var dest = Application.streamingAssetsPath + "/" + item;
-					if (File.Exists (src)) {
-						File.Copy (src, dest, true);
-					}
+			foreach (var item in files) {
+				var src = outputPath + "/" + item;
+				var dest = Application.streamingAssetsPath + "/" + item;
+				if (File.Exists (src)) {
+					File.Copy (src, dest, true);
 				}
 			}
 		}
@@ -160,7 +151,7 @@ namespace libx
 				return;
 #if UNITY_5_4 || UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0
 			BuildOptions option = EditorUserBuildSettings.development ? BuildOptions.Development : BuildOptions.None;
-			BuildPipeline.BuildPlayer(levels, outputPath + targetName, EditorUserBuildSettings.activeBuildTarget, option);
+			BuildPipeline.BuildPlayer(levels, path + targetName, EditorUserBuildSettings.activeBuildTarget, option);
 #else
 			var buildPlayerOptions = new BuildPlayerOptions {
 				scenes = levels,
@@ -305,13 +296,7 @@ namespace libx
 			}
 
 			return asset;
-		}
-
-		public static Settings GetSettings ()
-		{
-			const string path = "Assets/Settings.asset";
-			return GetAsset<Settings> (path);
-		}
+		} 
 
 		public static Manifest GetManifest ()
 		{

@@ -31,16 +31,13 @@ using UnityEngine;
 
 namespace libx
 {
-    public static class EditorRuntimeInitializeOnLoad
+    public class EditorRuntimeInitializeOnLoad
     {
         [RuntimeInitializeOnLoadMethod]
         private static void OnInitialize()
         {
-            var settings = BuildScript.GetSettings();
 			Assets.basePath = BuildScript.outputPath + Path.DirectorySeparatorChar;
-            Assets.runtimeMode = settings.runtimeMode;
-            Assets.loadDelegate = AssetDatabase.LoadAssetAtPath;
-
+            Assets.loadDelegate = AssetDatabase.LoadAssetAtPath; 
             var assets = new List<string>();
             var rules = BuildScript.GetBuildRules();
             foreach (var asset in rules.scenesInBuild)
@@ -66,7 +63,6 @@ namespace libx
                 scenes[index] = new EditorBuildSettingsScene(asset, true);
             }
             EditorBuildSettings.scenes = scenes;
-            Menu.SetChecked(MenuItems.KRuntimeMode, settings.runtimeMode);
         }
 
         [InitializeOnLoadMethod]
@@ -74,7 +70,6 @@ namespace libx
         {
             EditorUtility.ClearProgressBar();
             BuildScript.GetManifest();
-            BuildScript.GetSettings();
             BuildScript.GetBuildRules();
         }
     }
