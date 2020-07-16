@@ -82,7 +82,6 @@ namespace libx
 
         public void Restart()
         {
-            Stop();  
             _startTime = Time.realtimeSinceStartup;
             _lastTime = 0;
             _started = true;

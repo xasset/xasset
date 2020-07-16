@@ -59,11 +59,13 @@ namespace libx
         public const int STEP_COMPLETE = 5;
         private int _step;
 
-        [SerializeField] private string baseURL = "http://127.0.0.1:7888/";
+        [SerializeField] private string baseURL = "http://127.0.0.1:7888/DLC/";
         [SerializeField] private string gameScene = "Game.unity";
-        [SerializeField] private bool enableVFS;
-        [SerializeField] private bool development;
+        [SerializeField] private bool enableVFS = true;
+        [SerializeField] private bool development = false;
+
         public IUpdater listener { get; set; }
+
         private Downloader _downloader;
         private NetworkMonitor _monitor;
         private string _platform;
@@ -104,45 +106,52 @@ namespace libx
             _monitor = gameObject.GetComponent<NetworkMonitor>();
             _monitor.listener = this;
 
-			_savePath = string.Format ("{0}/DLC/", Application.persistentDataPath);
-            Assets.updatePath = _savePath;
+            _savePath = string.Format("{0}/DLC/", Application.persistentDataPath);
             _platform = GetPlatformForAssetBundles(Application.platform);
 
             _step = STEP_IDLE;
+
+            Assets.updatePath = _savePath; 
         }
 
         private void OnApplicationFocus(bool hasFocus)
         {
-            if (_reachabilityChanged)
+            if (_reachabilityChanged || _step == STEP_IDLE)
             {
                 return;
-            }
-#if !UNITY_EDITOR
-            if (_step < 4)
-            {
-                StartUpdate();
-            }
-            else if(_step == 4)
-            {
-                if (hasFocus)
+            } 
+            if (hasFocus)
+            { 
+                MessageBox.CloseAll();
+                if (_step < STEP_DOWNLOAD)
                 {
-                    _downloader.Restart();
-                } 
+                    StartUpdate();
+                }
+                else if (_step == STEP_DOWNLOAD)
+                {
+                    _downloader.Restart(); 
+                }
             }
-#endif
+            else
+            {
+                if (_step == STEP_DOWNLOAD)
+                {
+                    _downloader.Stop(); 
+                }
+            }
         }
 
         private bool _reachabilityChanged = false;
-        
-        public void OnNetworkReachablityChanged(NetworkReachability reachability)
+
+        public void OnReachablityChanged(NetworkReachability reachability)
         {
             
-            if (_step == 0)
+            if (_step == STEP_IDLE)
             {
                 return;
             } 
             _reachabilityChanged = true; 
-            if (_step == 4)
+            if (_step == STEP_DOWNLOAD)
             {
                 _downloader.Stop(); 
             } 
@@ -152,11 +161,11 @@ namespace libx
                 {
                     if (id == MessageBox.EventId.Ok)
                     {
-                        if (_step < 4)
+                        if (_step < STEP_DOWNLOAD)
                         {
                             StartUpdate();
                         }
-                        else if (_step == 4)
+                        else if (_step == STEP_DOWNLOAD)
                         {
                             _downloader.Restart();
                         }
@@ -170,11 +179,11 @@ namespace libx
             }
             else
             {
-                if (_step < 4)
+                if (_step < STEP_DOWNLOAD)
                 {
                     StartUpdate();
                 }
-                else if (_step == 4)
+                else if (_step == STEP_DOWNLOAD)
                 {
                     _downloader.Restart();
                 }
@@ -186,9 +195,9 @@ namespace libx
         private void OnUpdate(long progress, long size, float speed)
         {
             OnMessage(string.Format("下载中...{0}/{1}, 速度：{2}",
-                Downloader.GetDisplaySize(progress),
-                Downloader.GetDisplaySize(size),
-                Downloader.GetDisplaySpeed(speed)));
+                    Downloader.GetDisplaySize(progress),
+                    Downloader.GetDisplaySize(size),
+                    Downloader.GetDisplaySpeed(speed)));
 
             OnProgress(progress * 1f / size);
         }
@@ -247,6 +256,7 @@ namespace libx
 
         public void StartUpdate()
         {
+            Debug.Log("StartUpdate.Development:" + development); 
 #if UNITY_EDITOR
             if (development)
             {
@@ -408,16 +418,16 @@ namespace libx
                 Debug.LogException(e);
                 MessageBox.Show("提示", "版本文件加载失败", "重试", "退出").onComplete +=
                     delegate(MessageBox.EventId id)
+                {
+                    if (id == MessageBox.EventId.Ok)
                     {
-                        if (id == MessageBox.EventId.Ok)
-                        {
-                            StartUpdate();
-                        }
-                        else
-                        {
-                            Quit(); 
-                        }
-                    };
+                        StartUpdate();
+                    }
+                    else
+                    {
+                        Quit(); 
+                    }
+                };
             }
         }
 
@@ -512,11 +522,11 @@ namespace libx
                     foreach (var download in downloads)
                     {
                         files.Add(new VFile
-                        {
-                            name = Path.GetFileName(download.savePath),
-                            hash = download.hash,
-                            len = download.len,
-                        });
+                            {
+                                name = Path.GetFileName(download.savePath),
+                                hash = download.hash,
+                                len = download.len,
+                            });
                     }
 
                     var file = files[0];

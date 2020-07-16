@@ -4,7 +4,7 @@ namespace libx
 {
     public interface INetworkMonitorListener
     {
-        void OnNetworkReachablityChanged(NetworkReachability reachability);
+        void OnReachablityChanged(NetworkReachability reachability);
     }
     
     public class NetworkMonitor : MonoBehaviour
@@ -41,7 +41,7 @@ namespace libx
                 {
                     if (listener != null)
                     {
-                        listener.OnNetworkReachablityChanged(state);
+                        listener.OnReachablityChanged(state);
                     }
                     _reachability = state;
                 } 

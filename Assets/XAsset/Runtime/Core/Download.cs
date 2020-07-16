@@ -43,7 +43,8 @@ namespace libx
                 hash = hash,
                 url = url,
                 len = len,
-                savePath = savePath
+                savePath = savePath,
+                completed = completed,
             };
         }
 
