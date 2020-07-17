@@ -155,7 +155,7 @@ namespace libx
             BuildScript.CopyAssetBundlesTo(Application.streamingAssetsPath);
         } 
 
-#if !UNITY_2018_OR_NEWER
+#if !UNITY_2018_1_OR_NEWER
         private const string KCopyPath = "Assets/Copy Path";
         [MenuItem(KCopyPath)]
         private static void CopyPath()
