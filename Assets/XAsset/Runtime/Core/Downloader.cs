@@ -128,12 +128,13 @@ namespace libx
             _tostart.Clear();
         }
 
-        public void AddDownload(string url, string savePath, string hash, long len)
+        public void AddDownload(string url, string filename, string savePath, string hash, long len)
         {
             var download = new Download
             {
                 id = _downloads.Count,
                 url = url,
+                name = filename,
                 hash = hash,
                 len = len,
                 savePath = savePath,
@@ -159,7 +160,7 @@ namespace libx
                 _downloadIndex++;    
             } 
             _finishedIndex++;
-			Debug.Log (string.Format ("OnFinished:{0}, {1}", _finishedIndex, _downloads.Count));
+            Debug.Log(string.Format("OnFinished:{0}, {1}", _finishedIndex, _downloads.Count));
             if (_finishedIndex != downloads.Count)
                 return;
             if (onFinished != null)
@@ -193,7 +194,7 @@ namespace libx
                 return string.Format("{0:f2}KB", downloadSize / 1024);
             }
             return string.Format("{0:f2}B", downloadSize);
-        } 
+        }
 
 
         private void Update()
@@ -238,6 +239,6 @@ namespace libx
             
             _lastTime = elapsed;  
             _lastSize = position;
-        } 
+        }
     }
 }

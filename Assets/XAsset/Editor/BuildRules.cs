@@ -109,6 +109,8 @@ namespace libx
 		public string searchPatternPrefab = "*.prefab";
 		public string searchPatternScene = "*.unity";
 		public string searchPatternText = "*.txt,*.bytes,*.json,*.csv,*.xml,*htm,*.html,*.yaml,*.fnt";
+        public static bool nameByHash = true;
+        
 		[Tooltip("构建的版本号")]
 		[Header("Builds")] 
         public int version;
@@ -170,7 +172,11 @@ namespace libx
 
         private static string RuledAssetBundleName(string name)
         {
-            return Utility.GetMD5Hash(name) + Assets.Extension;
+            if (nameByHash)
+            {
+                return Utility.GetMD5Hash(name) + Assets.Extension; 
+            } 
+            return name.Replace("\\", "/").ToLower() + Assets.Extension;
         }
 
         private void Track(string asset, string bundle)

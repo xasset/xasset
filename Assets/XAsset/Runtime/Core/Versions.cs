@@ -121,6 +121,7 @@ namespace libx
 
 		public static List<VFile> LoadVersions (string filename, bool update = false)
 		{
+            var rootDir = Path.GetDirectoryName(filename);
 			var data = update ? _updateData : _baseData;
 			data.Clear ();
 			using (var stream = File.OpenRead (filename)) {
@@ -134,6 +135,11 @@ namespace libx
 					version.Deserialize (reader);
 					list.Add (version);
 					data [version.name] = version;
+                    var dir = string.Format("{0}/{1}", rootDir, Path.GetDirectoryName(version.name));
+                    if (! Directory.Exists(dir))
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
 				} 
 				return list;
 			}

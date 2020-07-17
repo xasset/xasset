@@ -116,6 +116,9 @@ namespace libx
 
         private void OnApplicationFocus(bool hasFocus)
         {
+#if UNITY_EDITOR
+            return;
+#endif
             if (_reachabilityChanged || _step == STEP_IDLE)
             {
                 return;
@@ -279,7 +282,7 @@ namespace libx
 
         private void AddDownload(VFile item)
         {
-            _downloader.AddDownload(GetDownloadURL(item.name), _savePath + item.name, item.hash, item.len);
+            _downloader.AddDownload(GetDownloadURL(item.name), item.name, _savePath + item.name, item.hash, item.len);
         }
 
         private void PrepareDownloads()
@@ -523,7 +526,7 @@ namespace libx
                     {
                         files.Add(new VFile
                             {
-                                name = Path.GetFileName(download.savePath),
+                                name = download.name,
                                 hash = download.hash,
                                 len = download.len,
                             });

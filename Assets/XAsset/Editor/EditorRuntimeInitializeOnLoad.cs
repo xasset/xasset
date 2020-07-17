@@ -69,8 +69,8 @@ namespace libx
         private static void OnEditorInitialize()
         {
             EditorUtility.ClearProgressBar();
-            BuildScript.GetManifest();
-            BuildScript.GetBuildRules();
+            // BuildScript.GetManifest();
+            // BuildScript.GetBuildRules();
         }
     }
 }

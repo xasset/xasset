@@ -45,29 +45,39 @@ namespace libx
                 len = len,
                 savePath = savePath,
                 completed = completed,
+                name = name
             };
         }
 
         #endregion
 
         public int id { get; set; }
+
         public string error { get; private set; }
+
         public long len { get; set; }
+
         public string hash { get; set; }
+
         public string url { get; set; }
+
         public long position { get; private set; }
+
+        public string name { get; set; }
 
         public string tempPath
         {
-            get { 
-				var dir = Path.GetDirectoryName(savePath);
-				return string.Format ("{0}/{1}", dir, hash);
-			}
+            get
+            { 
+                var dir = Path.GetDirectoryName(savePath);
+                return string.Format("{0}/{1}", dir, hash);
+            }
         }
 
         public string savePath;
 
         public Action<Download> completed { get; set; }
+
         private UnityWebRequest _request;
         private FileStream _stream;
         private bool _running;
@@ -104,7 +114,7 @@ namespace libx
         protected override void CompleteContent()
         {
             Complete();
-        } 
+        }
 
         public override string ToString()
         {
@@ -146,7 +156,7 @@ namespace libx
                 {
                     error = "unknown error: downloadedBytes < len";
                 }
-                if (! string.IsNullOrEmpty(_request.error))
+                if (!string.IsNullOrEmpty(_request.error))
                 {
                     error = _request.error;
                 } 
@@ -209,7 +219,8 @@ namespace libx
                     File.Copy(tempPath, savePath, true);
                     File.Delete(tempPath); 
                     Debug.Log("Complete Download：" + url);
-                    if (completed == null) return;
+                    if (completed == null)
+                        return;
                     completed.Invoke(this);
                     completed = null; 
                 }
@@ -228,7 +239,7 @@ namespace libx
         {
             Dispose(); 
             Start();
-        } 
+        }
 
         public bool finished
         {

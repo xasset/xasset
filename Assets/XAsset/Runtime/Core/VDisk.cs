@@ -91,7 +91,7 @@ namespace libx
 
 		public void AddFile (string path, long len, string hash)
 		{ 
-			var file = new VFile{ name = Path.GetFileName (path), len = len, hash = hash };
+			var file = new VFile{ name = path, len = len, hash = hash };
 			AddFile (file);
 		}
 
