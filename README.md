@@ -63,6 +63,7 @@ A more streamlined, efficient and secure Unity Resource Management Solution for 
 - [土豆](https://www.xasset.org/)
 - [JasonXuDeveloper](https://github.com/JasonXuDeveloper)
 - [大魔王有木桑](https://github.com/yomunsam)
+- [suixin567](https://github.com/suixin567)
 
 ## More Repository 
 
@@ -140,6 +141,7 @@ A more streamlined, efficient and secure Unity Resource Management Solution for 
 - [土豆](https://www.xasset.org/)
 - [JasonXuDeveloper](https://github.com/JasonXuDeveloper)
 - [大魔王有木桑](https://github.com/yomunsam)
+- [suixin567](https://github.com/suixin567)
 
 ## 更多项目
 
