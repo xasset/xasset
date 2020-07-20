@@ -55,8 +55,9 @@ namespace libx
         public const int STEP_VFS = 1;
         public const int STEP_COPY = 2;
         public const int STEP_VERSIONS = 3;
-        public const int STEP_DOWNLOAD = 4;
-        public const int STEP_COMPLETE = 5;
+        public const int STEP_PREPAREOVER = 4;
+        public const int STEP_DOWNLOAD = 5;
+        public const int STEP_COMPLETE = 6;
         private int _step;
 
         [SerializeField] private string baseURL = "http://127.0.0.1:7888/DLC/";
@@ -139,7 +140,7 @@ namespace libx
             {
                 if (_step == STEP_DOWNLOAD)
                 {
-                    _downloader.Stop(); 
+                    _downloader.Stop();
                 }
             }
         }
@@ -287,6 +288,11 @@ namespace libx
 
         private void PrepareDownloads()
         {
+            if (_step == STEP_PREPAREOVER)
+            {
+                return;
+            }
+            
             if (enableVFS)
             {
                 var path = string.Format("{0}{1}", _savePath, Versions.Dataname);
@@ -352,7 +358,9 @@ namespace libx
 
             if (_step == STEP_IDLE)
             {
+                //默认开器 VFS
                 yield return RequestVFS();
+//                enableVFS = true;
                 _step = STEP_COPY;
             }
 
@@ -371,6 +379,7 @@ namespace libx
             {
                 OnMessage("正在检查版本信息...");
                 PrepareDownloads();
+                _step = STEP_PREPAREOVER;
                 var totalSize = _downloader.size;
                 if (totalSize > 0)
                 {
