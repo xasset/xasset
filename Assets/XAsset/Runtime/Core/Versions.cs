@@ -113,10 +113,18 @@ namespace libx
 		{
 			if (!File.Exists (filename))
 				return -1;
-			using (var stream = File.OpenRead (filename)) {
-				var reader = new BinaryReader (stream);
-				return reader.ReadInt32 ();
+			try
+			{
+				using (var stream = File.OpenRead (filename)) {
+					var reader = new BinaryReader (stream);
+					return reader.ReadInt32 ();
+				}
 			}
+			catch (Exception e)
+			{
+				Debug.LogException(e);
+				return -1;
+			} 
 		}
 
 		public static List<VFile> LoadVersions (string filename, bool update = false)
