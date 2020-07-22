@@ -359,6 +359,7 @@ namespace libx
                 var versions = Versions.LoadVersions(path);
                 var basePath = GetStreamingAssetsPath() + "/";
                 yield return UpdateCopy(versions, basePath);
+                step = Step.Versions;
             }
 
             if (_step == Step.Versions)
@@ -384,6 +385,10 @@ namespace libx
                     {
                         Quit();
                     } 
+                }
+                else
+                {
+                    OnComplete();
                 }
             } 
         }
