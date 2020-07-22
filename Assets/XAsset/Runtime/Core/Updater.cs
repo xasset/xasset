@@ -388,7 +388,7 @@ namespace libx
                 }
                 else
                 {
-                    StartCoroutine(LoadGameScene());
+                    OnComplete();
                 }
             } 
         }
