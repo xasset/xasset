@@ -1,4 +1,4 @@
-﻿//
+﻿﻿//
 // Assets.cs
 //
 // Author:
@@ -38,7 +38,7 @@ namespace libx
     public sealed class Assets : MonoBehaviour
     {
         public static readonly string ManifestAsset = "Assets/Manifest.asset";
-        public static readonly string Extension = ".unity3d";
+        public static readonly string Extension = ".bundle";
 
         public static bool runtimeMode = true;
         public static Func<string, Type, Object> loadDelegate = null;
@@ -207,8 +207,10 @@ namespace libx
             var bundles = manifest.bundles;
 
             foreach (var item in bundles)
-                _bundleToDependencies[item.name] = Array.ConvertAll(item.deps, id => bundles[id].name);
+                _bundleToDependencies[item.name] = Array.ConvertAll(item.children, id => bundles[id].name);
 
+            _searchPaths.AddRange(dirs);
+            
             foreach (var item in assets)
             {
                 var path = string.Format("{0}/{1}", dirs[item.dir], item.name);

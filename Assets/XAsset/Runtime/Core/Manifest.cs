@@ -25,14 +25,15 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace libx
-{
+{  
     [Serializable]
     public class AssetRef
     {
-        public string name;
+        public string name; 
         public int bundle;
         public int dir;
     }
@@ -42,10 +43,11 @@ namespace libx
     {
         public string name;
         public int id;
-        public int[] deps;
+        public int[] children = new int[0];
         public long len;
         public string hash;
-    }
+        public string crc;
+    } 
 
     public class Manifest : ScriptableObject
     {

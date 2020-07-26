@@ -53,9 +53,7 @@ namespace libx
         enum Step
         {
             Wait,
-            Copy,
-            Coping,
-            Versions,
+            Version,
             Prepared,
             Download,
         }
@@ -64,7 +62,6 @@ namespace libx
 
         [SerializeField] private string baseURL = "http://127.0.0.1:7888/DLC/";
         [SerializeField] private string gameScene = "Game.unity";
-        [SerializeField] private bool enableVFS = true;
         [SerializeField] private bool development;
 
         public IUpdater listener { get; set; }
@@ -73,9 +70,7 @@ namespace libx
         private NetworkMonitor _monitor;
         private string _platform;
         private string _savePath;
-        private List<VFile> _versions = new List<VFile>();
-
-
+        
         public void OnMessage(string msg)
         {
             if (listener != null)
@@ -114,7 +109,7 @@ namespace libx
 
             _step = Step.Wait;
 
-            Assets.updatePath = _savePath;
+            Assets.updatePath = _savePath; 
         }
 
         private void OnApplicationFocus(bool hasFocus)
@@ -184,6 +179,7 @@ namespace libx
             }
             else
             {
+                MessageBox.CloseAll(); 
                 if (_step == Step.Download)
                 {
                     _downloader.Restart();
@@ -193,7 +189,6 @@ namespace libx
                     StartUpdate();
                 } 
                 _reachabilityChanged = false;
-                MessageBox.CloseAll();
             }
         }
 
@@ -221,21 +216,18 @@ namespace libx
         {
             OnMessage("数据清除完毕");
             OnProgress(0);
-            _versions.Clear();
+            Reset(); 
             _downloader.Clear();
             _step = Step.Wait;
-            _reachabilityChanged = false;
-
-            Assets.Clear();
-
+            _reachabilityChanged = false; 
+            Assets.Clear(); 
             if (listener != null)
             {
                 listener.OnClear();
-            }
-
-            if (Directory.Exists(_savePath))
+            }  
+            if (Directory.Exists(_savePath + Versions.Filename))
             {
-                Directory.Delete(_savePath, true);
+                Directory.Delete(_savePath + Versions.Filename, true);
             }
         }
 
@@ -245,9 +237,7 @@ namespace libx
             {
                 listener.OnStart();
             }
-        } 
-
-        private IEnumerator _checking;
+        }  
 
         public void StartUpdate()
         {
@@ -261,51 +251,91 @@ namespace libx
             }
 #endif
             OnStart();
-
-            if (_checking != null)
-            {
-                StopCoroutine(_checking);
-            }
-
-            _checking = Checking();
-
-            StartCoroutine(_checking);
+            Reset();
+            _step = Step.Version; 
         }
 
-        private void AddDownload(VFile item)
+        private void Update()
         {
-            _downloader.AddDownload(GetDownloadURL(item.name), item.name, _savePath + item.name, item.hash, item.len);
-        }
-
-        private void PrepareDownloads()
-        {
-            if (enableVFS)
+            switch (_step)
             {
-                var path = string.Format("{0}{1}", _savePath, Versions.Dataname);
-                if (!File.Exists(path))
-                {
-                    AddDownload(_versions[0]);
-                    return;
-                }
-
-                Versions.LoadDisk(path);
+                case Step.Wait:
+                    break;
+                
+                case Step.Version:
+                    _step = Step.Wait;  
+                    OnMessage("正在获取版本信息..."); 
+                    if (!Directory.Exists(_savePath))
+                    {
+                        Directory.CreateDirectory(_savePath);
+                    }   
+                    if (Application.internetReachability == NetworkReachability.NotReachable)
+                    {
+                        MessageBox.Show("提示", "请检查网络连接状态", "重试", "退出").onComplete = OnErrorAction; 
+                        return ;
+                    } 
+                    var request = Download(Versions.Filename);
+                    var oper = request.SendWebRequest();
+                    oper.completed += delegate(AsyncOperation operation)
+                    {
+                        if (!string.IsNullOrEmpty(request.error))
+                        {
+                            MessageBox.Show("提示", string.Format("获取服务器版本失败：{0}", request.error), "重试", "退出").onComplete = OnErrorAction; 
+                        }
+                        else
+                        {
+                            try
+                            {
+                                Versions.serverVersion = Versions.LoadFullVersion(_savePath + Versions.Filename);
+                                var newFiles = Versions.GetNewFiles(PatchId.Level1, _savePath); 
+                                if (newFiles.Count > 0)
+                                {
+                                    foreach (var item in newFiles)
+                                    {
+                                        _downloader.AddDownload(GetDownloadURL(item.name), item.name, _savePath + item.name, item.hash, item.len); 
+                                    }
+                                    _step = Step.Prepared;  
+                                }
+                                else
+                                {
+                                    OnComplete();
+                                } 
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogException(e);
+                                MessageBox.Show("提示", "版本文件加载失败", "重试", "退出").onComplete += OnErrorAction;
+                            }
+                        }
+                    };
+                    break;
+                
+                case Step.Prepared:
+                    OnMessage("正在检查版本信息...");
+                    _step = Step.Wait;
+                    var totalSize = _downloader.size;
+                    if (totalSize > 0)
+                    {
+                        var tips = string.Format("发现内容更新，总计需要下载 {0} 内容", Downloader.GetDisplaySize(totalSize));
+                        MessageBox.Show("提示", tips, "下载", "退出").onComplete += delegate(MessageBox.EventId id)
+                        {
+                            if (id == MessageBox.EventId.Ok)
+                            {
+                                _downloader.StartDownload();
+                                _step = Step.Download;
+                            }
+                            else
+                            {
+                                Quit(); 
+                            }
+                        }; 
+                    }
+                    else
+                    {
+                        OnComplete();
+                    }
+                    break;
             }
-
-            for (var i = 1; i < _versions.Count; i++)
-            {
-                var item = _versions[i];
-                if (Versions.IsNew(string.Format("{0}{1}", _savePath, item.name), item.len, item.hash))
-                {
-                    AddDownload(item);
-                }
-            }
-        }
-
-        private IEnumerator RequestVFS()
-        {
-            var mb = MessageBox.Show("提示", "是否开启VFS？开启有助于提升IO性能和数据安全。", "开启");
-            yield return mb;
-            enableVFS = mb.isOk;
         }
 
         private static string GetPlatformForAssetBundles(RuntimePlatform target)
@@ -324,7 +354,7 @@ namespace libx
                     return "Windows";
                 case RuntimePlatform.OSXEditor:
                 case RuntimePlatform.OSXPlayer:
-                    return "iOS"; // OSX
+                    return "OSX"; // OSX
                 default:
                     return null;
             }
@@ -333,135 +363,31 @@ namespace libx
         private string GetDownloadURL(string filename)
         {
             return string.Format("{0}{1}/{2}", baseURL, _platform, filename);
-        }
+        } 
 
-        private IEnumerator Checking()
+        private List<UnityWebRequest> _downloads = new List<UnityWebRequest>();
+        
+        UnityWebRequest Download(string filename)
         {
-            if (!Directory.Exists(_savePath))
-            {
-                Directory.CreateDirectory(_savePath);
-            }
-
-            if (_step == Step.Wait)
-            {
-                yield return RequestVFS();
-                _step = Step.Copy;
-            }
-
-            if (_step == Step.Copy)
-            {
-                yield return RequestCopy();
-            }
-
-            if (_step == Step.Coping)
-            {
-                var path = _savePath + Versions.Filename + ".tmp";
-                var versions = Versions.LoadVersions(path);
-                var basePath = GetStreamingAssetsPath() + "/";
-                yield return UpdateCopy(versions, basePath);
-                _step = Step.Versions;
-            }
-
-            if (_step == Step.Versions)
-            {
-                yield return RequestVersions();
-            }
-
-            if (_step == Step.Prepared)
-            {
-                OnMessage("正在检查版本信息...");
-                var totalSize = _downloader.size;
-                if (totalSize > 0)
-                {
-                    var tips = string.Format("发现内容更新，总计需要下载 {0} 内容", Downloader.GetDisplaySize(totalSize));
-                    var mb = MessageBox.Show("提示", tips, "下载", "退出");
-                    yield return mb;
-                    if (mb.isOk)
-                    {
-                        _downloader.StartDownload();
-                        _step = Step.Download;
-                    }
-                    else
-                    {
-                        Quit();
-                    } 
-                }
-                else
-                {
-                    OnComplete();
-                }
-            } 
-        }
-
-        private IEnumerator RequestVersions()
+            var request = UnityWebRequest.Get(GetDownloadURL(filename));
+            request.downloadHandler = new DownloadHandlerFile(_savePath + filename);
+            _downloads.Add(request);
+            return request;
+        } 
+        
+        private void OnErrorAction(MessageBox.EventId id)
         {
-            OnMessage("正在获取版本信息...");
-            if (Application.internetReachability == NetworkReachability.NotReachable)
+            if (id == MessageBox.EventId.Ok)
             {
-                var mb = MessageBox.Show("提示", "请检查网络连接状态", "重试", "退出");
-                yield return mb;
-                if (mb.isOk)
-                {
-                    StartUpdate();
-                }
-                else
-                {
-                    Quit();
-                } 
-                yield break;
+                StartUpdate();
             }
-
-            var request = UnityWebRequest.Get(GetDownloadURL(Versions.Filename));
-            request.downloadHandler = new DownloadHandlerFile(_savePath + Versions.Filename);
-            yield return request.SendWebRequest();
-            var error = request.error;
-            request.Dispose();
-            if (!string.IsNullOrEmpty(error))
+            else
             {
-                var mb = MessageBox.Show("提示", string.Format("获取服务器版本失败：{0}", error), "重试", "退出");
-                yield return mb;
-                if (mb.isOk)
-                {
-                    StartUpdate();
-                }
-                else
-                {
-                    Quit();
-                } 
-                yield break; 
-            } 
-            try
-            {
-                _versions = Versions.LoadVersions(_savePath + Versions.Filename, true);
-                if (_versions.Count > 0)
-                {
-                    PrepareDownloads();
-                    _step = Step.Prepared;
-                }
-                else
-                {
-                    OnComplete();
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-                MessageBox.Show("提示", "版本文件加载失败", "重试", "退出").onComplete +=
-                    delegate(MessageBox.EventId id)
-                    {
-                        if (id == MessageBox.EventId.Ok)
-                        {
-                            StartUpdate();
-                        }
-                        else
-                        {
-                            Quit();
-                        }
-                    };
+                Quit();
             }
         }
 
-        private static string GetStreamingAssetsPath()
+        public static string GetStreamingAssetsPath()
         {
             if (Application.platform == RuntimePlatform.Android)
             {
@@ -475,108 +401,14 @@ namespace libx
             }
 
             return "file://" + Application.streamingAssetsPath;
-        }
-
-        private IEnumerator RequestCopy()
-        {
-            var v1 = Versions.LoadVersion(_savePath + Versions.Filename);
-            var basePath = GetStreamingAssetsPath() + "/";
-            var request = UnityWebRequest.Get(basePath + Versions.Filename);
-            var path = _savePath + Versions.Filename + ".tmp";
-            request.downloadHandler = new DownloadHandlerFile(path);
-            yield return request.SendWebRequest();
-            if (string.IsNullOrEmpty(request.error))
-            {
-                var v2 = Versions.LoadVersion(path);
-                if (v2 > v1)
-                {
-                    var mb = MessageBox.Show("提示", "是否将资源解压到本地？", "解压", "跳过");
-                    yield return mb;
-                    _step = mb.isOk ? Step.Coping : Step.Versions;
-                }
-                else
-                {
-                    Versions.LoadVersions(path);
-                    _step = Step.Versions;
-                }
-            }
-            else
-            {
-                _step = Step.Versions;
-            } 
-            request.Dispose();
-        }
-
-        private IEnumerator UpdateCopy(IList<VFile> versions, string basePath)
-        {
-            var version = versions[0];
-            if (version.name.Equals(Versions.Dataname))
-            {
-                var request = UnityWebRequest.Get(basePath + version.name);
-                request.downloadHandler = new DownloadHandlerFile(_savePath + version.name);
-                var req = request.SendWebRequest();
-                while (!req.isDone)
-                {
-                    OnMessage("正在复制文件");
-                    OnProgress(req.progress);
-                    yield return null;
-                }
-
-                request.Dispose();
-            }
-            else
-            {
-                for (var index = 0; index < versions.Count; index++)
-                {
-                    var item = versions[index];
-                    var request = UnityWebRequest.Get(basePath + item.name);
-                    request.downloadHandler = new DownloadHandlerFile(_savePath + item.name);
-                    yield return request.SendWebRequest();
-                    request.Dispose();
-                    OnMessage(string.Format("正在复制文件：{0}/{1}", index, versions.Count));
-                    OnProgress(index * 1f / versions.Count);
-                }
-            }
-        }
+        } 
+        
 
         private void OnComplete()
-        {
-            if (enableVFS)
-            {
-                var dataPath = _savePath + Versions.Dataname;
-                var downloads = _downloader.downloads;
-                if (downloads.Count > 0 && File.Exists(dataPath))
-                {
-                    OnMessage("更新本地版本信息");
-                    var files = new List<VFile>(downloads.Count);
-                    foreach (var download in downloads)
-                    {
-                        files.Add(new VFile
-                        {
-                            name = download.name,
-                            hash = download.hash,
-                            len = download.len,
-                        });
-                    }
-
-                    var file = files[0];
-                    if (!file.name.Equals(Versions.Dataname))
-                    {
-                        Versions.UpdateDisk(dataPath, files);
-                    }
-                }
-
-                Versions.LoadDisk(dataPath);
-            }
-
+        { 
             OnProgress(1);
             OnMessage("更新完成");
-            var version = Versions.LoadVersion(_savePath + Versions.Filename);
-            if (version > 0)
-            {
-                OnVersion(version.ToString());
-            }
-
+            OnVersion(Versions.LoadVersion(_savePath + Versions.Filename).ToString());
             StartCoroutine(LoadGameScene());
         }
 
@@ -587,7 +419,6 @@ namespace libx
             yield return init;
             if (string.IsNullOrEmpty(init.error))
             {
-                Assets.AddSearchPath("Assets/XAsset/Demo/Scenes");
                 init.Release();
                 OnProgress(0);
                 OnMessage("加载游戏场景");
@@ -609,6 +440,18 @@ namespace libx
 
         private void OnDestroy()
         {
+            Reset();
+        }
+
+        private void Reset()
+        {
+            foreach (var download in _downloads)
+            {
+                download.Dispose();
+            }
+
+            _downloads.Clear();
+
             MessageBox.Dispose();
         }
 
