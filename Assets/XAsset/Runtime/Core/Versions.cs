@@ -37,23 +37,23 @@ namespace libx
         Hash
     }
 
-    public enum PatchId
+    public enum PatchBy
     {
+        Level0 = 0,
         Level1,
         Level2,
         Level3,
-        Level4,
-        Level5
+        Level4
     }
 
     public class VPatch
     {
-        public PatchId id; 
+        public PatchBy @by; 
         public List<int> files = new List<int>();
         
         public void Serialize(BinaryWriter writer)
         {
-            writer.Write((byte)id); 
+            writer.Write((byte)@by); 
             writer.Write(files.Count);
             foreach (var file in files)
             {
@@ -63,7 +63,7 @@ namespace libx
 
         public void Deserialize(BinaryReader reader)
         {
-            id = (PatchId)reader.ReadByte();
+            @by = (PatchBy)reader.ReadByte();
             var count = reader.ReadInt32();
             for (int i = 0; i < count; i++)
             {
@@ -101,7 +101,7 @@ namespace libx
         public List<VPatch> patches = new List<VPatch>();
         
         private Dictionary<string, VFile> _dataFiles = new Dictionary<string, VFile>();
-        private Dictionary<PatchId, VPatch> _dataPatches = new Dictionary<PatchId, VPatch>();
+        private Dictionary<PatchBy, VPatch> _dataPatches = new Dictionary<PatchBy, VPatch>();
 
         public VFile GetFile(string path)
         {
@@ -109,11 +109,11 @@ namespace libx
             return file;
         }
         
-        public List<VFile> GetFiles(PatchId patchId)
+        public List<VFile> GetFiles(PatchBy patchBy)
         {
             List<VFile> list = new List<VFile>();
             VPatch patch;
-            if (_dataPatches.TryGetValue(patchId, out patch))
+            if (_dataPatches.TryGetValue(patchBy, out patch))
             {
                 if (patch.files.Count > 0)
                 {
@@ -138,7 +138,7 @@ namespace libx
             writer.Write(patches.Count);
             foreach (var patch in patches)
             {
-                writer.Write((byte)patch.id); 
+                writer.Write((byte)patch.@by); 
                 writer.Write(patch.files.Count);
                 foreach (var bundleId in patch.files)
                 {
@@ -164,7 +164,7 @@ namespace libx
                 var patch = new VPatch();
                 patch.Deserialize(reader);
                 patches.Add(patch);
-                _dataPatches[patch.id] = patch;
+                _dataPatches[patch.@by] = patch;
             }
         }
     }
@@ -221,7 +221,7 @@ namespace libx
                 });
             }
             
-            patches.Sort((x, y) => x.id.CompareTo(y.id));
+            patches.Sort((x, y) => x.@by.CompareTo(y.@by));
             if (patches.Count > 0)
             {
                 patches[0].files.Add(bundles.Count - 1);
@@ -262,7 +262,7 @@ namespace libx
             }
         }
 
-        public static List<VFile> GetNewFiles(PatchId patch, string savePath)
+        public static List<VFile> GetNewFiles(PatchBy patch, string savePath)
         {
             var list = new List<VFile>();
             var files = serverVersion.GetFiles(patch);

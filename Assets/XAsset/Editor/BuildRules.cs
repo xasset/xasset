@@ -47,7 +47,7 @@ namespace libx
     public class AssetBuild
     {
         public string path;
-        public PatchId patch;
+        public PatchBy patch;
         public string bundle;
         public GroupBy groupBy = GroupBy.Filename;
     }
@@ -108,7 +108,7 @@ namespace libx
             }); 
         } 
         
-        public void PatchAsset(string path, PatchId patch)
+        public void PatchAsset(string path, PatchBy patch)
         {
             bool Match(AssetBuild bundleAsset)
             {

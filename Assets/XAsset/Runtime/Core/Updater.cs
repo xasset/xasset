@@ -287,7 +287,7 @@ namespace libx
                             try
                             {
                                 Versions.serverVersion = Versions.LoadFullVersion(_savePath + Versions.Filename);
-                                var newFiles = Versions.GetNewFiles(PatchId.Level1, _savePath); 
+                                var newFiles = Versions.GetNewFiles(PatchBy.Level0, _savePath); 
                                 if (newFiles.Count > 0)
                                 {
                                     foreach (var item in newFiles)

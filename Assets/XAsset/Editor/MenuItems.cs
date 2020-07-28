@@ -118,37 +118,37 @@ namespace libx
             AssetDatabase.SaveAssets();
         } 
         
-        [MenuItem("Assets/PatchId/Level1")]
-        private static void PatchByLevel1()
+        [MenuItem("Assets/PatchBy/Level0")]
+        private static void PatchByLevel0()
         {
-            PatchAssets(PatchId.Level1);
+            PatchAssets(PatchBy.Level0);
         } 
 
-        [MenuItem("Assets/PatchId/Level2")]
-        private static void PatchByLevel2()
+        [MenuItem("Assets/PatchBy/Level1")]
+        private static void PatchByLevel1()
         {
-            PatchAssets(PatchId.Level2); 
+            PatchAssets(PatchBy.Level1); 
         }
         
-        [MenuItem("Assets/PatchId/Level3")]
+        [MenuItem("Assets/PatchBy/Level2")]
+        private static void PatchByLevel2()
+        {
+            PatchAssets(PatchBy.Level2);  
+        } 
+        
+        [MenuItem("Assets/PatchBy/Level3")]
         private static void PatchByLevel3()
         {
-            PatchAssets(PatchId.Level3);  
+            PatchAssets(PatchBy.Level3);  
         } 
         
-        [MenuItem("Assets/PatchId/Level4")]
+        [MenuItem("Assets/PatchBy/Level4")]
         private static void PatchByLevel4()
         {
-            PatchAssets(PatchId.Level4);  
+            PatchAssets(PatchBy.Level4);  
         } 
         
-        [MenuItem("Assets/PatchId/Level5")]
-        private static void PatchByLevel5()
-        {
-            PatchAssets(PatchId.Level5);  
-        } 
-        
-        private static void PatchAssets(PatchId patch)
+        private static void PatchAssets(PatchBy patch)
         {
             var selection = Selection.GetFiltered<Object>(SelectionMode.DeepAssets);
             var rules = BuildScript.GetBuildRules();

@@ -240,10 +240,10 @@ namespace libx
                 asset.dir = index;
                 asset.name = Path.GetFileName(path);
                 assets.Add(asset);
-                var patch = patches.Find(pr => pr.id == item.patch);
+                var patch = patches.Find(pr => pr.@by == item.patch);
                 if (patch == null)
                 {
-                    patch = new VPatch() { id = item.patch };
+                    patch = new VPatch() { @by = item.patch };
                     patches.Add(patch);
                 } 
                 if (asset.bundle != -1)
@@ -293,10 +293,10 @@ namespace libx
                     bundle.len = stream.Length;
                     bundle.crc = Utility.GetCRC32Hash(stream);
                 } 
-                var patch = patches.Find(pr => pr.id == PatchId.Level1);
+                var patch = patches.Find(pr => pr.@by == PatchBy.Level0);
                 if (patch == null)
                 {
-                    patch = new VPatch() { id = PatchId.Level1 };
+                    patch = new VPatch() { @by = PatchBy.Level0 };
                     patches.Add(patch);
                 } 
                 bundles.Add(bundle);
