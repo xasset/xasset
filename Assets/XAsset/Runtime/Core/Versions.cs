@@ -105,7 +105,8 @@ namespace libx
 
         public VFile GetFile(string path)
         {
-            _dataFiles.TryGetValue(path, out var file);
+            VFile file;
+            _dataFiles.TryGetValue(path, out file);
             return file;
         }
         
