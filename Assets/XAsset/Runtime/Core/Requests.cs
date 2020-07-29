@@ -640,7 +640,7 @@ namespace libx
 
         internal override void Load()
         {
-            asset = Versions.LoadAssetBundleFromFile(url);
+            asset = AssetBundle.LoadFromFile(url);
             if (assetBundle == null)
                 error = url + " LoadFromFile failed.";
         }
@@ -690,7 +690,7 @@ namespace libx
 
         internal override void Load()
         {
-            _request = Versions.LoadAssetBundleFromFileAsync(url);
+            _request = AssetBundle.LoadFromFileAsync(url);
             if (_request == null)
             {
                 error = url + " LoadFromFile failed.";
@@ -744,7 +744,7 @@ namespace libx
 
         internal override void Load()
         {
-            _request = UnityWebRequest.GetAssetBundle(url);
+            _request = UnityWebRequestAssetBundle.GetAssetBundle(url);
             _request.SendWebRequest();
             loadState = LoadState.LoadAssetBundle;
         }
@@ -760,5 +760,5 @@ namespace libx
             loadState = LoadState.Unload;
             base.Unload();
         }
-    }
+    } 
 }
