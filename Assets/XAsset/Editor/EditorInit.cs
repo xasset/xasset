@@ -33,11 +33,13 @@ namespace libx
 {
     public class EditorInit
     {
+        private static List<string> _searchPaths = new List<string>();
+        
         [RuntimeInitializeOnLoadMethod]
         private static void OnInitialize()
         {
 			Assets.basePath = BuildScript.outputPath + Path.DirectorySeparatorChar;
-            Assets.loadDelegate = AssetDatabase.LoadAssetAtPath; 
+            Assets.EditorLoader = AssetDatabase.LoadAssetAtPath; 
             var assets = new List<string>();
             var rules = BuildScript.GetBuildRules();
             foreach (var asset in rules.scenesInBuild)
@@ -49,11 +51,18 @@ namespace libx
                 }
                 assets.Add(path); 
             } 
+            _searchPaths.Clear();
             foreach (var asset in rules.assets)
             {
-                if (asset.path.Contains("*.unity"))
+                if (asset.path.EndsWith(".unity"))
                 {
                     assets.Add(asset.path);
+                }
+
+                var dir = Path.GetDirectoryName(asset.path);
+                if (! _searchPaths.Contains(dir))
+                {
+                    _searchPaths.Add(dir);
                 }
             }  
             var scenes = new EditorBuildSettingsScene[assets.Count];
@@ -61,8 +70,14 @@ namespace libx
             {
                 var asset = assets[index]; 
                 scenes[index] = new EditorBuildSettingsScene(asset, true);
-            }
+            } 
+            Assets.EditorSearcher = EditorSearcher;
             EditorBuildSettings.scenes = scenes;
+        }
+
+        private static string[] EditorSearcher()
+        {
+            return _searchPaths.ToArray();
         }
 
         [InitializeOnLoadMethod]

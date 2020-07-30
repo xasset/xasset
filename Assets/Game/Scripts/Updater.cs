@@ -225,9 +225,9 @@ namespace libx
             {
                 listener.OnClear();
             }  
-            if (Directory.Exists(_savePath + Versions.Filename))
+            if (File.Exists(_savePath + Versions.Filename))
             {
-                Directory.Delete(_savePath + Versions.Filename, true);
+                File.Delete(_savePath + Versions.Filename);
             }
         }
 
@@ -245,7 +245,7 @@ namespace libx
 #if UNITY_EDITOR
             if (development)
             {
-                Assets.runtimeMode = false;
+                Assets.Development = true;
                 StartCoroutine(LoadGameScene());
                 return;
             }
@@ -276,7 +276,7 @@ namespace libx
                     } 
                     var request = Download(Versions.Filename);
                     var oper = request.SendWebRequest();
-                    oper.completed += delegate(AsyncOperation operation)
+                    oper.completed += delegate
                     {
                         if (!string.IsNullOrEmpty(request.error))
                         {

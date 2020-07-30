@@ -40,8 +40,10 @@ namespace libx
         public static readonly string ManifestAsset = "Assets/Manifest.asset";
         public static readonly string Extension = ".bundle";
 
-        public static bool runtimeMode = true;
-        public static Func<string, Type, Object> loadDelegate = null;
+        public static bool Development = false;
+        public static Func<string, Type, Object> EditorLoader = null;
+        public static Func<string[]> EditorSearcher = null;
+        
         private const string TAG = "[Assets]";
 
         [Conditional("LOG_ENABLE")]
@@ -89,13 +91,19 @@ namespace libx
             if (string.IsNullOrEmpty(updatePath))
             {
                 updatePath = Application.persistentDataPath + Path.DirectorySeparatorChar;
-            }
-
-            Clear();
+            } 
 
             Log(string.Format(
-                "Initialize with: runtimeMode={0}\nbasePath：{1}\nupdatePath={2}",
-                runtimeMode, basePath, updatePath));
+                "Initialize with: Development={0}\nbasePath：{1}\nupdatePath={2}",
+                Development, basePath, updatePath));
+
+            if (Development)
+            {
+                if (EditorSearcher != null)
+                { 
+                    _searchPaths.AddRange(EditorSearcher()); 
+                }
+            }
 
             var request = new ManifestRequest {url = ManifestAsset};
             AddAssetRequest(request);
@@ -337,7 +345,7 @@ namespace libx
         private static string GetExistPath(string path)
         {
 #if UNITY_EDITOR
-            if (!runtimeMode)
+            if (Development)
             {
                 if (File.Exists(path))
                     return path;

@@ -78,8 +78,8 @@ namespace libx
 
         internal virtual void Load()
         {
-            if (!Assets.runtimeMode && Assets.loadDelegate != null)
-                asset = Assets.loadDelegate(url, assetType);
+            if (Assets.Development && Assets.EditorLoader != null)
+                asset = Assets.EditorLoader(url, assetType);
             if (asset == null)
             {
                 error = "error! file not exist:" + url;
@@ -91,7 +91,7 @@ namespace libx
             if (asset == null)
                 return;
 
-            if (!Assets.runtimeMode)
+            if (!Assets.Development)
             {
                 if (!(asset is GameObject))
                     Resources.UnloadAsset(asset);
@@ -178,7 +178,7 @@ namespace libx
         internal override void Load()
         {
             _assetName = Path.GetFileName(url);
-            if (Assets.runtimeMode)
+            if (!Assets.Development)
             {
                 var assetBundleName = _assetName.Replace(".asset", ".unity3d").ToLower();
                 _request = Assets.LoadBundle(assetBundleName, true);
@@ -744,7 +744,7 @@ namespace libx
 
         internal override void Load()
         {
-            _request = UnityWebRequestAssetBundle.GetAssetBundle(url);
+            _request = UnityWebRequest.GetAssetBundle(url);
             _request.SendWebRequest();
             loadState = LoadState.LoadAssetBundle;
         }
