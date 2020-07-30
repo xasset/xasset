@@ -245,7 +245,7 @@ namespace libx
 #if UNITY_EDITOR
             if (development)
             {
-                Assets.runtimeMode = false;
+                Assets.Development = true;
                 StartCoroutine(LoadGameScene());
                 return;
             }
