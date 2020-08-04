@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -54,7 +53,7 @@ namespace libx
             EditorUtility.ClearProgressBar();
         }
 
-        internal static void BuildRules()
+        public static void BuildRules()
         {
             var rules = GetBuildRules();
             rules.Build();
@@ -90,6 +89,11 @@ namespace libx
         public static string GetPlatformName()
         {
             return GetPlatformForAssetBundles(EditorUserBuildSettings.activeBuildTarget);
+        }
+
+        public static string GetOutputPath(BuildTarget target)
+        {
+            return "DLC/" + GetPlatformForAssetBundles(target);
         }
 
         private static string GetPlatformForAssetBundles(BuildTarget target)
@@ -185,19 +189,22 @@ namespace libx
 
         public static void BuildAssetBundles()
         {
+            BuildAssetBundles(EditorUserBuildSettings.activeBuildTarget);
+        }
+
+        public static void BuildAssetBundles(BuildTarget target)
+        {
             // Choose the output path according to the build target.
-            var bundleDir = CreateAssetBundleDirectory(); 
-            var targetPlatform = EditorUserBuildSettings.activeBuildTarget;
+            var bundleDir = CreateAssetBundleDirectory();
             var rules = GetBuildRules();
             var builds = rules.GetBuilds();
-            var manifest = BuildPipeline.BuildAssetBundles(bundleDir, builds, rules.buildBundleOptions, targetPlatform);
+            var manifest = BuildPipeline.BuildAssetBundles(bundleDir, builds, rules.buildBundleOptions, target);
             if (manifest == null)
             {
                 return;
-            } 
-            BuildManifest(manifest, bundleDir, rules); 
+            }
+            BuildManifest(manifest, bundleDir, rules);
         }
-
         private static void BuildManifest(AssetBundleManifest assetBundleManifest, string bundleDir, BuildRules rules)
         {
             var manifest = GetManifest();
