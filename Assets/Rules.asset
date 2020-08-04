@@ -19,47 +19,47 @@ MonoBehaviour:
   - {fileID: 102900000, guid: 41515a2b3f98a445e88e746ac77f43d1, type: 3}
   assets:
   - path: Assets/Game/Art/Scenes/Game.unity
+    bundle: game
     patch: 0
-    bundle: 21ebbfcc429ccf411abf02de537060b6.bundle
-    groupBy: 2
+    groupBy: 1
   - path: Assets/Game/Art/UI/Game/Dropdown_bg_n.png
-    patch: 0
     bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
     groupBy: 3
   - path: Assets/Game/Art/UI/Game/Dropdown_menu.png
-    patch: 0
     bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
     groupBy: 3
   - path: Assets/Game/Art/UI/Game/checkbox_select.png
-    patch: 0
     bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
     groupBy: 3
   - path: Assets/Game/Art/UI/Game/Slider2_bg.png
-    patch: 0
     bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
     groupBy: 3
   - path: Assets/Game/Art/UI/Game/Dropdown_Btn_n.png
-    patch: 0
     bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
     groupBy: 3
   - path: Assets/Game/Art/UI/Game/Btn_Tab1_n.png
-    patch: 0
     bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
     groupBy: 3
   - path: Assets/Game/Art/UI/Game/bg_ItemIntrudction.png
-    patch: 0
     bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
     groupBy: 3
   - path: Assets/Game/Art/UI/Game/Dropdown_menu_bg.png
-    patch: 0
     bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
     groupBy: 3
   - path: Assets/Game/Art/UI/Game/Slider2.png
-    patch: 0
     bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
     groupBy: 3
   bundles:
-  - assetBundleName: 21ebbfcc429ccf411abf02de537060b6.bundle
+  - assetBundleName: c8d46d341bea4fd5bff866a65ff8aea9.bundle
     assetNames:
     - Assets/Game/Art/Scenes/Game.unity
   - assetBundleName: dab9c39d50d1e89a212e07f9998951f4.bundle

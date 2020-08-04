@@ -81,6 +81,7 @@ namespace libx
             {
                 instance = new GameObject("Assets").AddComponent<Assets>();
                 DontDestroyOnLoad(instance.gameObject);
+                Application.lowMemory += RemoveUnusedAssets;
             } 
 
             if (string.IsNullOrEmpty(basePath))
@@ -104,11 +105,11 @@ namespace libx
                     _searchPaths.AddRange(EditorSearcher()); 
                 }
             }
-
+            
             var request = new ManifestRequest {url = ManifestAsset};
             AddAssetRequest(request);
             return request;
-        }
+        } 
 
         public static void Clear()
         {
