@@ -47,9 +47,11 @@ namespace libx
     public class AssetBuild
     {
         public string path;
-        public PatchBy patch;
         public string bundle;
+        public PatchBy patch;
         public GroupBy groupBy = GroupBy.Filename;
+
+        public string assetBundleName { get; set; }
     }
 
     [Serializable]
@@ -314,8 +316,8 @@ namespace libx
 
             foreach (var asset in list)
             {
-                asset.bundle = GetBundle(asset);
-                _asset2Bundles[asset.path] = asset.bundle;
+                asset.assetBundleName = GetBundle(asset);
+                _asset2Bundles[asset.path] = asset.assetBundleName;
             }
 
             assets = list.ToArray();

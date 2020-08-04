@@ -81,6 +81,7 @@ namespace libx
             {
                 instance = new GameObject("Assets").AddComponent<Assets>();
                 DontDestroyOnLoad(instance.gameObject);
+                Application.lowMemory += RemoveUnusedAssets;
             } 
 
             if (string.IsNullOrEmpty(basePath))
@@ -104,11 +105,11 @@ namespace libx
                     _searchPaths.AddRange(EditorSearcher()); 
                 }
             }
-
+            
             var request = new ManifestRequest {url = ManifestAsset};
             AddAssetRequest(request);
             return request;
-        }
+        } 
 
         public static void Clear()
         {
@@ -304,6 +305,7 @@ namespace libx
             AssetRequest request;
             if (_assets.TryGetValue(path, out request))
             {
+                request.Update();
                 request.Retain();
                 _loadingAssets.Add(request);
                 return request;
@@ -462,6 +464,7 @@ namespace libx
 
             if (_bundles.TryGetValue(url, out bundle))
             {
+                bundle.Update();
                 bundle.Retain();
                 _loadingBundles.Add(bundle);
                 return bundle;
