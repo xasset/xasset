@@ -221,7 +221,7 @@ namespace libx
                 }
 
                 var asset = new AssetRef();
-                if (!bundle2Ids.TryGetValue(item.bundle, out asset.bundle))
+                if (!bundle2Ids.TryGetValue(item.assetBundleName, out asset.bundle))
                 {
                     // 第三方资源
                     var bundle = new BundleRef();

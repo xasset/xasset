@@ -51,7 +51,7 @@ namespace libx
         public PatchBy patch;
         public GroupBy groupBy = GroupBy.Filename;
 
-        public string assetBundleName { get; set; }
+        public string assetBundleName;
     }
 
     [Serializable]
@@ -95,7 +95,7 @@ namespace libx
 
         public void GroupAsset(string path, GroupBy groupBy = GroupBy.Filename)
         {
-            GroupAsset(path, groupBy, string.Empty);
+            GroupAsset(path, groupBy, string.Empty);            
         }
 
         public void GroupAsset(string path, GroupBy groupBy, string bundleName)
@@ -104,14 +104,14 @@ namespace libx
             if (asset != null)
             {
                 asset.groupBy = groupBy;
-                asset.assetBundleName = bundleName;
+                asset.bundle = bundleName;
                 return;
             }
             ArrayUtility.Add(ref assets, new AssetBuild()
             {
                 path = path,
                 groupBy = groupBy,
-                assetBundleName = bundleName
+                bundle = bundleName
             });
         }
 
