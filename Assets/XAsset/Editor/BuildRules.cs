@@ -80,6 +80,8 @@ namespace libx
         public int version;
         [Tooltip("是否把资源名字哈希处理")]
         public bool nameByHash = true;
+        [Tooltip("shader是否归集到一个bundle")]
+        public bool shaderBundle = true;
         [Tooltip("打包选项")]
         public BuildAssetBundleOptions buildBundleOptions = BuildAssetBundleOptions.ChunkBasedCompression;
         [Tooltip("BuildPlayer 的时候被打包的场景")] 
@@ -147,7 +149,7 @@ namespace libx
 
         private string GetBundle(AssetBuild assetBuild)
         {
-            if (assetBuild.path.EndsWith(".shader"))
+            if (shaderBundle && IsShader(assetBuild.path))
             {
                 return RuledAssetBundleName("shaders");
             }
@@ -158,6 +160,10 @@ namespace libx
                 case GroupBy.Directory: return RuledAssetBundleName(Path.GetDirectoryName(assetBuild.path));
                 default: return string.Empty;
             }
+        }
+        private bool IsShader(string path)
+        {
+            return path.EndsWith(".shader") || path.EndsWith(".cginc");
         }
 
         internal bool ValidateAsset(string asset)
@@ -325,7 +331,7 @@ namespace libx
 
         private void OptimizeAsset(string asset)
         {
-            if (asset.EndsWith(".shader"))
+            if (shaderBundle && IsShader(asset))
                 _asset2Bundles[asset] = RuledAssetBundleName("shaders");
             else
                 _asset2Bundles[asset] = RuledAssetBundleName(asset);
