@@ -94,20 +94,27 @@ namespace libx
         #region API
 
         public void GroupAsset(string path, GroupBy groupBy = GroupBy.Filename)
-        { 
+        {
+            GroupAsset(path, groupBy, string.Empty);
+        }
+
+        public void GroupAsset(string path, GroupBy groupBy, string bundleName)
+        {
             var asset = ArrayUtility.Find(assets, build => build.path.Equals(path));
             if (asset != null)
             {
-                asset.groupBy = groupBy; 
+                asset.groupBy = groupBy;
+                asset.assetBundleName = bundleName;
                 return;
             }
             ArrayUtility.Add(ref assets, new AssetBuild()
             {
                 path = path,
-                groupBy = groupBy, 
-            }); 
-        } 
-        
+                groupBy = groupBy,
+                assetBundleName = bundleName
+            });
+        }
+
         public void PatchAsset(string path, PatchBy patch)
         { 
             var asset = ArrayUtility.Find(assets, bundleAsset => bundleAsset.path.Equals(path));
