@@ -47,11 +47,10 @@ namespace libx
     public class AssetBuild
     {
         public string path;
-        public string bundle;
+        public string bundle = string.Empty;
         public PatchBy patch;
-        public GroupBy groupBy = GroupBy.Filename;
-
-        public string assetBundleName { get; set; }
+        public GroupBy groupBy = GroupBy.Filename; 
+        public string group = string.Empty;
     }
 
     [Serializable]
@@ -153,7 +152,7 @@ namespace libx
             }
             switch (assetBuild.groupBy)
             {
-                case GroupBy.Explicit: return RuledAssetBundleName(assetBuild.bundle);
+                case GroupBy.Explicit: return RuledAssetBundleName(assetBuild.group);
                 case GroupBy.Filename: return RuledAssetBundleName(Path.Combine(Path.GetDirectoryName(assetBuild.path), Path.GetFileNameWithoutExtension(assetBuild.path)));
                 case GroupBy.Directory: return RuledAssetBundleName(Path.GetDirectoryName(assetBuild.path));
                 default: return string.Empty;
@@ -316,8 +315,8 @@ namespace libx
 
             foreach (var asset in list)
             {
-                asset.assetBundleName = GetBundle(asset);
-                _asset2Bundles[asset.path] = asset.assetBundleName;
+                asset.bundle = GetBundle(asset);
+                _asset2Bundles[asset.path] = asset.bundle;
             }
 
             assets = list.ToArray();
