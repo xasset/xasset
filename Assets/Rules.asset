@@ -11,13 +11,65 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03142c330ced64e0ab46cddcd0484ab7, type: 3}
   m_Name: Rules
   m_EditorClassIdentifier: 
-  searchPatternText: '*.txt,*.bytes,*.json,*.csv,*.xml,*htm,*.html,*.yaml,*.fnt'
-  searchPatternPrefab: '*.prefab'
-  searchPatternMaterial: '*.mat'
-  searchPatternController: '*.controller'
-  searchPatternPNG: '*.png'
-  searchPatternAsset: '*.asset'
-  searchPatternScene: '*.unity'
-  searchPatternDir: '*'
-  unshared: []
-  rules: []
+  version: 10
+  nameByHash: 1
+  buildBundleOptions: 256
+  scenesInBuild:
+  - {fileID: 102900000, guid: d378f07356e960549add8141397b1462, type: 3}
+  - {fileID: 102900000, guid: 41515a2b3f98a445e88e746ac77f43d1, type: 3}
+  assets:
+  - path: Assets/Game/Art/Scenes/Game.unity
+    bundle: game
+    patch: 0
+    groupBy: 1
+  - path: Assets/Game/Art/UI/Game/Dropdown_bg_n.png
+    bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
+    groupBy: 3
+  - path: Assets/Game/Art/UI/Game/Dropdown_menu.png
+    bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
+    groupBy: 3
+  - path: Assets/Game/Art/UI/Game/checkbox_select.png
+    bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
+    groupBy: 3
+  - path: Assets/Game/Art/UI/Game/Slider2_bg.png
+    bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
+    groupBy: 3
+  - path: Assets/Game/Art/UI/Game/Dropdown_Btn_n.png
+    bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
+    groupBy: 3
+  - path: Assets/Game/Art/UI/Game/Btn_Tab1_n.png
+    bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
+    groupBy: 3
+  - path: Assets/Game/Art/UI/Game/bg_ItemIntrudction.png
+    bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
+    groupBy: 3
+  - path: Assets/Game/Art/UI/Game/Dropdown_menu_bg.png
+    bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
+    groupBy: 3
+  - path: Assets/Game/Art/UI/Game/Slider2.png
+    bundle: dab9c39d50d1e89a212e07f9998951f4.bundle
+    patch: 0
+    groupBy: 3
+  bundles:
+  - assetBundleName: c8d46d341bea4fd5bff866a65ff8aea9.bundle
+    assetNames:
+    - Assets/Game/Art/Scenes/Game.unity
+  - assetBundleName: dab9c39d50d1e89a212e07f9998951f4.bundle
+    assetNames:
+    - Assets/Game/Art/UI/Game/Dropdown_bg_n.png
+    - Assets/Game/Art/UI/Game/Dropdown_menu.png
+    - Assets/Game/Art/UI/Game/checkbox_select.png
+    - Assets/Game/Art/UI/Game/Slider2_bg.png
+    - Assets/Game/Art/UI/Game/Dropdown_Btn_n.png
+    - Assets/Game/Art/UI/Game/Btn_Tab1_n.png
+    - Assets/Game/Art/UI/Game/bg_ItemIntrudction.png
+    - Assets/Game/Art/UI/Game/Dropdown_menu_bg.png
+    - Assets/Game/Art/UI/Game/Slider2.png

@@ -12,30 +12,50 @@ MonoBehaviour:
   m_Name: Manifest
   m_EditorClassIdentifier: 
   activeVariants: []
-  bundles:
-  - demo/scenes
-  - manifest
-  - prefabs/canvas
   dirs:
-  - Assets/Demo/Scenes
-  - Assets
-  - Assets/Demo/Prefabs
+  - Assets/Game/Art/Scenes
+  - Assets/Game/Art/UI/Game
   assets:
-  - bundle: 0
+  - name: Game.unity
+    bundle: 0
     dir: 0
-    name: LoadAsset.unity
-  - bundle: 0
-    dir: 0
-    name: LoadScene.unity
-  - bundle: 0
-    dir: 0
-    name: Test.unity
-  - bundle: 1
+  - name: Dropdown_bg_n.png
+    bundle: 1
     dir: 1
-    name: Manifest.asset
-  - bundle: 2
-    dir: 2
-    name: Canvas.prefab
-  - bundle: 2
-    dir: 2
-    name: UIRoot.prefab
+  - name: Dropdown_menu.png
+    bundle: 1
+    dir: 1
+  - name: checkbox_select.png
+    bundle: 1
+    dir: 1
+  - name: Slider2_bg.png
+    bundle: 1
+    dir: 1
+  - name: Dropdown_Btn_n.png
+    bundle: 1
+    dir: 1
+  - name: Btn_Tab1_n.png
+    bundle: 1
+    dir: 1
+  - name: bg_ItemIntrudction.png
+    bundle: 1
+    dir: 1
+  - name: Dropdown_menu_bg.png
+    bundle: 1
+    dir: 1
+  - name: Slider2.png
+    bundle: 1
+    dir: 1
+  bundles:
+  - name: 21ebbfcc429ccf411abf02de537060b6.bundle
+    id: 0
+    children: 01000000
+    len: 117922
+    hash: ee733750948c836e8e34b64bec3eb50b
+    crc: fbb82b02
+  - name: dab9c39d50d1e89a212e07f9998951f4.bundle
+    id: 1
+    children: 
+    len: 14488
+    hash: 9bab8faf295a746deeb898da10595b64
+    crc: a6650f25
