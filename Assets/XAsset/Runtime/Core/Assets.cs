@@ -528,6 +528,7 @@ namespace libx
                 for (var i = 0; i < _unusedBundles.Count; i++)
                 {
                     var item = _unusedBundles[i];
+                    UnloadDependencies(item);
                     item.Unload();
                     Log("UnloadBundle: " + item.url);
                     _bundles.Remove(item.url);
