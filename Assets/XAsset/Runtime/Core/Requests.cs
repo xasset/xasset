@@ -632,7 +632,7 @@ namespace libx
     {
         public readonly List<BundleRequest> dependencies = new List<BundleRequest>();
 
-        public AssetBundle assetBundle
+        public virtual AssetBundle assetBundle
         {
             get { return asset as AssetBundle; }
             internal set { asset = value; }
@@ -652,11 +652,58 @@ namespace libx
             assetBundle.Unload(true);
             assetBundle = null;
         }
+        
+        void ReleaseByBundle(BundleRequest bundle)
+        {
+            if (bundle.url.Equals(url))
+            {
+                base.Release();
+                return;
+            } 
+            if (_parents.Contains(bundle))
+            {
+                return;
+            }
+            _parents.Add(bundle); 
+            foreach (var child in bundle.dependencies)
+            {
+                ReleaseByBundle(child);
+            }
+        }
+
+        private readonly List<BundleRequest> _parents = new List<BundleRequest>();
+
+        public override void Release()
+        {
+            base.Release();
+            foreach (var child in dependencies)
+            {
+                ReleaseByBundle(child);
+            }
+            _parents.Clear();
+        }
     }
 
     public class BundleAsyncRequest : BundleRequest
     {
         private AssetBundleCreateRequest _request;
+
+        public override AssetBundle assetBundle
+        {
+            get
+            {
+                if (_request != null && !_request.isDone)
+                {
+                    asset = _request.assetBundle;
+                }
+                return base.assetBundle;
+            }
+            
+            internal set
+            {
+                base.assetBundle = value;
+            }
+        }
 
         public override bool isDone
         {

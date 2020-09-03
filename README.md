@@ -70,6 +70,7 @@ XASSET 5.1为Unity项目提供了可以快速投入到生产环境中使用的�
 - [大魔王有木桑](https://github.com/yomunsam)
 - [suixin567](https://github.com/suixin567)
 - [Sven](https://github.com/SvenCheung)
+- [liufujingwen](https://github.com/liufujingwen)
 
 ## 更多项目
 

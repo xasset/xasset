@@ -111,8 +111,7 @@ public class Game : MonoBehaviour
 		}
 
 		_requests.Clear ();
-		yield return null;
-		Assets.RemoveUnusedAssets ();
+		yield return null; 
 	}
 
 	// Use this for initialization

@@ -53,12 +53,12 @@ namespace libx
 
 		public int refCount;
 
-		public void Retain ()
+		public virtual void Retain ()
 		{
 			refCount++;
 		}
 
-		public void Release ()
+		public virtual void Release ()
 		{
 			refCount--;
 		} 
