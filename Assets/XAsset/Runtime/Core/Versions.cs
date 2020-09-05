@@ -31,250 +31,174 @@ using UnityEngine;
 
 namespace libx
 {
-    public enum VerifyBy
-    {
-        Size,
-        Hash
-    }
+	public enum VerifyBy
+	{
+		Size,
+		Hash,
+	}
 
-    public enum PatchBy
-    {
-        Level0 = 0,
-        Level1,
-        Level2,
-        Level3,
-        Level4
-    }
+	public static class Versions
+	{
+		public const string Dataname = "res";
+		public const string Filename = "ver";
+		public static  readonly  VerifyBy verifyBy = VerifyBy.Hash;
+		private static readonly VDisk _disk = new VDisk ();
+		private static readonly Dictionary<string, VFile> _updateData = new Dictionary<string, VFile> ();
+		private static readonly Dictionary<string, VFile> _baseData = new Dictionary<string, VFile> ();
 
-    public class VPatch
-    {
-        public PatchBy @by; 
-        public List<int> files = new List<int>();
-        
-        public void Serialize(BinaryWriter writer)
-        {
-            writer.Write((byte)@by); 
-            writer.Write(files.Count);
-            foreach (var file in files)
-            {
-                writer.Write(file);
-            }
-        }
+		public static AssetBundle LoadAssetBundleFromFile (string url)
+		{
+			if (!File.Exists (url)) {
+				if (_disk != null) {
+					var name = Path.GetFileName (url);
+					var file = _disk.GetFile (name, string.Empty);
+					if (file != null) {
+						return AssetBundle.LoadFromFile (_disk.name, 0, (ulong)file.offset);
+					}
+				}	
+			}   
+			return AssetBundle.LoadFromFile (url);
+		}
 
-        public void Deserialize(BinaryReader reader)
-        {
-            @by = (PatchBy)reader.ReadByte();
-            var count = reader.ReadInt32();
-            for (int i = 0; i < count; i++)
-            {
-                var file = reader.ReadInt32();
-                files.Add(file);
-            }
-        }
-    }
+		public static AssetBundleCreateRequest LoadAssetBundleFromFileAsync (string url)
+		{
+			if (!File.Exists (url)) {
+				if (_disk != null) {
+					var name = Path.GetFileName (url);
+					var file = _disk.GetFile (name, string.Empty);
+					if (file != null) {
+						return AssetBundle.LoadFromFileAsync (_disk.name, 0, (ulong)file.offset);
+					}
+				}	
+			} 
+			return AssetBundle.LoadFromFileAsync (url);
+		}
 
-    public class VFile
-    {
-        public string hash { get; set; }
-        public long len { get; set; }
-        public string name { get; set; }
+		public static void BuildVersions (string outputPath, string[] bundles, int version)
+		{
+			var path = outputPath + "/" + Filename;
+			if (File.Exists (path)) {
+				File.Delete (path);
+			} 
+			var dataPath = outputPath + "/" + Dataname;
+			if (File.Exists (dataPath)) {
+				File.Delete (dataPath);
+			}  
 
-        public void Serialize(BinaryWriter writer)
-        {
-            writer.Write(name);
-            writer.Write(len);
-            writer.Write(hash);
-        }
+			var disk = new VDisk (); 
+			foreach (var file in bundles) {
+				using (var fs = File.OpenRead (outputPath + "/" + file)) {
+					disk.AddFile (file, fs.Length, Utility.GetCRC32Hash (fs));
+				}
+			} 
 
-        public void Deserialize(BinaryReader reader)
-        {
-            name = reader.ReadString();
-            len = reader.ReadInt64();
-            hash = reader.ReadString();
-        }
-    }
+			disk.name = dataPath;
+			disk.Save ();   
 
-    public class Version
-    {
-        public int ver;
-        public List<VFile> files = new List<VFile>();
-        public List<VPatch> patches = new List<VPatch>();
-        
-        private Dictionary<string, VFile> _dataFiles = new Dictionary<string, VFile>();
-        private Dictionary<PatchBy, VPatch> _dataPatches = new Dictionary<PatchBy, VPatch>();
+			using (var stream = File.OpenWrite (path)) {
+				var writer = new BinaryWriter (stream);
+				writer.Write (version);
+				writer.Write (disk.files.Count + 1);
+				using (var fs = File.OpenRead (dataPath)) {
+					var file = new VFile { name = Dataname, len = fs.Length, hash = Utility.GetCRC32Hash (fs) };
+					file.Serialize (writer);
+				} 
+				foreach (var file in disk.files) {
+					file.Serialize (writer);
+				}
+			}
+		}
 
-        public VFile GetFile(string path)
-        {
-            VFile file;
-            _dataFiles.TryGetValue(path, out file);
-            return file;
-        }
-        
-        public List<VFile> GetFiles(PatchBy patchBy)
-        {
-            List<VFile> list = new List<VFile>();
-            VPatch patch;
-            if (_dataPatches.TryGetValue(patchBy, out patch))
-            {
-                if (patch.files.Count > 0)
-                {
-                    foreach (var file in patch.files)
+		public static int LoadVersion (string filename)
+		{
+			if (!File.Exists (filename))
+				return -1;
+			try
+			{
+				using (var stream = File.OpenRead (filename)) {
+					var reader = new BinaryReader (stream);
+					return reader.ReadInt32 ();
+				}
+			}
+			catch (Exception e)
+			{
+				Debug.LogException(e);
+				return -1;
+			} 
+		}
+
+		public static List<VFile> LoadVersions (string filename, bool update = false)
+		{
+            var rootDir = Path.GetDirectoryName(filename);
+			var data = update ? _updateData : _baseData;
+			data.Clear ();
+			using (var stream = File.OpenRead (filename)) {
+				var reader = new BinaryReader (stream);
+				var list = new List<VFile> ();
+				var ver = reader.ReadInt32 ();
+				Debug.Log ("LoadVersions:" + ver);
+				var count = reader.ReadInt32 ();
+				for (var i = 0; i < count; i++) {
+					var version = new VFile ();
+					version.Deserialize (reader);
+					list.Add (version);
+					data [version.name] = version;
+                    var dir = string.Format("{0}/{1}", rootDir, Path.GetDirectoryName(version.name));
+                    if (! Directory.Exists(dir))
                     {
-                        var item = files[file];
-                        list.Add(item); 
+                        Directory.CreateDirectory(dir);
                     }
-                }
-            } 
-            return list;
-        }
+				} 
+				return list;
+			}
+		} 
+		public static void UpdateDisk(string savePath, List<VFile> newFiles)
+		{
+			var saveFiles = new List<VFile> ();
+			var files = _disk.files;
+			foreach (var file in files) {
+				if (_updateData.ContainsKey (file.name)) {
+					saveFiles.Add (file);
+				}
+			}  
+			_disk.Update(savePath, newFiles, saveFiles);
+		}
 
-        public void Serialize(BinaryWriter writer)
-        {
-            writer.Write(ver);
-            
-            writer.Write(files.Count);
-            foreach (var file in files) 
-                file.Serialize(writer);
-            
-            writer.Write(patches.Count);
-            foreach (var patch in patches)
-            {
-                writer.Write((byte)patch.@by); 
-                writer.Write(patch.files.Count);
-                foreach (var bundleId in patch.files)
-                {
-                    writer.Write(bundleId);
-                }
-            }
-        }
-        
-        public void Deserialize(BinaryReader reader)
-        {
-            ver = reader.ReadInt32();
-            var count = reader.ReadInt32();
-            for (int i = 0; i < count; i++)
-            {
-                var file = new VFile();
-                file.Deserialize(reader);
-                files.Add(file);
-                _dataFiles[file.name] = file;
-            } 
-            count = reader.ReadInt32();
-            for (int i = 0; i < count; i++)
-            {
-                var patch = new VPatch();
-                patch.Deserialize(reader);
-                patches.Add(patch);
-                _dataPatches[patch.@by] = patch;
-            }
-        }
-    }
+		public static bool LoadDisk (string filename)
+		{
+			return _disk.Load (filename);
+		}
 
-    public static class Versions
-    {
-        public const string Filename = "ver";
-        public static readonly VerifyBy verifyBy = VerifyBy.Hash;
-        public static Version serverVersion { get; set; }
-        public static Version localVersion { get; set; }
-        
-        public static int LoadVersion(string filename)
-        {
-            if (!File.Exists(filename))
-                return -1;
-            try
-            {
-                using (var stream = File.OpenRead(filename))
-                {
-                    var reader = new BinaryReader(stream);
-                    return reader.ReadInt32();
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-                return -1;
-            }
-        }
-        
-        public static Version LoadFullVersion(string filename)
-        { 
-            using (var stream = File.OpenRead(filename))
-            {
-                var reader = new BinaryReader(stream);
-                var ver = new Version();
-                ver.Deserialize(reader);
-                return ver;
-            }
-        }
-        
-        public static void BuildVersion(string outputPath, List<BundleRef> bundles, List<VPatch> patches, int version)
-        {
-            var path = outputPath + "/" + Filename;
-            if (File.Exists(path)) File.Delete(path);
-            var files = new List<VFile>();
-            foreach (var bundle in bundles)
-            {
-                files.Add(new VFile()
-                {
-                    name = bundle.name,
-                    hash = bundle.crc,
-                    len = bundle.len,
-                });
-            }
-            
-            patches.Sort((x, y) => x.@by.CompareTo(y.@by));
-            if (patches.Count > 0)
-            {
-                patches[0].files.Add(bundles.Count - 1);
-            }
-            
-            var ver = new Version();
-            ver.ver = version;
-            ver.files = files;
-            ver.patches = patches; 
-            
-            using (var stream = File.OpenWrite(path))
-            {
-                var writer = new BinaryWriter(stream);
-                ver.Serialize(writer);
-            }
-        } 
- 
-        public static bool IsNew(string path, long len, string hash)
-        { 
-            if (!File.Exists(path)) return true;
+		public static bool IsNew (string path, long len, string hash)
+		{
+			VFile file;
+			var key = Path.GetFileName (path);
+			if (_baseData.TryGetValue (key, out file)) {
+				if (key.Equals (Dataname) ||
+				    file.len == len && file.hash.Equals (hash, StringComparison.OrdinalIgnoreCase)) {
+					return false;
+				}
+			}
 
-            if (localVersion != null)
-            {
-                var key = Path.GetFileName(path); 
-                var file = localVersion.GetFile(key); 
-                if (file != null && 
-                    file.len == len && 
-                    file.hash.Equals(hash, StringComparison.OrdinalIgnoreCase))  
-                    return false;
-            } 
-            
-            using (var stream = File.OpenRead(path))
-            {
-                if (stream.Length != len) return true;
-                if (verifyBy != VerifyBy.Hash)
-                    return false;
-                return !Utility.GetCRC32Hash(stream).Equals(hash, StringComparison.OrdinalIgnoreCase);
-            }
-        }
+			if (_disk.Exists ()) {
+				var vdf = _disk.GetFile (path, hash);
+				if (vdf != null && vdf.len == len && vdf.hash.Equals (hash, StringComparison.OrdinalIgnoreCase)) {
+					return false;
+				}
+			}
 
-        public static List<VFile> GetNewFiles(PatchBy patch, string savePath)
-        {
-            var list = new List<VFile>();
-            var files = serverVersion.GetFiles(patch);
-            foreach (var file in files)
-            {
-                if (IsNew(savePath + file.name, file.len, file.hash))
-                {
-                    list.Add(file);
-                }
-            }
-            return list;
-        }
-    }
+			if (!File.Exists (path)) {
+				return true;
+			}
+
+			using (var stream = File.OpenRead (path)) {
+				if (stream.Length != len) {
+					return true;
+				} 
+				if (verifyBy != VerifyBy.Hash)
+					return false;
+				return !Utility.GetCRC32Hash (stream).Equals (hash, StringComparison.OrdinalIgnoreCase);
+			}
+		} 
+	}
 }

@@ -30,50 +30,144 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
-using Object = UnityEngine.Object;
 
 namespace libx
 {
     public static class MenuItems
-    {  
-        [MenuItem("XASSET/Build Rules")]
-        private static void BuildRules()
+    {
+        private const string KApplyBuildRules = "Assets/Bundles/Build Rules";
+        private const string KBuildAssetBundles = "Assets/Bundles/Build Bundles";
+        private const string KBuildPlayer = "Assets/Bundles/Build Player";
+		private const string KViewDataPath = "Assets/Bundles/View Bundles";
+        private const string KCopyBundles = "Assets/Bundles/Copy Bundles";
+
+        [MenuItem("Assets/Apply Rule/Text", false, 1)]
+        private static void ApplyRuleText()
+        {
+            var rules = BuildScript.GetBuildRules();
+            AddRulesForSelection(rules, rules.searchPatternText);
+        }
+
+        [MenuItem("Assets/Apply Rule/Prefab", false, 1)]
+        private static void ApplyRulePrefab()
+        {
+            var rules = BuildScript.GetBuildRules();
+            AddRulesForSelection(rules, rules.searchPatternPrefab);
+        }
+
+        [MenuItem("Assets/Apply Rule/Png", false, 1)]
+        private static void ApplyRulePng()
+        {
+            var rules = BuildScript.GetBuildRules();
+            AddRulesForSelection(rules, rules.searchPatternPng);
+        }
+
+        [MenuItem("Assets/Apply Rule/Material", false, 1)]
+        private static void ApplyRuleMaterial()
+        {
+            var rules = BuildScript.GetBuildRules();
+            AddRulesForSelection(rules, rules.searchPatternMaterial);
+        }
+
+        [MenuItem("Assets/Apply Rule/Controller", false, 1)]
+        private static void ApplyRuleController()
+        {
+            var rules = BuildScript.GetBuildRules();
+            AddRulesForSelection(rules, rules.searchPatternController);
+        }
+
+        [MenuItem("Assets/Apply Rule/Asset", false, 1)]
+        private static void ApplyRuleAsset()
+        {
+            var rules = BuildScript.GetBuildRules();
+            AddRulesForSelection(rules, rules.searchPatternAsset);
+        }
+
+        [MenuItem("Assets/Apply Rule/Scene", false, 1)]
+        private static void ApplyRuleScene()
+        {
+            var rules = BuildScript.GetBuildRules();
+            AddRulesForSelection(rules, rules.searchPatternScene);
+        }
+
+        [MenuItem("Assets/Apply Rule/Directory", false, 1)]
+        private static void ApplyRuleDir()
+        {
+            var rules = BuildScript.GetBuildRules();
+            AddRulesForSelection(rules, rules.searchPatternDir);
+        }
+
+        private static void AddRulesForSelection(BuildRules rules, string searchPattern)
+        {
+            var isDir = rules.searchPatternDir.Equals(searchPattern);
+            foreach (var item in Selection.objects)
+            {
+                var path = AssetDatabase.GetAssetPath(item);
+                var rule = new BuildRule
+                {
+                    searchPath = path,
+                    searchPattern = searchPattern,
+                    nameBy = isDir ? NameBy.Directory : NameBy.Path
+                };
+                ArrayUtility.Add(ref rules.rules, rule);
+            }
+
+            EditorUtility.SetDirty(rules);
+            AssetDatabase.SaveAssets();
+        }
+
+        [MenuItem(KApplyBuildRules)]
+        private static void ApplyBuildRules()
         {
             var watch = new Stopwatch();
             watch.Start();
-            BuildScript.BuildRules(); 
+            BuildScript.ApplyBuildRules();
             watch.Stop();
-            Debug.Log("BuildRules " + watch.ElapsedMilliseconds + " ms.");
-        } 
-        
-        [MenuItem("XASSET/Build Bundles")]
-        private static void BuildBundles()
+            Debug.Log("ApplyBuildRules " + watch.ElapsedMilliseconds + " ms.");
+        }
+
+        [MenuItem(KBuildAssetBundles)]
+        private static void BuildAssetBundles()
         {
             var watch = new Stopwatch();
             watch.Start();
-            BuildScript.BuildRules();
+			BuildScript.ApplyBuildRules ();
             BuildScript.BuildAssetBundles();
             watch.Stop();
-            Debug.Log("BuildBundles " + watch.ElapsedMilliseconds + " ms.");
+            Debug.Log("BuildAssetBundles " + watch.ElapsedMilliseconds + " ms.");
         } 
-        
-        [MenuItem("XASSET/Build Player")]
+
+        [MenuItem(KBuildPlayer)]
         private static void BuildStandalonePlayer()
         {
-            var watch = new Stopwatch();
-            watch.Start();
             BuildScript.BuildStandalonePlayer();
-            watch.Stop();
-            Debug.Log("BuildPlayer " + watch.ElapsedMilliseconds + " ms.");
         }
 
-        [MenuItem("XASSET/View/PersistentDataPath")]
+		[MenuItem(KViewDataPath)]
         private static void ViewDataPath()
         {
-            EditorUtility.OpenWithDefaultApp(Application.persistentDataPath);
+			EditorUtility.OpenWithDefaultApp(Application.persistentDataPath);
         }
 
-        [MenuItem("Assets/ToJson")]
+        [MenuItem(KCopyBundles)]
+        private static void CopyAssetBundles()
+        {
+            BuildScript.CopyAssetBundlesTo(Application.streamingAssetsPath);
+        } 
+
+#if !UNITY_2018_1_OR_NEWER
+        private const string KCopyPath = "Assets/Copy Path";
+        [MenuItem(KCopyPath)]
+        private static void CopyPath()
+        {
+            var assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
+            EditorGUIUtility.systemCopyBuffer = assetPath;
+            Debug.Log(assetPath);
+        }
+#endif
+        private const string KToJson = "Assets/ToJson";
+
+        [MenuItem(KToJson)]
         private static void ToJson()
         {
             var path = AssetDatabase.GetAssetPath(Selection.activeObject);
@@ -82,97 +176,15 @@ namespace libx
             AssetDatabase.Refresh();
         }
 
-        [MenuItem("Assets/GroupBy/Filename")]
-        private static void GroupByFilename()
-        {
-            GroupAssets(GroupBy.Filename);
-        } 
-
-        [MenuItem("Assets/GroupBy/Directory")]
-        private static void GroupByDirectory()
-        {
-            GroupAssets(GroupBy.Directory); 
-        }
-        
-        [MenuItem("Assets/GroupBy/Explicit")]
-        private static void GroupByExplicitLevel1()
-        {
-            GroupAssets(GroupBy.Explicit);  
-        } 
-        
-        private static void GroupAssets(GroupBy nameBy)
-        {
-            var selection = Selection.GetFiltered<Object>(SelectionMode.DeepAssets);
-            var rules = BuildScript.GetBuildRules();
-            foreach (var o in selection)
-            {
-                var path = AssetDatabase.GetAssetPath(o);
-                if (string.IsNullOrEmpty(path) || Directory.Exists(path))
-                {
-                    continue;
-                }  
-                rules.GroupAsset(path, nameBy);
-            }
-
-            EditorUtility.SetDirty(rules);
-            AssetDatabase.SaveAssets();
-        } 
-        
-        [MenuItem("Assets/PatchBy/Level0")]
-        private static void PatchByLevel0()
-        {
-            PatchAssets(PatchBy.Level0);
-        } 
-
-        [MenuItem("Assets/PatchBy/Level1")]
-        private static void PatchByLevel1()
-        {
-            PatchAssets(PatchBy.Level1); 
-        }
-        
-        [MenuItem("Assets/PatchBy/Level2")]
-        private static void PatchByLevel2()
-        {
-            PatchAssets(PatchBy.Level2);  
-        } 
-        
-        [MenuItem("Assets/PatchBy/Level3")]
-        private static void PatchByLevel3()
-        {
-            PatchAssets(PatchBy.Level3);  
-        } 
-        
-        [MenuItem("Assets/PatchBy/Level4")]
-        private static void PatchByLevel4()
-        {
-            PatchAssets(PatchBy.Level4);  
-        } 
-        
-        private static void PatchAssets(PatchBy patch)
-        {
-            var selection = Selection.GetFiltered<Object>(SelectionMode.DeepAssets);
-            var rules = BuildScript.GetBuildRules();
-            foreach (var o in selection)
-            {
-                var path = AssetDatabase.GetAssetPath(o);
-                if (string.IsNullOrEmpty(path) || Directory.Exists(path))
-                {
-                    continue;
-                }  
-                rules.PatchAsset(path, patch);
-            }
-
-            EditorUtility.SetDirty(rules);
-            AssetDatabase.SaveAssets();
-        } 
-
-        #region Tools
-
-        [MenuItem("XASSET/View/CRC")]
+        #region Tools 
+        [MenuItem("Tools/View CRC")]
         private static void GetCRC()
         {
             var path = EditorUtility.OpenFilePanel("OpenFile", Environment.CurrentDirectory, "");
-            if (string.IsNullOrEmpty(path)) return;
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
 
             using (var fs = File.OpenRead(path))
             {
@@ -181,11 +193,14 @@ namespace libx
             }
         }
 
-        [MenuItem("XASSET/View/MD5")]
+        [MenuItem("Tools/View MD5")]
         private static void GetMD5()
         {
             var path = EditorUtility.OpenFilePanel("OpenFile", Environment.CurrentDirectory, "");
-            if (string.IsNullOrEmpty(path)) return;
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
 
             using (var fs = File.OpenRead(path))
             {
@@ -194,15 +209,18 @@ namespace libx
             }
         }
 
-        [MenuItem("XASSET/Take a screenshot")]
+        [MenuItem("Tools/Take a Screenshot")]
         private static void Screenshot()
         {
             var path = EditorUtility.SaveFilePanel("截屏", null, "screenshot_", "png");
-            if (string.IsNullOrEmpty(path)) return;
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
 
             ScreenCapture.CaptureScreenshot(path);
-        }
 
-        #endregion
+        }
+        #endregion 
     }
 }

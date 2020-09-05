@@ -14,20 +14,24 @@ namespace libx
         [SerializeField]private float sampleTime = 0.5f;
         private float _time;
         private bool _started;
+        
         private void Start()
         {
             _reachability = Application.internetReachability;
             Restart();
         }
+
         public void Restart()
         {
             _time = Time.timeSinceLevelLoad;
             _started = true;
         }
+
         public void Stop()
         {
             _started = false;
         }
+
         private void Update()
         {
             if (_started && Time.timeSinceLevelLoad - _time >= sampleTime)

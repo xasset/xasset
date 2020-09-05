@@ -133,8 +133,8 @@ public class MessageBox : IEnumerator
         var ok1 = GetComponent<Button>("Buttons/Ok");
         var no1 = GetComponent<Button>("Buttons/No");
         ok1.onClick.AddListener(OnClickOk);
-        no1.onClick.AddListener(OnClickNo); 
-        
+        no1.onClick.AddListener(OnClickNo);
+
         Init(title, content, ok, no);
     }
 

@@ -29,104 +29,107 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace libx
 {
-    /// <summary>
-    /// 资源打包的分组方式
-    /// </summary>
-    public enum GroupBy
+    public enum NameBy
     {
-        None, 
         Explicit,
-        Filename,
+        Path,
         Directory,
+        TopDirectory
     }
 
     [Serializable]
-    public class AssetBuild
+    public class RuleAsset
     {
+        public string bundle;
         public string path;
-        public string bundle = string.Empty;
-        public PatchBy patch;
-        public GroupBy groupBy = GroupBy.Filename; 
-        public string group = string.Empty;
     }
 
     [Serializable]
-    public class BundleBuild
+    public class RuleBundle
     {
-        public string assetBundleName;
-        public string[] assetNames;
-        public AssetBundleBuild ToBuild()
+        public string name;
+        public string[] assets;
+    }
+
+    [Serializable]
+    public class BuildRule
+    {
+        [Tooltip("搜索路径")] public string searchPath;
+
+        [Tooltip("搜索通配符，多个之间请用,(逗号)隔开")] public string searchPattern;
+
+        [Tooltip("命名规则")] public NameBy nameBy = NameBy.Path;
+
+        [Tooltip("Explicit的名称")] public string assetBundleName;
+
+        public string[] GetAssets()
         {
-            return new AssetBundleBuild()
+            var patterns = searchPattern.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
+            if (!Directory.Exists(searchPath))
             {
-                assetBundleName = assetBundleName,
-                assetNames = assetNames
-            };
+                Debug.LogWarning("Rule searchPath not exist:" + searchPath);
+                return new string[0];
+            }
+
+            var getFiles = new List<string>();
+            foreach (var item in patterns)
+            {
+                var files = Directory.GetFiles(searchPath, item, SearchOption.AllDirectories);
+                foreach (var file in files)
+                {
+                    if (Directory.Exists(file)) continue;
+                    var ext = Path.GetExtension(file).ToLower();
+                    if ((ext == ".fbx" || ext == ".anim") && !item.Contains(ext)) continue;
+                    if (!BuildRules.ValidateAsset(file)) continue;
+                    var asset = file.Replace("\\", "/");
+                    getFiles.Add(asset);
+                }
+            }
+
+            return getFiles.ToArray();
         }
     }
 
     public class BuildRules : ScriptableObject
     {
-        private readonly List<string> _duplicated = new List<string>();
+        private readonly Dictionary<string, string> _asset2Bundles = new Dictionary<string, string>();
         private readonly Dictionary<string, string[]> _conflicted = new Dictionary<string, string[]>();
+        private readonly List<string> _duplicated = new List<string>();
         private readonly Dictionary<string, HashSet<string>> _tracker = new Dictionary<string, HashSet<string>>();
-        private readonly Dictionary<string, string> _asset2Bundles = new Dictionary<string, string>(); 
+		[Header("Patterns")]
+		public string searchPatternAsset = "*.asset";
+		public string searchPatternController = "*.controller";
+		public string searchPatternDir = "*";
+		public string searchPatternMaterial = "*.mat";
+		public string searchPatternPng = "*.png";
+		public string searchPatternPrefab = "*.prefab";
+		public string searchPatternScene = "*.unity";
+		public string searchPatternText = "*.txt,*.bytes,*.json,*.csv,*.xml,*htm,*.html,*.yaml,*.fnt";
+        public static bool nameByHash = true;
         
-        [Tooltip("构建的版本号")]  
+		[Tooltip("构建的版本号")]
+		[Header("Builds")] 
         public int version;
-        [Tooltip("是否把资源名字哈希处理")]
-        public bool nameByHash = true;
-        [Tooltip("打包选项")]
-        public BuildAssetBundleOptions buildBundleOptions = BuildAssetBundleOptions.ChunkBasedCompression;
-        [Tooltip("BuildPlayer 的时候被打包的场景")] 
-        public SceneAsset[] scenesInBuild = new SceneAsset[0];
-        [Tooltip("所有要打包的资源")] 
-        public AssetBuild[] assets = new AssetBuild[0]; 
-        [Tooltip("所有打包的资源")]
-        public BundleBuild[] bundles = new BundleBuild[0];
-        
+        [Tooltip("BuildPlayer 的时候被打包的场景")] public SceneAsset[] scenesInBuild = new SceneAsset[0]; 
+        public BuildRule[] rules = new BuildRule[0]; 
+		[Header("Assets")]
+		[HideInInspector]public RuleAsset[] ruleAssets = new RuleAsset[0];
+        [HideInInspector]public RuleBundle[] ruleBundles = new RuleBundle[0];
         #region API
-
-        public void GroupAsset(string path, GroupBy groupBy = GroupBy.Filename)
-        { 
-            var asset = ArrayUtility.Find(assets, build => build.path.Equals(path));
-            if (asset != null)
-            {
-                asset.groupBy = groupBy; 
-                return;
-            }
-            ArrayUtility.Add(ref assets, new AssetBuild()
-            {
-                path = path,
-                groupBy = groupBy, 
-            }); 
-        } 
-        
-        public void PatchAsset(string path, PatchBy patch)
-        { 
-            var asset = ArrayUtility.Find(assets, bundleAsset => bundleAsset.path.Equals(path));
-            if (asset != null)
-            {
-                asset.patch = patch; 
-                return;
-            }
-            ArrayUtility.Add(ref assets, new AssetBuild()
-            {
-                path = path,
-                patch = patch, 
-            }); 
-        } 
 
         public int AddVersion()
         {
-            version = version + 1; 
+            version = version + 1;
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssets();
             return version;
         }
 
-        public void Build()
+        public void Apply()
         {
             Clear();
             CollectAssets();
@@ -137,29 +140,24 @@ namespace libx
 
         public AssetBundleBuild[] GetBuilds()
         {
-            return Array.ConvertAll(bundles, input => input.ToBuild());
+            var builds = new List<AssetBundleBuild>();
+            foreach (var bundle in ruleBundles)
+            {
+                builds.Add(new AssetBundleBuild
+                {
+                    assetNames = bundle.assets,
+                    assetBundleName = bundle.name
+                });
+            }
+
+            return builds.ToArray();
         }
 
         #endregion
 
         #region Private
 
-        private string GetBundle(AssetBuild assetBuild)
-        {
-            if (assetBuild.path.EndsWith(".shader"))
-            {
-                return RuledAssetBundleName("shaders");
-            }
-            switch (assetBuild.groupBy)
-            {
-                case GroupBy.Explicit: return RuledAssetBundleName(assetBuild.group);
-                case GroupBy.Filename: return RuledAssetBundleName(Path.Combine(Path.GetDirectoryName(assetBuild.path), Path.GetFileNameWithoutExtension(assetBuild.path)));
-                case GroupBy.Directory: return RuledAssetBundleName(Path.GetDirectoryName(assetBuild.path));
-                default: return string.Empty;
-            }
-        }
-
-        internal bool ValidateAsset(string asset)
+        internal static bool ValidateAsset(string asset)
         {
             if (!asset.StartsWith("Assets/")) return false;
 
@@ -167,38 +165,31 @@ namespace libx
             return ext != ".dll" && ext != ".cs" && ext != ".meta" && ext != ".js" && ext != ".boo";
         }
 
-        private bool IsScene(string asset)
+        private static bool IsScene(string asset)
         {
             return asset.EndsWith(".unity");
         }
 
-        private string RuledAssetBundleName(string assetName)
+        private static string RuledAssetBundleName(string name)
         {
             if (nameByHash)
             {
-                return Utility.GetMD5Hash(assetName) + Assets.Extension;
-            }
-
-            return assetName.Replace("\\", "/").ToLower() + Assets.Extension;
+                return Utility.GetMD5Hash(name) + Assets.Extension; 
+            } 
+            return name.Replace("\\", "/").ToLower() + Assets.Extension;
         }
 
         private void Track(string asset, string bundle)
         {
-            if (! _asset2Bundles.ContainsKey(asset))
+            HashSet<string> assets;
+            if (!_tracker.TryGetValue(asset, out assets))
             {
-                _asset2Bundles[asset] = Path.GetFileNameWithoutExtension(bundle) + "_children" + Assets.Extension;
+                assets = new HashSet<string>();
+                _tracker.Add(asset, assets);
             }
-            
-            HashSet<string> hashSet;
-            if (!_tracker.TryGetValue(asset, out hashSet))
-            {
-                hashSet = new HashSet<string>();
-                _tracker.Add(asset, hashSet);
-            }
-            
-            hashSet.Add(bundle);
-            
-            if (hashSet.Count > 1)
+
+            assets.Add(bundle);
+            if (assets.Count > 1)
             {
                 string bundleName;
                 _asset2Bundles.TryGetValue(asset, out bundleName);
@@ -211,21 +202,21 @@ namespace libx
 
         private Dictionary<string, List<string>> GetBundles()
         {
-            var dictionary = new Dictionary<string, List<string>>();
+            var bundles = new Dictionary<string, List<string>>();
             foreach (var item in _asset2Bundles)
             {
                 var bundle = item.Value;
                 List<string> list;
-                if (!dictionary.TryGetValue(bundle, out list))
+                if (!bundles.TryGetValue(bundle, out list))
                 {
                     list = new List<string>();
-                    dictionary[bundle] = list;
+                    bundles[bundle] = list;
                 }
 
                 if (!list.Contains(item.Key)) list.Add(item.Key);
             }
 
-            return dictionary;
+            return bundles;
         }
 
         private void Clear()
@@ -239,15 +230,14 @@ namespace libx
         private void Save()
         {
             var getBundles = GetBundles();
-
-            bundles = new BundleBuild[getBundles.Count];
+            ruleBundles = new RuleBundle[getBundles.Count];
             var i = 0;
             foreach (var item in getBundles)
             {
-                bundles[i] = new BundleBuild
+                ruleBundles[i] = new RuleBundle
                 {
-                    assetBundleName = item.Key,
-                    assetNames = item.Value.ToArray()
+                    name = item.Key,
+                    assets = item.Value.ToArray()
                 };
                 i++;
             }
@@ -303,23 +293,24 @@ namespace libx
 
         private void CollectAssets()
         {
-            var list = new List<AssetBuild>();
-            for (var index = 0; index < this.assets.Length; index++)
+            for (int i = 0, max = rules.Length; i < max; i++)
             {
-                var asset = this.assets[index];
-                if (File.Exists(asset.path) && ValidateAsset(asset.path))
+                var rule = rules[i];
+                if (EditorUtility.DisplayCancelableProgressBar(string.Format("收集资源{0}/{1}", i, max), rule.searchPath,
+                    i / (float) max))
+                    break;
+                ApplyRule(rule);
+            }
+
+            var list = new List<RuleAsset>();
+            foreach (var item in _asset2Bundles)
+                list.Add(new RuleAsset
                 {
-                    list.Add(asset);
-                }
-            }
-
-            foreach (var asset in list)
-            {
-                asset.bundle = GetBundle(asset);
-                _asset2Bundles[asset.path] = asset.bundle;
-            }
-
-            assets = list.ToArray();
+                    path = item.Key,
+                    bundle = item.Value
+                });
+            list.Sort((a, b) => string.Compare(a.path, b.path, StringComparison.Ordinal));
+            ruleAssets = list.ToArray();
         }
 
         private void OptimizeAsset(string asset)
@@ -328,6 +319,53 @@ namespace libx
                 _asset2Bundles[asset] = RuledAssetBundleName("shaders");
             else
                 _asset2Bundles[asset] = RuledAssetBundleName(asset);
+        }
+
+        private void ApplyRule(BuildRule rule)
+        {
+            var assets = rule.GetAssets();
+            switch (rule.nameBy)
+            {
+                case NameBy.Explicit:
+                {
+                    foreach (var asset in assets) _asset2Bundles[asset] = RuledAssetBundleName(rule.assetBundleName);
+
+                    break;
+                }
+                case NameBy.Path:
+                {
+                    foreach (var asset in assets) _asset2Bundles[asset] = RuledAssetBundleName(asset);
+
+                    break;
+                }
+                case NameBy.Directory:
+                {
+                    foreach (var asset in assets)
+                        _asset2Bundles[asset] = RuledAssetBundleName(Path.GetDirectoryName(asset));
+
+                    break;
+                }
+                case NameBy.TopDirectory:
+                {
+                    var startIndex = rule.searchPath.Length;
+                    foreach (var asset in assets)
+                    {
+                        var dir = Path.GetDirectoryName(asset);
+                        if (!string.IsNullOrEmpty(dir))
+                            if (!dir.Equals(rule.searchPath))
+                            {
+                                var pos = dir.IndexOf("/", startIndex + 1, StringComparison.Ordinal);
+                                if (pos != -1) dir = dir.Substring(0, pos);
+                            }
+
+                        _asset2Bundles[asset] = RuledAssetBundleName(dir);
+                    }
+
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         #endregion

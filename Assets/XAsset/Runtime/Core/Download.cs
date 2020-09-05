@@ -81,7 +81,7 @@ namespace libx
         private UnityWebRequest _request;
         private FileStream _stream;
         private bool _running;
-        private bool _finished;
+        private bool _finished = false;
 
         protected override float GetProgress()
         {
@@ -91,7 +91,12 @@ namespace libx
         protected override byte[] GetData()
         {
             return null;
-        }  
+        }
+
+        protected override void ReceiveContentLength(int contentLength)
+        {
+        }
+
         protected override bool ReceiveData(byte[] buffer, int dataLength)
         {
             if (!string.IsNullOrEmpty(_request.error))
@@ -185,10 +190,6 @@ namespace libx
                 return;   
             } 
             CheckError();
-            if (! string.IsNullOrEmpty(error))
-            {
-                Start();
-            }
         }
 
         private void CheckError()
@@ -232,7 +233,13 @@ namespace libx
             {
                 error = "文件不存在"; 
             }
-        } 
+        }
+
+        public void Retry()
+        {
+            Dispose(); 
+            Start();
+        }
 
         public bool finished
         {

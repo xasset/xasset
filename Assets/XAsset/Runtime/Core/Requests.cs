@@ -78,8 +78,8 @@ namespace libx
 
         internal virtual void Load()
         {
-            if (Assets.Development && Assets.EditorLoader != null)
-                asset = Assets.EditorLoader(url, assetType);
+            if (!Assets.runtimeMode && Assets.loadDelegate != null)
+                asset = Assets.loadDelegate(url, assetType);
             if (asset == null)
             {
                 error = "error! file not exist:" + url;
@@ -91,7 +91,7 @@ namespace libx
             if (asset == null)
                 return;
 
-            if (!Assets.Development)
+            if (!Assets.runtimeMode)
             {
                 if (!(asset is GameObject))
                     Resources.UnloadAsset(asset);
@@ -117,6 +117,11 @@ namespace libx
 
             completed = null;
             return false;
+        }
+
+        internal virtual void LoadImmediate()
+        {
+            
         }
 
         public Action<AssetRequest> completed;
@@ -178,7 +183,7 @@ namespace libx
         internal override void Load()
         {
             _assetName = Path.GetFileName(url);
-            if (!Assets.Development)
+            if (Assets.runtimeMode)
             {
                 var assetBundleName = _assetName.Replace(".asset", ".unity3d").ToLower();
                 _request = Assets.LoadBundle(assetBundleName, true);
@@ -262,6 +267,16 @@ namespace libx
         public BundleAssetAsyncRequest(string bundle)
             : base(bundle)
         {
+        }
+
+        internal override void LoadImmediate()
+        {
+            bundle.LoadImmediate(); 
+            if (bundle.assetBundle != null)
+            {
+                var assetName = Path.GetFileName(url);
+                asset = bundle.assetBundle.LoadAsset(assetName, assetType); 
+            }
         }
 
         public override bool isDone
@@ -640,7 +655,7 @@ namespace libx
 
         internal override void Load()
         {
-            asset = AssetBundle.LoadFromFile(url);
+            asset = Versions.LoadAssetBundleFromFile(url);
             if (assetBundle == null)
                 error = url + " LoadFromFile failed.";
         }
@@ -681,13 +696,13 @@ namespace libx
                 ReleaseByBundle(child);
             }
             _parents.Clear();
-        }
+        } 
     }
 
     public class BundleAsyncRequest : BundleRequest
     {
         private AssetBundleCreateRequest _request;
-
+        
         public override AssetBundle assetBundle
         {
             get
@@ -695,16 +710,25 @@ namespace libx
                 if (_request != null && !_request.isDone)
                 {
                     asset = _request.assetBundle;
+                    if (_request.assetBundle == null)
+                    {
+                        error = string.Format("unable to load assetBundle:{0}", url);
+                    }
+                    loadState = LoadState.Loaded;
                 }
                 return base.assetBundle;
             }
-            
-            internal set
+            internal set { base.assetBundle = value; }
+        }
+        
+        internal override void LoadImmediate()
+        { 
+            Load();
+            if (assetBundle != null)
             {
-                base.assetBundle = value;
+                Debug.LogWarning("LoadImmediate:" + assetBundle.name);
             }
         }
-
         public override bool isDone
         {
             get
@@ -737,7 +761,10 @@ namespace libx
 
         internal override void Load()
         {
-            _request = AssetBundle.LoadFromFileAsync(url);
+            if (_request == null)
+            {
+                _request = Versions.LoadAssetBundleFromFileAsync(url);
+            } 
             if (_request == null)
             {
                 error = url + " LoadFromFile failed.";
@@ -807,5 +834,5 @@ namespace libx
             loadState = LoadState.Unload;
             base.Unload();
         }
-    } 
+    }
 }

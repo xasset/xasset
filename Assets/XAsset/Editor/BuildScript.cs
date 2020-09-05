@@ -27,345 +27,246 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 namespace libx
 {
-    public static class BuildScript
-    {
-        public static string outputPath = "DLC/" + GetPlatformName();
+	public static class BuildScript
+	{
+		public static string outputPath  = "DLC/" + GetPlatformName(); 
 
-        public static void ClearAssetBundles()
-        {
-            var allAssetBundleNames = AssetDatabase.GetAllAssetBundleNames();
-            for (var i = 0; i < allAssetBundleNames.Length; i++)
-            {
-                var text = allAssetBundleNames[i];
-                if (EditorUtility.DisplayCancelableProgressBar(
-                    string.Format("Clear AssetBundles {0}/{1}", i, allAssetBundleNames.Length), text,
-                    i * 1f / allAssetBundleNames.Length))
-                    break;
+		public static void ClearAssetBundles ()
+		{
+			var allAssetBundleNames = AssetDatabase.GetAllAssetBundleNames ();
+			for (var i = 0; i < allAssetBundleNames.Length; i++) {
+				var text = allAssetBundleNames [i];
+				if (EditorUtility.DisplayCancelableProgressBar (
+					                string.Format ("Clear AssetBundles {0}/{1}", i, allAssetBundleNames.Length), text,
+					                i * 1f / allAssetBundleNames.Length))
+					break;
 
-                AssetDatabase.RemoveAssetBundleName(text, true);
-            }
+				AssetDatabase.RemoveAssetBundleName (text, true);
+			} 
+			EditorUtility.ClearProgressBar ();
+		}
 
-            EditorUtility.ClearProgressBar();
-        }
+		internal static void ApplyBuildRules ()
+		{
+			var rules = GetBuildRules ();
+			rules.Apply ();
+		}
 
-        internal static void BuildRules()
-        {
-            var rules = GetBuildRules();
-            rules.Build();
-        }
+		internal static BuildRules GetBuildRules ()
+		{
+			return GetAsset<BuildRules> ("Assets/Rules.asset");
+		} 
 
-        internal static BuildRules GetBuildRules()
-        {
-            return GetAsset<BuildRules>("Assets/Rules.asset");
-        }
+		public static void CopyAssetBundlesTo (string path)
+		{ 
+			var files = new[] {
+				Versions.Dataname,
+				Versions.Filename,
+			};  
+			if (!Directory.Exists (path)) {
+				Directory.CreateDirectory (path);
+			} 
+			foreach (var item in files) {
+				var src = outputPath + "/" + item;
+				var dest = Application.streamingAssetsPath + "/" + item;
+				if (File.Exists (src)) {
+					File.Copy (src, dest, true);
+				}
+			}
+		}
 
-        public static void CopyAssetBundlesTo(string path)
-        {
-            var files = new[]
-            { 
-                Versions.Filename,
-            };
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
+		public static string GetPlatformName ()
+		{
+			return GetPlatformForAssetBundles (EditorUserBuildSettings.activeBuildTarget);
+		}
 
-            foreach (var item in files)
-            {
-                var src = outputPath + "/" + item;
-                var dest = Application.streamingAssetsPath + "/" + item;
-                if (File.Exists(src))
-                {
-                    File.Copy(src, dest, true);
-                }
-            }
-        }
-
-        public static string GetPlatformName()
-        {
-            return GetPlatformForAssetBundles(EditorUserBuildSettings.activeBuildTarget);
-        }
-
-        private static string GetPlatformForAssetBundles(BuildTarget target)
-        {
-            // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (target)
-            {
-                case BuildTarget.Android:
-                    return "Android";
-                case BuildTarget.iOS:
-                    return "iOS";
-                case BuildTarget.WebGL:
-                    return "WebGL";
-                case BuildTarget.StandaloneWindows:
-                case BuildTarget.StandaloneWindows64:
-                    return "Windows";
+		private static string GetPlatformForAssetBundles (BuildTarget target)
+		{
+			// ReSharper disable once SwitchStatementMissingSomeCases
+			switch (target) {
+			case BuildTarget.Android:
+				return "Android";
+			case BuildTarget.iOS:
+				return "iOS";
+			case BuildTarget.WebGL:
+				return "WebGL";
+			case BuildTarget.StandaloneWindows:
+			case BuildTarget.StandaloneWindows64:
+				return "Windows";
 #if UNITY_2017_3_OR_NEWER
-                case BuildTarget.StandaloneOSX:
-                    return "OSX";
+			case BuildTarget.StandaloneOSX:
+				return "OSX";
 #else
                 case BuildTarget.StandaloneOSXIntel:
                 case BuildTarget.StandaloneOSXIntel64:
                 case BuildTarget.StandaloneOSXUniversal:
                     return "OSX";
 #endif
-                default:
-                    return null;
-            }
-        }
+			default:
+				return null;
+			}
+		}
 
-        private static string[] GetLevelsFromBuildSettings()
-        {
-            List<string> scenes = new List<string>();
-            foreach (var item in GetBuildRules().scenesInBuild)
-            {
-                var path = AssetDatabase.GetAssetPath(item);
-                if (!string.IsNullOrEmpty(path))
-                {
-                    scenes.Add(path);
-                }
-            }
+		private static string[] GetLevelsFromBuildSettings ()
+		{
+			List<string> scenes = new List<string> ();
+			foreach (var item in GetBuildRules().scenesInBuild) {
+				var path = AssetDatabase.GetAssetPath (item);
+				if (!string.IsNullOrEmpty (path)) {
+					scenes.Add (path);
+				}
+			}
 
-            return scenes.ToArray();
-        }
+			return scenes.ToArray ();
+		}
 
-        private static string GetAssetBundleManifestFilePath()
-        {
-            var relativeAssetBundlesOutputPathForPlatform = Path.Combine("Asset", GetPlatformName());
-            return Path.Combine(relativeAssetBundlesOutputPathForPlatform, GetPlatformName()) + ".manifest";
-        }
+		private static string GetAssetBundleManifestFilePath ()
+		{
+			var relativeAssetBundlesOutputPathForPlatform = Path.Combine ("Asset", GetPlatformName ());
+			return Path.Combine (relativeAssetBundlesOutputPathForPlatform, GetPlatformName ()) + ".manifest";
+		}
 
-        public static void BuildStandalonePlayer()
-        {
-            var path = Path.Combine(Environment.CurrentDirectory, "Build/" + GetPlatformName());
-            //EditorUtility.SaveFolderPanel("Choose Location of the Built Game", "", "");
-            if (path.Length == 0)
-                return;
+		public static void BuildStandalonePlayer ()
+		{
+			var outputPath =
+				Path.Combine (Environment.CurrentDirectory,
+					"Build/" + GetPlatformName ()
+                        .ToLower ()); //EditorUtility.SaveFolderPanel("Choose Location of the Built Game", "", "");
+			if (outputPath.Length == 0)
+				return;
 
-            var levels = GetLevelsFromBuildSettings();
-            if (levels.Length == 0)
-            {
-                Debug.Log("Nothing to build.");
-                return;
-            }
+			var levels = GetLevelsFromBuildSettings ();
+			if (levels.Length == 0) {
+				Debug.Log ("Nothing to build.");
+				return;
+			}
 
-            var targetName = GetBuildTargetName(EditorUserBuildSettings.activeBuildTarget);
-            if (targetName == null)
-                return;
+			var targetName = GetBuildTargetName (EditorUserBuildSettings.activeBuildTarget);
+			if (targetName == null)
+				return;
 #if UNITY_5_4 || UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0
 			BuildOptions option = EditorUserBuildSettings.development ? BuildOptions.Development : BuildOptions.None;
 			BuildPipeline.BuildPlayer(levels, path + targetName, EditorUserBuildSettings.activeBuildTarget, option);
 #else
-            var buildPlayerOptions = new BuildPlayerOptions
-            {
-                scenes = levels,
-                locationPathName = path + targetName,
-                assetBundleManifestPath = GetAssetBundleManifestFilePath(),
-                target = EditorUserBuildSettings.activeBuildTarget,
-                options = EditorUserBuildSettings.development ? BuildOptions.Development : BuildOptions.None
-            };
-            BuildPipeline.BuildPlayer(buildPlayerOptions);
+			var buildPlayerOptions = new BuildPlayerOptions {
+				scenes = levels,
+				locationPathName = outputPath + targetName,
+				assetBundleManifestPath = GetAssetBundleManifestFilePath (),
+				target = EditorUserBuildSettings.activeBuildTarget,
+				options = EditorUserBuildSettings.development ? BuildOptions.Development : BuildOptions.None
+			};
+			BuildPipeline.BuildPlayer (buildPlayerOptions);
 #endif
-        }
+		}
 
-        public static string CreateAssetBundleDirectory()
-        {
-            // Choose the output path according to the build target.
-            if (!Directory.Exists(outputPath))
-                Directory.CreateDirectory(outputPath);
+		public static string CreateAssetBundleDirectory ()
+		{
+			// Choose the output path according to the build target.
+			if (!Directory.Exists (outputPath))
+				Directory.CreateDirectory (outputPath);
 
-            return outputPath;
-        }
+			return outputPath;
+		}
 
-        public static void BuildAssetBundles()
-        {
-            // Choose the output path according to the build target.
-            var bundleDir = CreateAssetBundleDirectory(); 
-            var targetPlatform = EditorUserBuildSettings.activeBuildTarget;
-            var rules = GetBuildRules();
-            var builds = rules.GetBuilds();
-            var manifest = BuildPipeline.BuildAssetBundles(bundleDir, builds, rules.buildBundleOptions, targetPlatform);
-            if (manifest == null)
-            {
-                return;
-            } 
-            BuildManifest(manifest, bundleDir, rules); 
-        }
+		public static void BuildAssetBundles ()
+		{
+			// Choose the output path according to the build target.
+			var outputPath = CreateAssetBundleDirectory ();
+			const BuildAssetBundleOptions options = BuildAssetBundleOptions.ChunkBasedCompression;
+			var targetPlatform = EditorUserBuildSettings.activeBuildTarget;
+			var rules = GetBuildRules ();
+			var builds = rules.GetBuilds ();
+			var assetBundleManifest = BuildPipeline.BuildAssetBundles (outputPath, builds, options, targetPlatform);
+			if (assetBundleManifest == null) {
+				return;
+			}
 
-        private static void BuildManifest(AssetBundleManifest assetBundleManifest, string bundleDir, BuildRules rules)
-        {
-            var manifest = GetManifest();
-            var allAssetBundles = assetBundleManifest.GetAllAssetBundles();
-            var bundle2Ids = GetBundle2Ids(allAssetBundles);
-            var bundles = GetBundles(assetBundleManifest, bundleDir, allAssetBundles, bundle2Ids);
-            var dirs = new List<string>();
-            var assets = new List<AssetRef>();
-            var patches = new List<VPatch>(); 
-            
-            for (var i = 0; i < rules.assets.Length; i++)
-            {
-                var item = rules.assets[i];
-                var path = item.path;
-                var dir = Path.GetDirectoryName(path).Replace("\\", "/");
-                var index = dirs.FindIndex(o => o.Equals(dir));
-                if (index == -1)
-                {
-                    index = dirs.Count;
-                    dirs.Add(dir);
-                }
+			var manifest = GetManifest ();
+			var dirs = new List<string> ();
+			var assets = new List<AssetRef> ();
+			var bundles = assetBundleManifest.GetAllAssetBundles ();
+			var bundle2Ids = new Dictionary<string, int> ();
+			for (var index = 0; index < bundles.Length; index++) {
+				var bundle = bundles [index];
+				bundle2Ids [bundle] = index;
+			}
 
-                var asset = new AssetRef();
-                if (!bundle2Ids.TryGetValue(item.bundle, out asset.bundle))
-                {
-                    // 第三方资源
-                    var bundle = new BundleRef();
-                    bundle.id = bundles.Count;
-                    bundle.name = Path.GetFileName(path);
-                    using (var stream = File.OpenRead(path))
-                    {
-                        bundle.len = stream.Length;
-                        bundle.crc = Utility.GetCRC32Hash(stream);
-                    }
+			var bundleRefs = new List<BundleRef> ();
+			for (var index = 0; index < bundles.Length; index++) {
+				var bundle = bundles [index];
+				var deps = assetBundleManifest.GetAllDependencies (bundle);
+				var path = string.Format ("{0}/{1}", outputPath, bundle);
+				if (File.Exists (path)) {
+					using (var stream = File.OpenRead (path)) {
+						bundleRefs.Add (new BundleRef {
+							name = bundle,
+							id = index,
+							deps = Array.ConvertAll (deps, input => bundle2Ids [input]),
+							len = stream.Length,
+							hash = assetBundleManifest.GetAssetBundleHash (bundle).ToString (),
+						});
+					}
+				} else {
+					Debug.LogError (path + " file not exsit.");
+				}
+			}
 
-                    bundles.Add(bundle);
-                    asset.bundle = bundle.id;
-                } 
-                
-                asset.dir = index;
-                asset.name = Path.GetFileName(path);
-                assets.Add(asset);
-                var patch = patches.Find(pr => pr.@by == item.patch);
-                if (patch == null)
-                {
-                    patch = new VPatch() { @by = item.patch };
-                    patches.Add(patch);
-                } 
-                if (asset.bundle != -1)
-                {
-                    if (! patch.files.Contains(asset.bundle))
-                    {
-                        patch.files.Add(asset.bundle);
-                    }
-                    var bundle = bundles[asset.bundle];
-                    foreach (var child in bundle.children)
-                    {
-                        if (! patch.files.Contains(child))
-                        {
-                            patch.files.Add(child);
-                        }
-                    }
-                }
-            }
+			for (var i = 0; i < rules.ruleAssets.Length; i++) {
+				var item = rules.ruleAssets [i];
+				var path = item.path;
+				var dir = Path.GetDirectoryName (path).Replace("\\", "/");
+				var index = dirs.FindIndex (o => o.Equals (dir));
+				if (index == -1) {
+					index = dirs.Count;
+					dirs.Add (dir);
+				}
 
-            manifest.dirs = dirs.ToArray();
-            manifest.assets = assets.ToArray();
-            manifest.bundles = bundles.ToArray();
+				var asset = new AssetRef { bundle = bundle2Ids [item.bundle], dir = index, name = Path.GetFileName (path) };
+				assets.Add (asset);
+			}
 
-            EditorUtility.SetDirty(manifest);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            
-            var manifestBundleName = "manifest.unity3d";
-            var builds = new[]
-            {
-                new AssetBundleBuild
-                {
-                    assetNames = new[] {AssetDatabase.GetAssetPath(manifest),},
-                    assetBundleName = manifestBundleName
-                }
-            }; 
-            
-            var targetPlatform = EditorUserBuildSettings.activeBuildTarget; 
-            BuildPipeline.BuildAssetBundles(bundleDir, builds, rules.buildBundleOptions, targetPlatform);
-            {
-                var path = bundleDir + "/" + manifestBundleName;
-                var bundle = new BundleRef();
-                bundle.id = bundles.Count;
-                bundle.name = Path.GetFileName(path);
-                using (var stream = File.OpenRead(path))
-                {
-                    bundle.len = stream.Length;
-                    bundle.crc = Utility.GetCRC32Hash(stream);
-                } 
-                var patch = patches.Find(pr => pr.@by == PatchBy.Level0);
-                if (patch == null)
-                {
-                    patch = new VPatch() { @by = PatchBy.Level0 };
-                    patches.Add(patch);
-                } 
-                bundles.Add(bundle);
-            }
-            Versions.BuildVersion(bundleDir, bundles, patches, GetBuildRules().AddVersion()); 
-        }
+			manifest.dirs = dirs.ToArray ();
+			manifest.assets = assets.ToArray ();
+			manifest.bundles = bundleRefs.ToArray ();
 
-        private static List<BundleRef> GetBundles(AssetBundleManifest assetBundleManifest, string bundleDir,
-            string[] allAssetBundles,
-            Dictionary<string, int> bundle2Ids)
-        {
-            var bundles = new List<BundleRef>();
-            for (var index = 0; index < allAssetBundles.Length; index++)
-            {
-                var bundle = allAssetBundles[index];
-                var deps = assetBundleManifest.GetAllDependencies(bundle);
-                var path = string.Format("{0}/{1}", bundleDir, bundle);
-                if (File.Exists(path))
-                {
-                    using (var stream = File.OpenRead(path))
-                    {
-                        bundles.Add(new BundleRef
-                        {
-                            name = bundle,
-                            id = index,
-                            children = Array.ConvertAll(deps, input => bundle2Ids[input]),
-                            len = stream.Length,
-                            hash = assetBundleManifest.GetAssetBundleHash(bundle).ToString(), 
-                            crc = Utility.GetCRC32Hash(stream)
-                        });
-                    }
-                }
-                else
-                {
-                    Debug.LogError(path + " file not exist.");
-                }
-            }
+			EditorUtility.SetDirty (manifest);
+			AssetDatabase.SaveAssets ();
+			AssetDatabase.Refresh ();
 
-            return bundles;
-        }
+			var manifestBundleName = "manifest.unity3d";
+			builds = new[] {
+				new AssetBundleBuild {
+					assetNames = new[] { AssetDatabase.GetAssetPath (manifest), },
+					assetBundleName = manifestBundleName
+				}
+			};
 
-        private static Dictionary<string, int> GetBundle2Ids(string[] allAssetBundles)
-        {
-            var bundle2Ids = new Dictionary<string, int>();
-            for (var index = 0; index < allAssetBundles.Length; index++)
-            {
-                var bundle = allAssetBundles[index];
-                bundle2Ids[bundle] = index;
-            }
+			BuildPipeline.BuildAssetBundles (outputPath, builds, options, targetPlatform);
+			ArrayUtility.Add (ref bundles, manifestBundleName);  
 
-            return bundle2Ids;
-        }
+			Versions.BuildVersions (outputPath, bundles, GetBuildRules ().AddVersion ());
+		}
 
-        private static string GetBuildTargetName(BuildTarget target)
-        {
-            var time = DateTime.Now.ToString("yyyyMMdd-HHmmss");
-            var name = PlayerSettings.productName + "-v" + PlayerSettings.bundleVersion + ".";
-            switch (target)
-            {
-                case BuildTarget.Android:
-                    return string.Format("/{0}{1}-{2}.apk", name, GetBuildRules().version, time);
+		private static string GetBuildTargetName (BuildTarget target)
+		{
+			var time = DateTime.Now.ToString ("yyyyMMdd-HHmmss");
+			var name = PlayerSettings.productName + "-v" + PlayerSettings.bundleVersion + ".";
+			switch (target) {
+			case BuildTarget.Android:
+				return string.Format ("/{0}{1}-{2}.apk", name, GetBuildRules().version, time);
 
-                case BuildTarget.StandaloneWindows:
-                case BuildTarget.StandaloneWindows64:
-                    return string.Format("/{0}{1}-{2}.exe", name, GetBuildRules().version, time);
+			case BuildTarget.StandaloneWindows:
+			case BuildTarget.StandaloneWindows64:
+				return string.Format ("/{0}{1}-{2}.exe", name, GetBuildRules().version, time);
 
 #if UNITY_2017_3_OR_NEWER
-                case BuildTarget.StandaloneOSX:
-                    return "/" + name + ".app";
+			case BuildTarget.StandaloneOSX:
+				return "/" + name + ".app";
 
 #else
                 case BuildTarget.StandaloneOSXIntel:
@@ -375,34 +276,31 @@ namespace libx
 
 #endif
 
-                case BuildTarget.WebGL:
-                case BuildTarget.iOS:
-                    return "";
-                // Add more build targets for your own.
-                default:
-                    Debug.Log("Target not implemented.");
-                    return null;
-            }
-        }
+			case BuildTarget.WebGL:
+			case BuildTarget.iOS:
+				return "";
+			// Add more build targets for your own.
+			default:
+				Debug.Log ("Target not implemented.");
+				return null;
+			}
+		}
 
-        private static T GetAsset<T>(string path) where T : ScriptableObject
-        {
-            var asset = AssetDatabase.LoadAssetAtPath<T>(path);
-            if (asset == null)
-            {
-                asset = ScriptableObject.CreateInstance<T>();
-                AssetDatabase.CreateAsset(asset, path);
-                AssetDatabase.SaveAssets();
-            }
+		private static T GetAsset<T> (string path) where T : ScriptableObject
+		{
+			var asset = AssetDatabase.LoadAssetAtPath<T> (path);
+			if (asset == null) {
+				asset = ScriptableObject.CreateInstance<T> ();
+				AssetDatabase.CreateAsset (asset, path);
+				AssetDatabase.SaveAssets ();
+			}
 
-            return asset;
-        }
+			return asset;
+		} 
 
-        public static Manifest GetManifest()
-        {
-            return GetAsset<Manifest>(Assets.ManifestAsset);
-        }
-    }
-
-    
+		public static Manifest GetManifest ()
+		{
+			return GetAsset<Manifest> (Assets.ManifestAsset);
+		}
+	}
 }

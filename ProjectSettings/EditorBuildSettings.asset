@@ -12,5 +12,5 @@ EditorBuildSettings:
     path: Assets/Init.unity
     guid: 41515a2b3f98a445e88e746ac77f43d1
   - enabled: 1
-    path: Assets/Game/Art/Scenes/Game.unity
+    path: Assets/XAsset/Demo/Scenes/Game.unity
     guid: d9f2c870487b3492a97fe55f70b65202
