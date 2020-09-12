@@ -8,6 +8,8 @@
 
 官网：https://game4d.cn
 
+![Demo](Docs/Demo.png)
+
 ## 主要特点
 
 满足高效生产和灵活运营的Unity资源管理环境
@@ -40,21 +42,23 @@ XASSET 5.1的内存管理是一种基于引用计数内存管理策略，不论�
 
 Omega Legends is a sci-fi battle royale shooter set in the near future where the game known as "Ω" has taken the world by storm! Select a Hero and make use of their abilities to defeat the competition. Choose to fight alone or team up with friends in intense battles with one hundred participants. Hunt down enemies, build defenses, or take a stealthy approach, do whatever it takes to be the last one standing!
 
-[![Omega](https://www.bing.com/images/blob?bcid=Swic94a2uskBqxcxoNWLuD9SqbotqVTdP8c)
+![Omega](Docs/Omega.png)
 
-## 订阅方案
+3W+预定用户次数的精品像素游戏的信赖
 
-最大的价值是节约的时间
+### [砰砰军团](https://www.taptap.com/app/192380)
 
-| Plus            | Pro             | Enterprise      |
-| --------------- | --------------- | --------------- |
-| 单项目授权      | 单项目授权      | 单项目授权      |
-| **￥299/年**    | **￥2999/年**   | **￥29999/年**  |
-| 核心源码 + DEMO | 核心源码 + DEMO | 核心源码 + DEMO |
-| 1年更新服务支持 | 1年更新服务支持 | 1年更新服务支持 |
-| 可选付费解读    | 免费深度解读    | 优先深度解读    |
-| -               | 资源内存优化    | 全面性能优化    |
-| -               | -               | 功能定制        |
+《砰砰军团》是一款实时对战的策略游戏，我们试着去融合视觉和听觉体验，将战斗的动态与音乐的节拍巧妙结合。我们设计了小豆丁这样活泼可爱的造物，并让它们随着鼓点有节奏地战斗，以带给玩家一种全新的游戏体验。我们尽可能地在细节上做到让这些小豆丁的形象变得丰满，战斗之外，还描绘了它们在村子里生活的状态。希望这个游戏不仅可以让玩家体验到紧张，刺激，且欢快的战斗的乐趣，还可以在闲暇之余带给玩家温馨的平和时光。
+
+![PPJT](Docs/PPJT.png)
+
+3个城市不下10家体验店的驾培系统的需要
+
+### [汽车模拟驾驶器](http://www.carshow.com.cn/)
+
+汽车模拟驾驶器是采用仿真技术通过软硬件，通过视觉、听觉、体感营造真实的驾驶环境和视角，展示汽车驾驶的特性和性能，为驾驶学员提供一个虚拟的可靠的驾驶训练环境。学员可以通过模拟器操作部件在虚拟环境中驾驶学习，发生交互，从而提升驾驶技能。在驾驶人培训中运用模拟驾驶器不仅能提高培训效率和质量，而且能够提高大数据运用能力，增强政府服务和监管的有效性。高效采集、有效整合、充分运用政府数据和社会数据，健全政府运用大数据的工作机制，将运用大数据作为提高政府治理能力的重要手段，不断提高政府服务和监管的针对性、有效性。
+
+![CarShow](Docs/CarShow.jpg)
 
 ## 用户评价
 
