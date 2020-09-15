@@ -97,7 +97,7 @@ namespace libx
                 "Initialize with: runtimeMode={0}\nbasePath：{1}\nupdatePath={2}",
                 runtimeMode, basePath, updatePath));
 
-            var request = new ManifestRequest {url = ManifestAsset};
+            var request = new ManifestRequest {name = ManifestAsset};
             AddAssetRequest(request);
             return request;
         }
@@ -121,7 +121,7 @@ namespace libx
             }
 
             path = GetExistPath(path);
-            var asset = new SceneAssetAsyncRequest(path, additive);
+            var asset = new SceneAssetRequest(path, additive);
             if (! additive)
             {
                 if (_runningScene != null)
@@ -225,8 +225,8 @@ namespace libx
                 for (var i = 0; i < _unusedAssets.Count; ++i)
                 {
                     var request = _unusedAssets[i]; 
-                    Log(string.Format("UnloadAsset:{0}", request.url));
-                    _assets.Remove(request.url);
+                    Log(string.Format("UnloadAsset:{0}", request.name));
+                    _assets.Remove(request.name);
                     request.Unload(); 
                 } 
                 _unusedAssets.Clear();
@@ -238,7 +238,7 @@ namespace libx
                 if (request.Update() || !request.IsUnused())
                     continue;
                 _scenes.RemoveAt(i);
-                Log(string.Format("UnloadScene:{0}", request.url));
+                Log(string.Format("UnloadScene:{0}", request.name));
                 request.Unload(); 
                 --i;
             }
@@ -246,7 +246,7 @@ namespace libx
 
         private static void AddAssetRequest(AssetRequest request)
         {
-            _assets.Add(request.url, request);
+            _assets.Add(request.name, request);
             _loadingAssets.Add(request);
             request.Load();
         }
@@ -273,7 +273,7 @@ namespace libx
             if (GetAssetBundleName(path, out assetBundleName))
             {
                 request = async
-                    ? new BundleAssetAsyncRequest(assetBundleName)
+                    ? new BundleAssetRequestAsync(assetBundleName)
                     : new BundleAssetRequest(assetBundleName);
             }
             else
@@ -288,7 +288,7 @@ namespace libx
                     request = new AssetRequest();
             }
 
-            request.url = path;
+            request.name = path;
             request.assetType = type;
             AddAssetRequest(request);
             request.Retain();
@@ -360,7 +360,7 @@ namespace libx
             return _assetToBundles.TryGetValue(path, out assetBundleName);
         }
 
-        private static string[] GetAllDependencies(string bundle)
+        internal static string[] GetAllDependencies(string bundle)
         {
             string[] deps;
             if (_bundleToDependencies.TryGetValue(bundle, out deps))
@@ -382,30 +382,7 @@ namespace libx
         internal static void UnloadBundle(BundleRequest bundle)
         {
             bundle.Release();
-        }
-
-        private static void UnloadDependencies(BundleRequest bundle)
-        {
-            for (var i = 0; i < bundle.dependencies.Count; i++)
-            {
-                var item = bundle.dependencies[i];
-                item.Release();
-            }
-
-            bundle.dependencies.Clear();
-        }
-
-        private static void LoadDependencies(BundleRequest bundle, string assetBundleName, bool asyncRequest)
-        {
-            var dependencies = GetAllDependencies(assetBundleName);
-            if (dependencies.Length <= 0)
-                return;
-            for (var i = 0; i < dependencies.Length; i++)
-            {
-                var item = dependencies[i];
-                bundle.dependencies.Add(LoadBundle(item, asyncRequest));
-            }
-        }
+        }  
 
         internal static BundleRequest LoadBundle(string assetBundleName, bool asyncMode)
         {
@@ -433,12 +410,12 @@ namespace libx
                 url.StartsWith("ftp://", StringComparison.Ordinal))
                 bundle = new WebBundleRequest();
             else
-                bundle = asyncMode ? new BundleAsyncRequest() : new BundleRequest();
+                bundle = asyncMode ? new BundleRequestAsync() : new BundleRequest();
 
-            bundle.url = url;
+            bundle.name = url;
             _bundles.Add(url, bundle);
 
-            if (MAX_BUNDLES_PERFRAME > 0 && (bundle is BundleAsyncRequest || bundle is WebBundleRequest))
+            if (MAX_BUNDLES_PERFRAME > 0 && (bundle is BundleRequestAsync || bundle is WebBundleRequest))
             {
                 _toloadBundles.Add(bundle);
             }
@@ -447,9 +424,7 @@ namespace libx
                 bundle.Load();
                 _loadingBundles.Add(bundle);
                 Log("LoadBundle: " + url);
-            }
-
-            LoadDependencies(bundle, assetBundleName, asyncMode);
+            } 
 
             bundle.Retain();
             return bundle;
@@ -506,10 +481,9 @@ namespace libx
                     var item = _unusedBundles[i];
                     if (item.isDone)
                     {
-                        UnloadDependencies(item);
                         item.Unload();
-                        _bundles.Remove(item.url);
-                        Log("UnloadBundle: " + item.url); 
+                        _bundles.Remove(item.name);
+                        Log("UnloadBundle: " + item.name); 
                     }  
                 }
                 _unusedBundles.Clear();
