@@ -91,7 +91,7 @@ namespace libx
 
         internal virtual void Load()
         {
-            if (Assets.runtimeMode && Assets.loadDelegate != null)
+            if (!Assets.runtimeMode && Assets.loadDelegate != null)
                 asset = Assets.loadDelegate(name, assetType);
             if (asset == null)
             {
