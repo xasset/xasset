@@ -117,7 +117,11 @@ namespace libx
 			{
 				using (var stream = File.OpenRead (filename)) {
 					var reader = new BinaryReader (stream);
-					return reader.ReadInt32 ();
+					while(reader.PeekChar() != -1)
+					{
+						return reader.ReadInt32 ();
+					}
+					return -1;
 				}
 			}
 			catch (Exception e)

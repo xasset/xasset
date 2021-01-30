@@ -226,8 +226,15 @@ namespace libx
 					dirs.Add (dir);
 				}
 
-				var asset = new AssetRef { bundle = bundle2Ids [item.bundle], dir = index, name = Path.GetFileName (path) };
-				assets.Add (asset);
+				try
+				{
+					var asset = new AssetRef { bundle = bundle2Ids [item.bundle], dir = index, name = Path.GetFileName (path) };
+					assets.Add (asset);
+				}
+				catch
+				{
+					Debug.LogError ("File at " + path + " is invalid to build into assetbundle");
+				}
 			}
 
 			manifest.dirs = dirs.ToArray ();
