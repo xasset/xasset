@@ -391,8 +391,11 @@ namespace libx
             {
                 asset = _request.asset;
                 loadState = LoadState.Loaded;
-                if (asset == null) error = "asset == null";
-                return false;
+                if (asset == null)
+                {
+                    error = "asset == null";
+                    return false;
+                }
             }
 
             return true;
