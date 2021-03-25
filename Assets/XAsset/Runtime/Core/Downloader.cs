@@ -36,15 +36,13 @@ namespace libx
         private const float BYTES_2_MB = 1f / (1024 * 1024);
         
         public int maxDownloads = 3;
-        
-        private readonly List<Download> _downloads = new List<Download>();
-        private readonly List<Download> _tostart = new List<Download>();
-        private readonly List<Download> _progressing = new List<Download>();
+
+        private readonly Stack<Download> _downloads = new Stack<Download>();  
+        private readonly List<Download> _progressing = new List<Download>(); 
+        private readonly List<Download> _finished = new List<Download>(); 
         public Action<long, long, float> onUpdate;
         public Action onFinished;
 
-        private int _finishedIndex;
-        private int _downloadIndex;
         private float _startTime;
         private float _lastTime;
         private long _lastSize;
@@ -55,7 +53,7 @@ namespace libx
 
         public float speed { get; private set; }
 
-        public List<Download> downloads { get { return _downloads; } }
+        public List<Download> finished { get { return _finished; } }
 
         private long GetDownloadSize()
         {
@@ -65,7 +63,17 @@ namespace libx
             {
                 downloadSize += download.position;
                 len += download.len;
-            } 
+            }
+            foreach (var download in _progressing)
+            {
+                downloadSize += download.position;
+                len += download.len;
+            }
+            foreach (var download in _finished)
+            {
+                downloadSize += download.position;
+                len += download.len;
+            }
             return downloadSize - (len - size);
         }
 
@@ -74,8 +82,8 @@ namespace libx
 
         public void StartDownload()
         {
-            _tostart.Clear(); 
-            _finishedIndex = 0; 
+            _progressing.Clear();
+            _finished.Clear();
             _lastSize = 0L;
             Restart();
         }
@@ -85,24 +93,14 @@ namespace libx
             _startTime = Time.realtimeSinceStartup;
             _lastTime = 0;
             _started = true;
-            _downloadIndex = _finishedIndex;
-            var max = Math.Min(_downloads.Count, maxDownloads);
-            for (var i = _finishedIndex; i < max; i++)
-            {
-                var item = _downloads[i];
-                _tostart.Add(item);
-                _downloadIndex++;
-            }
         }
 
         public void Stop()
         {
-            _tostart.Clear();
             foreach (var download in _progressing)
             {
                 download.Complete(true); 
-                _downloads[download.id] = download.Clone() as Download;
-
+                _downloads.Push(download.Clone() as Download);
             } 
             _progressing.Clear();
             _started = false;
@@ -113,8 +111,6 @@ namespace libx
             size = 0;
             position = 0;
             
-            _downloadIndex = 0;
-            _finishedIndex = 0;
             _lastTime = 0f;
             _lastSize = 0L;
             _startTime = 0;
@@ -125,14 +121,13 @@ namespace libx
             }
             _progressing.Clear();
             _downloads.Clear();
-            _tostart.Clear();
+            _finished.Clear();
         }
 
         public void AddDownload(string url, string filename, string savePath, string hash, long len)
         {
             var download = new Download
             {
-                id = _downloads.Count,
                 url = url,
                 name = filename,
                 hash = hash,
@@ -140,7 +135,7 @@ namespace libx
                 savePath = savePath,
                 completed = OnFinished
             };
-            _downloads.Add(download);
+            _downloads.Push(download);
             var info = new FileInfo(download.tempPath);
             if (info.Exists)
             {
@@ -154,19 +149,16 @@ namespace libx
 
         private void OnFinished(Download download)
         {
-            if (_downloadIndex < _downloads.Count)
-            {
-                _tostart.Add(_downloads[_downloadIndex]);
-                _downloadIndex++;    
-            } 
-            _finishedIndex++;
-            Debug.Log(string.Format("OnFinished:{0}, {1}", _finishedIndex, _downloads.Count));
-            if (_finishedIndex != downloads.Count)
+            _progressing.Remove(download);
+            _finished.Add(download);
+
+            Debug.Log(string.Format("OnFinished:{0}, Remain {1}", _finished.Count, _downloads.Count));
+            if (_downloads.Count > 0 || _progressing.Count > 0)
                 return;
             if (onFinished != null)
             {
-                onFinished.Invoke(); 
-            } 
+                onFinished.Invoke();
+            }
             _started = false;
         }
 
@@ -200,17 +192,15 @@ namespace libx
         private void Update()
         {
             if (!_started)
-                return; 
-            
-            if (_tostart.Count > 0)
+                return;
+
+            if (_progressing.Count < maxDownloads && _downloads.Count > 0)
             {
-                for (var i = 0; i < Math.Min(maxDownloads, _tostart.Count); i++)
+                for (var i = 0; i < Math.Min(maxDownloads - _progressing.Count, _downloads.Count); i++)
                 {
-                    var item = _tostart[i];
+                    var item = _downloads.Pop();
                     item.Start();
-                    _tostart.RemoveAt(i);
                     _progressing.Add(item);
-                    i--;
                 }
             }
 
@@ -218,18 +208,14 @@ namespace libx
             {
                 var download = _progressing[index];
                 download.Update();
-                if (!download.finished)
-                    continue;
-                _progressing.RemoveAt(index);
-                index--;
             }
 
-            position = GetDownloadSize(); 
-            
             var elapsed = Time.realtimeSinceStartup - _startTime;
             if (elapsed - _lastTime < sampleTime)
                 return;
-            
+
+            position = GetDownloadSize();
+
             var deltaTime = elapsed - _lastTime; 
             speed = (position - _lastSize) / deltaTime;
             if (onUpdate != null)

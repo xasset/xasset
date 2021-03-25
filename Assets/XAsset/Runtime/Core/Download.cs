@@ -39,7 +39,6 @@ namespace libx
         {
             return new Download()
             {
-                id = id,
                 hash = hash,
                 url = url,
                 len = len,
@@ -50,8 +49,6 @@ namespace libx
         }
 
         #endregion
-
-        public int id { get; set; }
 
         public string error { get; private set; }
 
@@ -227,6 +224,7 @@ namespace libx
                 else
                 {
                     File.Delete(tempPath);
+                    Start();
                 } 
             }
             else
