@@ -42,7 +42,7 @@ namespace Versions
                 {
                     progress = (count - files.Count) * 1f / count;
                     var file = files[0];
-                    if (!File.Exists(file))
+                    if (File.Exists(file))
                     {
                         File.Delete(file);
                     }
