@@ -1,83 +1,57 @@
-**新版发布(主要面向团队提供订阅服务)**
+# xasset-7.0 体验版
 
-# XASSET 6.1
+xasset-7.0 体验版是 xasset-7.0 订阅版的简化版本。
 
-xasset-6.1 是一个全新的分布式 Unity，主要为 Unity 项目的打包慢、包体大、局部更新、边玩边下、版本管理、内存管理、依赖管理、运行卡顿之类的疑难杂症提供全面可靠的解决方案。需要了解更多，请参考：
+xasset-7.0 的订阅版本主要面向团队提供技术支持，体验版本和订阅版的差异可以参考：版本比较 https://xasset.github.io/#/compare-plans
 
-- 官网：https://game4d.cn/xasset.php
-- 入门指南：https://zhuanlan.zhihu.com/p/369974901
-- 特性说明：https://zhuanlan.zhihu.com/p/364058188
-- 作者微信：vmakemore
-- QQ群：[693203087](https://jq.qq.com/?_wv=1027&k=5DyV09a)
+xasset-7.0 的订阅版本主要为 Unity 项目的包体大、打包慢、版本更新、边玩边下、运行卡顿等疑难杂症提供全面有效的解决方案。如需订阅可以联系:
 
-# XASSET 4.0.2（过时了，预计7月后更新）
+- 微信：vmakemore
+- 邮箱：xasset@qq.com
 
-精简实用、高效安全的Unity资源管理方案。
-- Github：<https://github.com/xasset/xasset>
+从开源版本到商业化，xasset 已经持续迭代了近 5 年，通过持续不断的自我迭代和突破 xasset 项目达成了：
 
-## 主要特点
+- 1.4k+ 星标的开源项目（1.0-4.x）
+- 150+ 个人付费订阅（5.1-6.1）
+- 30+ 团队付费订阅（持续增长 6.1 + 7.0）
+- 1k+ 用户的行业内容交流群（持续增长）
+- 15+ 次创作赞助扶持（持续投入）
 
-- 开发模式：编辑器下可以在不用构建AB的环境中使用，平常开发时可以秒进游戏。
-- 支持异步加载到同步加载的无缝切换，对协程无依赖：相对于高度依赖协程的方案，这种设计不但在性能上更有优势，同时，业务层可以用更少的Coding写出更优雅高效的并行异步加载业务。
-- 用引用计数管理对象生命周期：避免重复加载与轻易卸载，让资源对象的生命周期得到妥善处理。并且没有使用WeakReference，可以更方便在跨语言环境中使用，例如避免Lua和C#的交叉引用导致C#这边需要等Lua先GC才能回收资源。
-- 基于规则配置的打包策略，配置好打包规则后，底层会自动收集所有要打包的资源，并分析其冗余和冲突，再进行自动优化，可以有效的解决大部分非内建的资源的冗余情况。
-- 非泛型接口设计: 对Lua更友好，可以更方便的在跨语言的环境中使用。
+非常感谢新老用户的支持和鼓励！到 100+ 团队订阅的时候，我们将和大家分享：普通程序员，如何在没有 Buffer 的情况下，不通过项目背书；不通过商业炒作；和各种注册资金过亿、千万+、百万+公司的团队或个人建立服务关系。希望我们探索出来的路，可以为更多的人提供指引，并且真实没有包装。
 
-## 了解更多
+## 功能特性
 
-- 知乎专栏：[XASSET 4.0发布预告](https://zhuanlan.zhihu.com/p/158040305)
-- 知乎专栏：[XASSET 4.0入门指南](https://zhuanlan.zhihu.com/p/69410498)
+xasset-7.0 体验版提供了以下功能特性：
 
-## 测试数据
+- 增量打包（Unity构建管线自带机制），输出文件默认以追加hash的方式命名，天生不会有CDN同名缓存问题。
+- 全量更新、加载资源自动更新，最稳定可靠的只读模式的版本管理机制。
+- 简便的跨平台资源（同步和异步）、场景（异步）加载能力、支持异步转同步。
+- 仿真模式：编辑器有效，只需设置好打包分组、可以跳过打包直接运行。
+- 预加载模式：编辑器有效，需要先打包才能运行，直接加载最新的打包数据，不会触发更新。
+- 增量模式：需要先打包才能运行，可以在编辑器下模拟和真机一样的版本更新流程。
+- 离线模式：真机有效、开启后不会触发更新。
 
-| VFS在各个平台的IO+对象构建性能（毫秒）        | VFS     | BUILDIN |
-| --------------------------------------------- | ------- | ------- |
-| PC（Win10+i7=10700F CPU2.9GHz 64位 16GB内存） | 310.76  | 354.88  |
-| Android（Sony XZs）                           | 2179.63 | 2740.27 |
-| iOS（iPhone 7）                               | 629.10  | 593.74  |
-| MacBook Pro（macOS15.5 2.9GHz 6核 i9 64位 32GB内存） | 180.29  | 181.90  |
+体验版没有提供分布式打包工具，以及自动分析依赖、自动优化冗余、自动解决冲突的支持。可以结合 Unity 的 [AssetBundleBrowser](https://github.com/Unity-Technologies/AssetBundles-Browser) 可视化的创建资源的 AssetBundle 打包分组。
 
-*注*：大约读取了 662 张贴图资源
+了解 xasset-7.0 订阅版的功能特性可以参考：https://xasset.github.io/
 
-## 开发环境
+## 环境需求
 
-- 引擎版本：Unity2017.4.34f1（已经支持2019）
-- 语言环境：.net 3.5（支持.net4.x以及.net core）
-- 操作系统：Win 10
+- 引擎版本：Unity2018.4+
+- 语言环境：.net 4.x
 
-## 贡献成员
+## 赞助
 
-- [yusjoel](https://github.com/yusjoel)
-- [hemingfei](https://github.com/hemingfei)
-- [veboys](https://github.com/veboys)
-- [woshihuo12](https://github.com/woshihuo12)
-- [CatImmortal](https://github.com/CatImmortal) 
-- [ZhangDi](https://github.com/ZhangDi2018)
-- [QuinShuai](https://github.com/QuinShuai)
-- [songtm](https://github.com/songtm)
-- [woodelfLee](https://github.com/woodelfLee)
-- [LostEarth](https://github.com/LostEarth)
-- [Coeur](https://github.com/Coeur)
-- [XINCGer](https://github.com/XINCGer)
-- [烟雨迷离半世殇](https://www.lfzxb.top/)
-- [土豆](https://www.xasset.org/)
-- [JasonXuDeveloper](https://github.com/JasonXuDeveloper)
-- [大魔王有木桑](https://github.com/yomunsam)
-- [suixin567](https://github.com/suixin567)
-- [Sven](https://github.com/SvenCheung)
-- [liufujingwen](https://github.com/liufujingwen)
+成为 xasset 项目的赞助商可以在这里添加自己的链接，可以带 LOGO 或名字：
 
-## 鸣谢
+- [Jojohello](https://www.zhihu.com/people/jojohello)（人民币3000元）
 
-感谢JetBrains公司提供的使用许可证！
+如需赞助可以联系作者微信：vmakemore。
 
-<p><a href="https://www.jetbrains.com/?from=NKGMobaBasedOnET ">
-<img src="https://images.gitee.com/uploads/images/2020/0722/084147_cc1c0a4a_2253805.png" alt="JetBrains的Logo" width="20%" height="20%"></a></p>
 
-## 更多项目
+## 友情链接
 
 - [ET](https://github.com/egametang/ET) Unity3D Client And C# Server Framework
-- [QFramework](https://github.com/liangxiegame/QFramework) Your first K.I.S.S Unity 3D Framework
 - [TinaX Framework](https://tinax.corala.space/) “开箱即用”的Unity独立游戏开发工具
 - [LuaProfiler-For-Unity](https://github.com/ElPsyCongree/LuaProfiler-For-Unity) Lua Profiler For Unity支持 XLua、SLua、ToLua
 - [JEngine](https://github.com/JasonXuDeveloper/JEngine) 一个基于XAsset&ILRuntime，精简好用的热更框架
