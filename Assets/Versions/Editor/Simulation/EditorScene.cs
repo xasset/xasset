@@ -8,10 +8,7 @@ namespace Versions.Editor.Simulation
     {
         internal static Scene Create(string assetPath, bool additive = false)
         {
-            if (!File.Exists(assetPath))
-            {
-                throw new FileNotFoundException(assetPath);
-            }
+            if (!File.Exists(assetPath)) throw new FileNotFoundException(assetPath);
 
             var scene = new EditorScene
             {

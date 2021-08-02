@@ -18,19 +18,12 @@ namespace Versions
             base.Start();
             downloadedBytes = 0;
             lastDownloadedBytes = 0;
-            foreach (var info in items)
-            {
-                totalSize += info.size;
-            }
+            foreach (var info in items) totalSize += info.size;
 
             if (items.Count > 0)
-            {
                 download = Download.DownloadAsync(items[0]);
-            }
             else
-            {
                 Finish();
-            }
         }
 
         protected override void Update()
@@ -44,13 +37,9 @@ namespace Versions
                         lastDownloadedBytes += download.downloadedBytes;
                         items.RemoveAt(0);
                         if (items.Count > 0)
-                        {
                             download = Download.DownloadAsync(items[0]);
-                        }
                         else
-                        {
                             Finish();
-                        }
                     }
                     else
                     {
@@ -63,10 +52,7 @@ namespace Versions
                     progress = downloadedBytes * 1f / totalSize;
                 }
 
-                if (updated != null)
-                {
-                    updated(this);
-                }
+                if (updated != null) updated(this);
             }
         }
     }

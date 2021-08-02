@@ -11,10 +11,7 @@ namespace Versions
         {
             base.Start();
             var settings = Resources.Load<PlayerSettings>("PlayerSettings");
-            if (settings == null)
-            {
-                settings = ScriptableObject.CreateInstance<PlayerSettings>();
-            }
+            if (settings == null) settings = ScriptableObject.CreateInstance<PlayerSettings>();
 
             file = nameof(Manifest);
             Versions.builtinAssets.AddRange(settings.assets);
@@ -28,10 +25,7 @@ namespace Versions
             if (status == OperationStatus.Processing)
             {
                 progress = asset.progress;
-                if (!asset.isDone)
-                {
-                    return;
-                }
+                if (!asset.isDone) return;
 
                 if (string.IsNullOrEmpty(asset.error))
                 {

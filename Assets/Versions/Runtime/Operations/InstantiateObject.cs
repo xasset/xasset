@@ -38,10 +38,7 @@ namespace Versions
                 }
 
                 progress = asset.progress;
-                if (!asset.isDone)
-                {
-                    return;
-                }
+                if (!asset.isDone) return;
 
                 if (asset.status == LoadableStatus.FailedToLoad)
                 {
@@ -70,20 +67,15 @@ namespace Versions
             }
 
             if (status == OperationStatus.Success)
-            {
                 if (result != null)
                 {
                     Object.DestroyImmediate(result);
                     result = null;
                 }
-            }
 
             if (asset != null)
             {
-                if (string.IsNullOrEmpty(asset.error))
-                {
-                    asset.Release();
-                }
+                if (string.IsNullOrEmpty(asset.error)) asset.Release();
 
                 asset = null;
             }
@@ -94,15 +86,9 @@ namespace Versions
             for (var index = 0; index < AllObjects.Count; index++)
             {
                 var item = AllObjects[index];
-                if (Updater.Instance.busy)
-                {
-                    return;
-                }
+                if (Updater.Instance.busy) return;
 
-                if (!item.isDone || item.result != null)
-                {
-                    continue;
-                }
+                if (!item.isDone || item.result != null) continue;
 
                 AllObjects.RemoveAt(index);
                 index--;

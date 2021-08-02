@@ -24,15 +24,9 @@ namespace Versions.Example.Editor
             Debug.LogFormat("PostprocessBuildBundles {0}", task.name);
 
             var record = task.record;
-            if (record == null)
-            {
-                return;
-            }
+            if (record == null) return;
 
-            foreach (var file in record.files)
-            {
-                Debug.Log(file);
-            }
+            foreach (var file in record.files) Debug.Log(file);
         }
     }
 }

@@ -31,10 +31,7 @@ namespace Versions.Editor.Builds
             get
             {
                 var dir = Utility.buildPath + $"/{GetPlatformName()}";
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
                 return dir;
             }
@@ -54,16 +51,10 @@ namespace Versions.Editor.Builds
             foreach (var guild in guilds)
             {
                 var assetPath = AssetDatabase.GUIDToAssetPath(guild);
-                if (string.IsNullOrEmpty(assetPath))
-                {
-                    continue;
-                }
+                if (string.IsNullOrEmpty(assetPath)) continue;
 
                 var settings = LoadAsset<Settings>(assetPath);
-                if (settings == null)
-                {
-                    continue;
-                }
+                if (settings == null) continue;
 
                 return settings;
             }
@@ -76,10 +67,7 @@ namespace Versions.Editor.Builds
             var manifest = CreateInstance<Manifest>();
             manifest.name = nameof(Manifest);
             var path = GetBuildPath(manifest.name);
-            if (!File.Exists(path))
-            {
-                return manifest;
-            }
+            if (!File.Exists(path)) return manifest;
 
             manifest.Load(path);
             return manifest;
@@ -143,16 +131,10 @@ namespace Versions.Editor.Builds
         public static T LoadAsset<T>(string path) where T : ScriptableObject
         {
             var asset = AssetDatabase.LoadAssetAtPath<T>(path);
-            if (asset != null)
-            {
-                return asset;
-            }
+            if (asset != null) return asset;
 
             var dir = Path.GetDirectoryName(path);
-            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
             asset = CreateInstance<T>();
             AssetDatabase.CreateAsset(asset, path);

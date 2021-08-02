@@ -148,10 +148,7 @@ namespace Versions
         {
             lock (_globalSync)
             {
-                if (_crc32Table == null)
-                {
-                    PrepareTable();
-                }
+                if (_crc32Table == null) PrepareTable();
             }
         }
 
@@ -165,13 +162,9 @@ namespace Versions
             {
                 var bytesRead = stream.Read(buffer, 0, buffer.Length);
                 if (bytesRead > 0)
-                {
                     Accumulate(buffer, 0, bytesRead);
-                }
                 else
-                {
                     break;
-                }
             }
 
             return crc;
@@ -180,11 +173,9 @@ namespace Versions
         internal void Accumulate(byte[] buffer, int offset, int count)
         {
             for (var i = offset; i < count + offset; i++)
-            {
                 _residue = ((_residue >> 8) & 0x00FFFFFF)
                            ^
                            _crc32Table[(_residue ^ buffer[i]) & 0x000000FF];
-            }
         }
 
         internal void ClearCrc()
@@ -200,10 +191,7 @@ namespace Versions
             for (byte bitPosition = 0; bitPosition < 32; bitPosition++)
             {
                 var bitValue = false;
-                foreach (var maskingBit in _maskingBitTable[bitPosition])
-                {
-                    bitValue ^= GetBit(maskingBit, tablePosition);
-                }
+                foreach (var maskingBit in _maskingBitTable[bitPosition]) bitValue ^= GetBit(maskingBit, tablePosition);
 
                 SetBit(bitPosition, ref _crc32Table[tablePosition], bitValue);
             }
@@ -216,10 +204,7 @@ namespace Versions
 
         private static void SetBit(byte bitOrdinal, ref uint data, bool value)
         {
-            if (value)
-            {
-                data |= (uint) 0x1 << bitOrdinal;
-            }
+            if (value) data |= (uint) 0x1 << bitOrdinal;
         }
     }
 }

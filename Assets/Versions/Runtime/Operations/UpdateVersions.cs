@@ -23,35 +23,23 @@ namespace Versions
 
         public void Override()
         {
-            if (Versions.OfflineMode)
-            {
-                return;
-            }
+            if (Versions.OfflineMode) return;
 
             asset.Override();
         }
 
         public void Dispose()
         {
-            if (asset == null)
-            {
-                return;
-            }
+            if (asset == null) return;
 
-            if (asset.status != LoadableStatus.Unloaded)
-            {
-                asset.Release();
-            }
+            if (asset.status != LoadableStatus.Unloaded) asset.Release();
         }
 
         protected override void Update()
         {
             if (status == OperationStatus.Processing)
             {
-                if (!asset.isDone)
-                {
-                    return;
-                }
+                if (!asset.isDone) return;
 
                 version = asset.assetVersion.version.ToString();
                 changed = asset.changed;

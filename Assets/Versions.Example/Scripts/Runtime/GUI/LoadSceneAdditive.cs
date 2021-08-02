@@ -10,13 +10,9 @@ namespace Versions.Example
 
         private void Update()
         {
-            if (Input.GetKeyUp(KeyCode.UpArrow))
-            {
-                _scenes.Add(Scene.LoadAdditiveAsync(Res.GetScene(sceneName)));
-            }
+            if (Input.GetKeyUp(KeyCode.UpArrow)) _scenes.Add(Scene.LoadAdditiveAsync(Res.GetScene(sceneName)));
 
             if (Input.GetKeyUp(KeyCode.DownArrow))
-            {
                 if (_scenes.Count > 0)
                 {
                     var index = _scenes.Count - 1;
@@ -24,7 +20,6 @@ namespace Versions.Example
                     scene.Release();
                     _scenes.RemoveAt(index);
                 }
-            }
         }
     }
 }

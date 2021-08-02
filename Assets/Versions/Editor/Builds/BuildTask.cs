@@ -41,10 +41,7 @@ namespace Versions.Editor.Builds
         {
             var records = ScriptableObject.CreateInstance<Records>();
             var path = GetRecordsPath(build);
-            if (File.Exists(path))
-            {
-                JsonUtility.FromJsonOverwrite(File.ReadAllText(path), records);
-            }
+            if (File.Exists(path)) JsonUtility.FromJsonOverwrite(File.ReadAllText(path), records);
 
             return records;
         }
@@ -63,7 +60,7 @@ namespace Versions.Editor.Builds
                 var assetBundleName = assetBundleNames[i];
                 DisplayProgressBar("采集资源", assetBundleName, i, assetBundleNames.Length);
                 var assetNames = AssetDatabase.GetAssetPathsFromAssetBundle(assetBundleName);
-                bundledAssets.AddRange(Array.ConvertAll(assetNames, input => new Asset()
+                bundledAssets.AddRange(Array.ConvertAll(assetNames, input => new Asset
                 {
                     path = input,
                     bundle = assetBundleName
@@ -139,10 +136,7 @@ namespace Versions.Editor.Builds
         {
             var pos = assetBundle.LastIndexOf("_", StringComparison.Ordinal) + 1;
             var hash = assetBundle.Substring(pos);
-            if (!string.IsNullOrEmpty(bundleExtension))
-            {
-                hash = hash.Replace(bundleExtension, "");
-            }
+            if (!string.IsNullOrEmpty(bundleExtension)) hash = hash.Replace(bundleExtension, "");
 
             var originBundle = $"{assetBundle.Replace("_" + hash, "")}";
             return originBundle;
@@ -174,17 +168,13 @@ namespace Versions.Editor.Builds
                             Array.ConvertAll(dependencies, input => nameWithBundles[input].id);
                         var file = Settings.GetBuildPath(assetBundle);
                         if (File.Exists(file))
-                        {
                             using (var stream = File.OpenRead(file))
                             {
                                 manifestBundle.size = stream.Length;
                                 manifestBundle.crc = Utility.ComputeCRC32(stream);
                             }
-                        }
                         else
-                        {
                             Debug.LogErrorFormat("File not found: {0}", file);
-                        }
                     }
                     else
                     {
@@ -205,14 +195,12 @@ namespace Versions.Editor.Builds
             var newFiles = new List<string>();
             var newSize = 0L;
             foreach (var bundle in bundles)
-            {
                 if (!getBundles.TryGetValue(bundle.name, out var value) ||
                     value.nameWithAppendHash != bundle.nameWithAppendHash)
                 {
                     newFiles.Add(bundle.nameWithAppendHash);
                     newSize += bundle.size;
                 }
-            }
 
             manifest.bundles = bundles;
             var newFilesSize = Utility.FormatBytes(newSize);

@@ -9,10 +9,7 @@ namespace Versions.Editor.Simulation
     {
         protected override void OnLoad()
         {
-            if (mustCompleteOnNextFrame)
-            {
-                OnLoaded();
-            }
+            if (mustCompleteOnNextFrame) OnLoaded();
         }
 
         private void OnLoaded()
@@ -32,25 +29,16 @@ namespace Versions.Editor.Simulation
 
         protected override void OnUnload()
         {
-            if (asset == null)
-            {
-                return;
-            }
+            if (asset == null) return;
 
-            if (!(asset is GameObject))
-            {
-                Resources.UnloadAsset(asset);
-            }
+            if (!(asset is GameObject)) Resources.UnloadAsset(asset);
 
             asset = null;
         }
 
         protected override void OnUpdate()
         {
-            if (status != LoadableStatus.Loading)
-            {
-                return;
-            }
+            if (status != LoadableStatus.Loading) return;
 
             OnLoaded();
         }
@@ -62,10 +50,7 @@ namespace Versions.Editor.Simulation
 
         internal static EditorAsset Create(string path, Type type)
         {
-            if (!File.Exists(path))
-            {
-                throw new FileNotFoundException(path);
-            }
+            if (!File.Exists(path)) throw new FileNotFoundException(path);
 
             return new EditorAsset
             {

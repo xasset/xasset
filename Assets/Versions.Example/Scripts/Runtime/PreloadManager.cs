@@ -31,10 +31,7 @@ namespace Versions.Example
 
         public void SetVisible(bool visible)
         {
-            if (progressBar != null)
-            {
-                progressBar.SetVisible(visible);
-            }
+            if (progressBar != null) progressBar.SetVisible(visible);
         }
 
         public void SetMessage(string message, float progress)

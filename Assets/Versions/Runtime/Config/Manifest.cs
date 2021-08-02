@@ -30,10 +30,7 @@ namespace Versions
         public Dictionary<string, ManifestBundle> GetBundles()
         {
             var dictionary = new Dictionary<string, ManifestBundle>();
-            foreach (var bundle in bundles)
-            {
-                dictionary[bundle.name] = bundle;
-            }
+            foreach (var bundle in bundles) dictionary[bundle.name] = bundle;
 
             return dictionary;
         }
@@ -51,10 +48,7 @@ namespace Versions
 
         public ManifestBundle[] GetDependencies(ManifestBundle bundle)
         {
-            if (bundle == null)
-            {
-                return EmptyBundles;
-            }
+            if (bundle == null) return EmptyBundles;
 
             return Array.ConvertAll(bundle.dependencies, input => bundles[input]);
         }
@@ -77,7 +71,6 @@ namespace Versions
             JsonUtility.FromJsonOverwrite(json, this);
             nameWithBundles.Clear();
             if (onReadAsset != null)
-            {
                 foreach (var bundle in bundles)
                 {
                     nameWithBundles[bundle.nameWithAppendHash] = bundle;
@@ -87,27 +80,18 @@ namespace Versions
                         onReadAsset.Invoke(asset);
                     }
                 }
-            }
             else
-            {
                 foreach (var bundle in bundles)
                 {
                     nameWithBundles[bundle.nameWithAppendHash] = bundle;
-                    foreach (var asset in bundle.assets)
-                    {
-                        nameWithBundles[asset] = bundle;
-                    }
+                    foreach (var asset in bundle.assets) nameWithBundles[asset] = bundle;
                 }
-            }
         }
 
         public void AddAsset(string assetPath)
         {
             nameWithBundles[assetPath] = ManifestBundle.Empty;
-            if (onReadAsset != null)
-            {
-                onReadAsset(assetPath);
-            }
+            if (onReadAsset != null) onReadAsset(assetPath);
         }
     }
 }

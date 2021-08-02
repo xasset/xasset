@@ -14,10 +14,7 @@ namespace Versions.Example
 
         private void Start()
         {
-            if (loadOnAwake)
-            {
-                LoadScene();
-            }
+            if (loadOnAwake) LoadScene();
         }
 
         public void LoadScene()
@@ -33,16 +30,10 @@ namespace Versions.Example
 
         private void Loading()
         {
-            if (loading != null)
-            {
-                return;
-            }
+            if (loading != null) return;
 
             loading = Scene.LoadAsync(Res.GetScene(scene));
-            if (showProgress)
-            {
-                PreloadManager.Instance.ShowProgress(loading);
-            }
+            if (showProgress) PreloadManager.Instance.ShowProgress(loading);
         }
     }
 }

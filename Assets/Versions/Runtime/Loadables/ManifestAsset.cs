@@ -19,16 +19,10 @@ namespace Versions
         {
             get
             {
-                if (assetVersion == null)
-                {
-                    return false;
-                }
+                if (assetVersion == null) return false;
 
                 var find = Versions.Manifest;
-                if (find != null)
-                {
-                    return find.version < assetVersion.version;
-                }
+                if (find != null) return find.version < assetVersion.version;
 
                 return true;
             }
@@ -52,10 +46,7 @@ namespace Versions
 
         public virtual void Override()
         {
-            if (assetVersion == null)
-            {
-                return;
-            }
+            if (assetVersion == null) return;
 
             if (builtin)
             {
@@ -65,7 +56,6 @@ namespace Versions
                 {
                     path = Versions.GetDownloadDataPath(asset.name);
                     if (File.Exists(path))
-                    {
                         using (var stream = File.OpenRead(path))
                         {
                             if (Utility.ComputeCRC32(stream) == file.crc)
@@ -75,7 +65,6 @@ namespace Versions
                                 return;
                             }
                         }
-                    }
                 }
 
                 asset.Load(GetTemporaryPath(name));
@@ -83,10 +72,7 @@ namespace Versions
             }
             else
             {
-                if (!changed)
-                {
-                    return;
-                }
+                if (!changed) return;
 
                 var split = name.Split(new[]
                 {
@@ -140,15 +126,9 @@ namespace Versions
             for (var index = 0; index < Unused.Count; index++)
             {
                 var item = Unused[index];
-                if (Updater.Instance.busy)
-                {
-                    break;
-                }
+                if (Updater.Instance.busy) break;
 
-                if (!item.isDone)
-                {
-                    continue;
-                }
+                if (!item.isDone) continue;
 
                 Unused.RemoveAt(index);
                 index--;
@@ -158,10 +138,7 @@ namespace Versions
 
         private void DownloadAsync(string url, string savePath)
         {
-            if (File.Exists(savePath))
-            {
-                File.Delete(savePath);
-            }
+            if (File.Exists(savePath)) File.Delete(savePath);
 
             Logger.I("Load {0}", url);
             request = UnityWebRequest.Get(url);
@@ -205,10 +182,7 @@ namespace Versions
             }
 
             progress = 0.2f + request.downloadProgress;
-            if (!request.isDone)
-            {
-                return;
-            }
+            if (!request.isDone) return;
 
             if (!string.IsNullOrEmpty(request.error))
             {
@@ -231,10 +205,7 @@ namespace Versions
             }
 
             progress = 0.2f * request.downloadProgress;
-            if (!request.isDone)
-            {
-                return;
-            }
+            if (!request.isDone) return;
 
             if (!string.IsNullOrEmpty(request.error))
             {
@@ -256,7 +227,6 @@ namespace Versions
             Logger.I("Read {0} with version {1} crc {2}", name, assetVersion.version, assetVersion.crc);
             var path = GetTemporaryPath(name);
             if (File.Exists(path))
-            {
                 using (var stream = File.OpenRead(path))
                 {
                     if (Utility.ComputeCRC32(stream) == assetVersion.crc)
@@ -266,12 +236,8 @@ namespace Versions
                         return;
                     }
                 }
-            }
 
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
+            if (File.Exists(path)) File.Delete(path);
 
             DownloadAsync(pathOrURL, path);
             status = LoadableStatus.Downloading;

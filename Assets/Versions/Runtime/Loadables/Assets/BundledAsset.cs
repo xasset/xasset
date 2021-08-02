@@ -39,50 +39,11 @@ namespace Versions
             asset = null;
         }
 
-        public override void LoadImmediate()
-        {
-            if (isDone)
-            {
-                return;
-            }
-
-            if (dependencies == null)
-            {
-                Finish("dependencies == null");
-                return;
-            }
-
-            if (!dependencies.isDone)
-            {
-                dependencies.LoadImmediate();
-            }
-
-            if (dependencies.assetBundle == null)
-            {
-                Finish("dependencies.assetBundle == null");
-                return;
-            }
-
-            asset = dependencies.assetBundle.LoadAsset(pathOrURL, type);
-            if (asset == null)
-            {
-                Finish("target == null");
-                return;
-            }
-
-            Finish();
-        }
-
         protected override void OnUpdate()
         {
             if (status == LoadableStatus.Loading)
-            {
                 UpdateLoading();
-            }
-            else if (status == LoadableStatus.DependentLoading)
-            {
-                UpdateDependencies();
-            }
+            else if (status == LoadableStatus.DependentLoading) UpdateDependencies();
         }
 
         private void UpdateLoading()
@@ -94,10 +55,7 @@ namespace Versions
             }
 
             progress = 0.5f + request.progress * 0.5f;
-            if (!request.isDone)
-            {
-                return;
-            }
+            if (!request.isDone) return;
 
             asset = request.asset;
             if (asset == null)
@@ -118,10 +76,7 @@ namespace Versions
             }
 
             progress = 0.5f * dependencies.progress;
-            if (!dependencies.isDone)
-            {
-                return;
-            }
+            if (!dependencies.isDone) return;
 
             var assetBundle = dependencies.assetBundle;
             if (assetBundle == null)

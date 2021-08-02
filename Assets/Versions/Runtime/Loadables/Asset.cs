@@ -35,16 +35,10 @@ namespace Versions
 
         protected override void OnComplete()
         {
-            if (completed == null)
-            {
-                return;
-            }
+            if (completed == null) return;
 
             var saved = completed;
-            if (completed != null)
-            {
-                completed(this);
-            }
+            if (completed != null) completed(this);
 
             completed -= saved;
         }
@@ -80,17 +74,11 @@ namespace Versions
                 Cache.Add(path, item);
             }
 
-            if (completed != null)
-            {
-                item.completed += completed;
-            }
+            if (completed != null) item.completed += completed;
 
             item.mustCompleteOnNextFrame = mustCompleteOnNextFrame;
             item.Load();
-            if (mustCompleteOnNextFrame)
-            {
-                item.LoadImmediate();
-            }
+            if (mustCompleteOnNextFrame) item.LoadImmediate();
 
             return item;
         }
@@ -100,22 +88,11 @@ namespace Versions
             for (var index = 0; index < Unused.Count; index++)
             {
                 var item = Unused[index];
-                if (Updater.Instance.busy)
-                {
-                    break;
-                }
-
-                if (!item.isDone)
-                {
-                    continue;
-                }
+                if (!item.isDone) continue;
 
                 Unused.RemoveAt(index);
                 index--;
-                if (!item.reference.unused)
-                {
-                    continue;
-                }
+                if (!item.reference.unused) continue;
 
                 item.Unload();
                 Cache.Remove(item.pathOrURL);

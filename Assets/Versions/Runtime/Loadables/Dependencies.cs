@@ -27,25 +27,15 @@ namespace Versions
             mainBundle = Bundle.LoadInternal(info, mustCompleteOnNextFrame);
             bundles.Add(mainBundle);
             if (infos != null && infos.Length > 0)
-            {
                 foreach (var item in infos)
-                {
                     bundles.Add(Bundle.LoadInternal(item, mustCompleteOnNextFrame));
-                }
-            }
         }
 
         public override void LoadImmediate()
         {
-            if (isDone)
-            {
-                return;
-            }
+            if (isDone) return;
 
-            foreach (var request in bundles)
-            {
-                request.LoadImmediate();
-            }
+            foreach (var request in bundles) request.LoadImmediate();
         }
 
         protected override void OnUnload()
@@ -53,12 +43,8 @@ namespace Versions
             if (bundles.Count > 0)
             {
                 foreach (var item in bundles)
-                {
                     if (string.IsNullOrEmpty(item.error))
-                    {
                         item.Release();
-                    }
-                }
 
                 bundles.Clear();
             }
@@ -83,10 +69,7 @@ namespace Versions
                         return;
                     }
 
-                    if (child.isDone)
-                    {
-                        continue;
-                    }
+                    if (child.isDone) continue;
 
                     allDone = false;
                     break;

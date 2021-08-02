@@ -37,16 +37,10 @@ namespace Versions
 
         public static Scene LoadAsync(string assetPath, Action<Scene> completed = null, bool additive = false)
         {
-            if (string.IsNullOrEmpty(assetPath))
-            {
-                throw new ArgumentNullException(nameof(assetPath));
-            }
+            if (string.IsNullOrEmpty(assetPath)) throw new ArgumentNullException(nameof(assetPath));
 
             var scene = Versions.CreateScene(assetPath, additive);
-            if (completed != null)
-            {
-                scene.completed += completed;
-            }
+            if (completed != null) scene.completed += completed;
 
             current = scene;
             scene.Load();
@@ -63,10 +57,7 @@ namespace Versions
             if (status == LoadableStatus.Loading)
             {
                 UpdateLoading();
-                if (updated != null)
-                {
-                    updated(this);
-                }
+                if (updated != null) updated(this);
             }
         }
 
@@ -82,18 +73,12 @@ namespace Versions
 
             if (operation.allowSceneActivation)
             {
-                if (!operation.isDone)
-                {
-                    return;
-                }
+                if (!operation.isDone) return;
             }
             else
             {
                 // https://docs.unity3d.com/ScriptReference/AsyncOperation-allowSceneActivation.html
-                if (operation.progress < 0.9f)
-                {
-                    return;
-                }
+                if (operation.progress < 0.9f) return;
             }
 
             Finish();
@@ -120,10 +105,7 @@ namespace Versions
             }
             else
             {
-                if (main != null)
-                {
-                    main.additives.Add(this);
-                }
+                if (main != null) main.additives.Add(this);
             }
         }
 
@@ -137,72 +119,42 @@ namespace Versions
         {
             if (loadSceneMode == LoadSceneMode.Additive)
             {
-                if (main != null)
-                {
-                    main.additives.Remove(this);
-                }
+                if (main != null) main.additives.Remove(this);
 
-                if (string.IsNullOrEmpty(error))
-                {
-                    SceneManager.UnloadSceneAsync(sceneName);
-                }
+                if (string.IsNullOrEmpty(error)) SceneManager.UnloadSceneAsync(sceneName);
             }
             else
             {
-                foreach (var item in additives)
-                {
-                    item.Release();
-                }
+                foreach (var item in additives) item.Release();
 
                 additives.Clear();
             }
 
-            if (onSceneUnloaded != null)
-            {
-                onSceneUnloaded.Invoke(this);
-            }
+            if (onSceneUnloaded != null) onSceneUnloaded.Invoke(this);
         }
 
         protected override void OnComplete()
         {
-            if (onSceneLoaded != null)
-            {
-                onSceneLoaded.Invoke(this);
-            }
+            if (onSceneLoaded != null) onSceneLoaded.Invoke(this);
 
-            if (completed == null)
-            {
-                return;
-            }
+            if (completed == null) return;
 
             var saved = completed;
-            if (completed != null)
-            {
-                completed(this);
-            }
+            if (completed != null) completed(this);
 
             completed -= saved;
         }
 
         public static void UpdateScenes()
         {
-            if (current == null || !current.isDone)
-            {
-                return;
-            }
+            if (current == null || !current.isDone) return;
 
             for (var index = 0; index < Unused.Count; index++)
             {
                 var item = Unused[index];
-                if (Updater.Instance.busy)
-                {
-                    break;
-                }
+                if (Updater.Instance.busy) break;
 
-                if (!item.isDone)
-                {
-                    continue;
-                }
+                if (!item.isDone) continue;
 
                 Unused.RemoveAt(index);
                 index--;

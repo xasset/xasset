@@ -1,5 +1,4 @@
 using System.IO;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 using Versions.Editor.Builds;
@@ -15,29 +14,6 @@ namespace Versions.Editor
             var path = AssetDatabase.GetAssetPath(target);
             var crc32 = Utility.ComputeCRC32(File.OpenRead(path));
             Debug.LogFormat("ComputeCRC for {0} with {1}", path, crc32);
-        }
-
-        [MenuItem("Assets/Versions/GenRes")]
-        public static void GenRes()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("namespace Versions.Example\n{");
-            sb.AppendLine("\tpublic class Res\n\t{");
-            var assetBundleNames = AssetDatabase.GetAllAssetBundleNames();
-            foreach (var assetBundleName in assetBundleNames)
-            {
-                var assetNames = AssetDatabase.GetAssetPathsFromAssetBundle(assetBundleName);
-                foreach (var assetName in assetNames)
-                {
-                    var type = AssetDatabase.GetMainAssetTypeAtPath(assetName);
-                    var name = Path.GetFileNameWithoutExtension(assetName).Replace(" ", "_").Replace("-", "_");
-                    sb.AppendFormat("\t\tpublic const string {0}_{1}=\"{2}\";\n", type.Name, name, assetName);
-                }
-            }
-
-            sb.AppendLine("\t}");
-            sb.AppendLine("}");
-            File.WriteAllText("Assets/Versions.Example/Scripts/Runtime/Res.cs", sb.ToString());
         }
 
         [MenuItem("Assets/Versions/Build/Bundles")]

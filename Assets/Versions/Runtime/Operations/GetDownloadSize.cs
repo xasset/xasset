@@ -20,10 +20,7 @@ namespace Versions
             }
 
             totalSize = 0;
-            if (bundles.Count == 0)
-            {
-                Finish();
-            }
+            if (bundles.Count == 0) Finish();
         }
 
         protected override void Update()
@@ -38,13 +35,9 @@ namespace Versions
                     {
                         var file = new FileInfo(savePath);
                         if (file.Exists)
-                        {
                             totalSize += bundle.size - file.Length;
-                        }
                         else
-                        {
                             totalSize += bundle.size;
-                        }
 
                         result.Add(new DownloadInfo
                         {
@@ -56,10 +49,7 @@ namespace Versions
                     }
 
                     bundles.RemoveAt(0);
-                    if (Updater.Instance.busy)
-                    {
-                        return;
-                    }
+                    if (Updater.Instance.busy) return;
                 }
 
                 Finish();

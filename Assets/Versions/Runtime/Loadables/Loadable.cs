@@ -44,16 +44,10 @@ namespace Versions
             for (var index = 0; index < Loading.Count; index++)
             {
                 var item = Loading[index];
-                if (Updater.Instance.busy)
-                {
-                    return;
-                }
+                if (Updater.Instance.busy) return;
 
                 item.Update();
-                if (!item.isDone)
-                {
-                    continue;
-                }
+                if (!item.isDone) continue;
 
                 Loading.RemoveAt(index);
                 index--;
@@ -112,10 +106,7 @@ namespace Versions
         {
             reference.Retain();
             Add(this);
-            if (status != LoadableStatus.Wait)
-            {
-                return;
-            }
+            if (status != LoadableStatus.Wait) return;
 
             Logger.I("Load {0} {1}.", GetType().Name, Path.GetFileName(pathOrURL));
             status = LoadableStatus.Loading;
@@ -125,10 +116,7 @@ namespace Versions
 
         protected internal void Unload()
         {
-            if (status == LoadableStatus.Unloaded)
-            {
-                return;
-            }
+            if (status == LoadableStatus.Unloaded) return;
 
             Logger.I("Unload {0} {1}.", GetType().Name, Path.GetFileName(pathOrURL), error);
             OnUnload();
@@ -144,10 +132,7 @@ namespace Versions
             }
 
             reference.Release();
-            if (!reference.unused)
-            {
-                return;
-            }
+            if (!reference.unused) return;
 
             OnUnused();
         }

@@ -18,10 +18,7 @@ namespace Versions
             usedFiles.Add(manifest.name);
             foreach (var bundle in manifest.bundles)
             {
-                if (string.IsNullOrEmpty(bundle.nameWithAppendHash))
-                {
-                    continue;
-                }
+                if (string.IsNullOrEmpty(bundle.nameWithAppendHash)) continue;
 
                 usedFiles.Add(bundle.nameWithAppendHash);
             }
@@ -42,16 +39,10 @@ namespace Versions
                 {
                     progress = (count - files.Count) * 1f / count;
                     var file = files[0];
-                    if (File.Exists(file))
-                    {
-                        File.Delete(file);
-                    }
+                    if (File.Exists(file)) File.Delete(file);
 
                     files.RemoveAt(0);
-                    if (Updater.Instance.busy)
-                    {
-                        break;
-                    }
+                    if (Updater.Instance.busy) break;
                 }
 
                 Finish();

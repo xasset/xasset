@@ -13,10 +13,7 @@ namespace Versions
 
         public static ManifestVersion Load(string filename)
         {
-            if (!File.Exists(filename))
-            {
-                return CreateInstance<ManifestVersion>();
-            }
+            if (!File.Exists(filename)) return CreateInstance<ManifestVersion>();
 
             var json = File.ReadAllText(filename);
             var manifestVersion = CreateInstance<ManifestVersion>();

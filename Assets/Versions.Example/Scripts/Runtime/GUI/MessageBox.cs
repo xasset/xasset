@@ -70,17 +70,11 @@ namespace Versions.Example
 
         public static void Dispose()
         {
-            foreach (var item in _hidden)
-            {
-                item.Destroy();
-            }
+            foreach (var item in _hidden) item.Destroy();
 
             _hidden.Clear();
 
-            foreach (var item in _showed)
-            {
-                item.Destroy();
-            }
+            foreach (var item in _showed) item.Destroy();
 
             _showed.Clear();
         }
@@ -152,10 +146,7 @@ namespace Versions.Example
         {
             ok = isOk;
             Close();
-            if (completed == null)
-            {
-                return;
-            }
+            if (completed == null) return;
 
             completed(isOk);
             completed = null;

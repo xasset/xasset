@@ -31,9 +31,7 @@ namespace Versions.Editor
                 case ScriptPlayMode.Incremental:
                     if (!Directory.Exists(Path.Combine(Application.streamingAssetsPath,
                         Utility.buildPath)))
-                    {
                         config.assets.Clear();
-                    }
 
                     config.offlineMode = false;
                     break;

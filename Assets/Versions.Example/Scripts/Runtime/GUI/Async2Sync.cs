@@ -23,10 +23,7 @@ namespace Versions.Example
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Delete))
-            {
-                ReleaseAssets();
-            }
+            if (Input.GetKeyDown(KeyCode.Delete)) ReleaseAssets();
         }
 
         private void OnDestroy()
@@ -36,10 +33,7 @@ namespace Versions.Example
 
         private void ReleaseAssets()
         {
-            foreach (var item in _assets)
-            {
-                item.Release();
-            }
+            foreach (var item in _assets) item.Release();
 
             _assets.Clear();
         }

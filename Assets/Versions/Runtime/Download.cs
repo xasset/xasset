@@ -28,22 +28,14 @@ namespace Versions
     public class Download : CustomYieldInstruction
     {
         public static uint MaxDownloads = 10;
-        public static long MaxBandwidth = 0;
-        public static int MaxRetryTimes = 3;
         public static uint ReadBufferSize = 1042 * 4;
         public static readonly List<Download> Prepared = new List<Download>();
         public static readonly List<Download> Progressing = new List<Download>();
         public static readonly Dictionary<string, Download> Cache = new Dictionary<string, Download>();
         private static float lastSampleTime;
         private static long lastTotalDownloadedBytes;
-
-
         private readonly byte[] _readBuffer = new byte[ReadBufferSize];
-        private long _bandWidth;
-
         private Thread _thread;
-
-        private int retryTimes;
         private FileStream writer;
 
 
@@ -54,22 +46,15 @@ namespace Versions
         }
 
         public DownloadInfo info { get; private set; }
-
-
         public DownloadStatus status { get; private set; }
-
         public string error { get; private set; }
         public Action<Download> completed { get; set; }
         public Action<Download> updated { get; set; }
 
         public bool isDone => status == DownloadStatus.Failed || status == DownloadStatus.Success;
-
         public float progress => downloadedBytes * 1f / info.size;
-
         public long downloadedBytes { get; private set; }
-
         public override bool keepWaiting => !isDone;
-
         public static bool Working => Progressing.Count > 0;
 
         public static long TotalDownloadedBytes
@@ -77,10 +62,7 @@ namespace Versions
             get
             {
                 var value = 0L;
-                foreach (var item in Cache)
-                {
-                    value += item.Value.downloadedBytes;
-                }
+                foreach (var item in Cache) value += item.Value.downloadedBytes;
 
                 return value;
             }
@@ -91,24 +73,17 @@ namespace Versions
             get
             {
                 var value = 0L;
-                foreach (var item in Cache)
-                {
-                    value += item.Value.info.size;
-                }
+                foreach (var item in Cache) value += item.Value.info.size;
 
                 return value;
             }
         }
 
-
         public static long TotalBandwidth { get; private set; }
 
         public static void ClearAllDownloads()
         {
-            foreach (var download in Progressing)
-            {
-                download.Cancel();
-            }
+            foreach (var download in Progressing) download.Cancel();
 
             Prepared.Clear();
             Progressing.Clear();
@@ -144,10 +119,7 @@ namespace Versions
                 Logger.W("Download url {0} already exist.", info.url);
             }
 
-            if (completed != null)
-            {
-                download.completed += completed;
-            }
+            if (completed != null) download.completed += completed;
 
             return download;
         }
@@ -155,7 +127,6 @@ namespace Versions
         public static void UpdateAll()
         {
             if (Prepared.Count > 0)
-            {
                 for (var index = 0; index < Mathf.Min(Prepared.Count, MaxDownloads - Progressing.Count); index++)
                 {
                     var download = Prepared[index];
@@ -164,28 +135,20 @@ namespace Versions
                     Progressing.Add(download);
                     download.Start();
                 }
-            }
 
             if (Progressing.Count > 0)
             {
                 for (var index = 0; index < Progressing.Count; index++)
                 {
                     var download = Progressing[index];
-                    if (download.updated != null)
-                    {
-                        download.updated(download);
-                    }
+                    if (download.updated != null) download.updated(download);
 
                     if (download.isDone)
                     {
                         if (download.status == DownloadStatus.Failed)
-                        {
                             Logger.E("Unable to download {0} with error {1}", download.info.url, download.error);
-                        }
                         else
-                        {
                             Logger.I("Success to download {0}", download.info.url);
-                        }
 
                         Progressing.RemoveAt(index);
                         index--;
@@ -202,10 +165,7 @@ namespace Versions
             }
             else
             {
-                if (Cache.Count <= 0)
-                {
-                    return;
-                }
+                if (Cache.Count <= 0) return;
 
                 Cache.Clear();
                 lastTotalDownloadedBytes = 0;
@@ -250,19 +210,11 @@ namespace Versions
             {
                 Downloading();
                 CloseWrite();
-                if (status == DownloadStatus.Failed)
-                {
-                    return;
-                }
+                if (status == DownloadStatus.Failed) return;
 
                 if (downloadedBytes != info.size)
                 {
                     error = $"Download lenght {downloadedBytes} mismatch to {info.size}";
-                    if (CanRetry())
-                    {
-                        return;
-                    }
-
                     status = DownloadStatus.Failed;
                     return;
                 }
@@ -274,11 +226,6 @@ namespace Versions
                     {
                         File.Delete(info.savePath);
                         error = $"Download crc {crc} mismatch to {info.crc}";
-                        if (CanRetry())
-                        {
-                            return;
-                        }
-
                         status = DownloadStatus.Failed;
                         return;
                     }
@@ -290,11 +237,6 @@ namespace Versions
             {
                 CloseWrite();
                 error = e.Message;
-                if (CanRetry())
-                {
-                    return;
-                }
-
                 status = DownloadStatus.Failed;
             }
         }
@@ -306,20 +248,6 @@ namespace Versions
                 writer.Flush();
                 writer.Close();
             }
-        }
-
-        private bool CanRetry()
-        {
-            if (retryTimes < MaxRetryTimes)
-            {
-                Logger.W("Failed to download {0} with error {1}, auto retry {2}", info.url, error, retryTimes);
-                Thread.Sleep(1000);
-                Retry();
-                retryTimes++;
-                return true;
-            }
-
-            return false;
         }
 
         private static bool CheckValidationResult(object sender, X509Certificate certificate, X509Chain chain,
@@ -335,26 +263,14 @@ namespace Versions
             {
                 if (response.ContentLength > 0)
                 {
-                    if (info.size == 0)
-                    {
-                        info.size = response.ContentLength + downloadedBytes;
-                    }
+                    if (info.size == 0) info.size = response.ContentLength + downloadedBytes;
 
                     using (var reader = response.GetResponseStream())
                     {
                         if (downloadedBytes < info.size)
-                        {
-                            var startTime = DateTime.Now;
                             while (status == DownloadStatus.Progressing)
-                            {
                                 if (ReadToEnd(reader))
-                                {
                                     break;
-                                }
-
-                                UpdateBandwidth(ref startTime);
-                            }
-                        }
                     }
                 }
                 else
@@ -362,29 +278,6 @@ namespace Versions
                     status = DownloadStatus.Success;
                 }
             }
-        }
-
-        private void UpdateBandwidth(ref DateTime startTime)
-        {
-            var elapsed = (DateTime.Now - startTime).TotalMilliseconds;
-            while (MaxBandwidth > 0 &&
-                   status == DownloadStatus.Progressing &&
-                   _bandWidth >= MaxBandwidth / Progressing.Count &&
-                   elapsed < 1000)
-            {
-                var wait = Mathf.Clamp((int) (1000 - elapsed), 1, 33);
-                Thread.Sleep(wait);
-                elapsed = (DateTime.Now - startTime).TotalMilliseconds;
-            }
-
-            if (!(elapsed >= 1000))
-            {
-                return;
-            }
-
-            startTime = DateTime.Now;
-            TotalBandwidth = _bandWidth;
-            _bandWidth = 0L;
         }
 
         private WebRequest CreateWebRequest()
@@ -407,10 +300,7 @@ namespace Versions
         {
             var httpWebRequest = (HttpWebRequest) WebRequest.Create(info.url);
             httpWebRequest.ProtocolVersion = HttpVersion.Version10;
-            if (downloadedBytes > 0)
-            {
-                httpWebRequest.AddRange(downloadedBytes);
-            }
+            if (downloadedBytes > 0) httpWebRequest.AddRange(downloadedBytes);
 
             return httpWebRequest;
         }
@@ -422,7 +312,6 @@ namespace Versions
             {
                 writer.Write(_readBuffer, 0, len);
                 downloadedBytes += len;
-                _bandWidth += len;
                 return false;
             }
 
@@ -431,10 +320,7 @@ namespace Versions
 
         private void Start()
         {
-            if (status != DownloadStatus.Wait)
-            {
-                return;
-            }
+            if (status != DownloadStatus.Wait) return;
 
             Logger.I("Start download {0}", info.url);
             status = DownloadStatus.Progressing;
@@ -449,18 +335,12 @@ namespace Versions
 
                 writer = File.OpenWrite(info.savePath);
                 downloadedBytes = writer.Length - 1;
-                if (downloadedBytes > 0)
-                {
-                    writer.Seek(-1, SeekOrigin.End);
-                }
+                if (downloadedBytes > 0) writer.Seek(-1, SeekOrigin.End);
             }
             else
             {
                 var dir = Path.GetDirectoryName(info.savePath);
-                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
                 writer = File.Create(info.savePath);
                 downloadedBytes = 0;

@@ -62,10 +62,7 @@ namespace Versions
 
         protected void Complete()
         {
-            if (completed == null)
-            {
-                return;
-            }
+            if (completed == null) return;
 
             var saved = completed;
             completed.Invoke(this);
@@ -77,23 +74,15 @@ namespace Versions
             for (var index = 0; index < Processing.Count; index++)
             {
                 var item = Processing[index];
-                if (Updater.Instance.busy)
-                {
-                    return;
-                }
+                if (Updater.Instance.busy) return;
 
                 item.Update();
-                if (!item.isDone)
-                {
-                    continue;
-                }
+                if (!item.isDone) continue;
 
                 Processing.RemoveAt(index);
                 index--;
                 if (item.status == OperationStatus.Failed)
-                {
                     Logger.W("Unable to complete {0} with error: {1}", item.GetType().Name, item.error);
-                }
 
                 item.Complete();
             }

@@ -11,24 +11,6 @@ namespace Versions
             request = AssetBundle.LoadFromFileAsync(pathOrURL);
         }
 
-        public override void LoadImmediate()
-        {
-            if (isDone)
-            {
-                return;
-            }
-
-            assetBundle = request.assetBundle;
-            if (assetBundle == null)
-            {
-                Finish("assetBundle == null");
-                return;
-            }
-
-            Finish();
-            request = null;
-        }
-
         private void OnLoaded()
         {
             if (request == null)
@@ -50,10 +32,7 @@ namespace Versions
 
         protected override void OnUpdate()
         {
-            if (status != LoadableStatus.Loading)
-            {
-                return;
-            }
+            if (status != LoadableStatus.Loading) return;
 
             if (request == null)
             {
@@ -62,10 +41,7 @@ namespace Versions
             }
 
             progress = request.progress;
-            if (request.isDone)
-            {
-                OnLoaded();
-            }
+            if (request.isDone) OnLoaded();
         }
     }
 }

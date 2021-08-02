@@ -31,10 +31,7 @@ namespace Versions.Example
 
         public Asset Preload(string path, Type type, Action<Asset> completed = null)
         {
-            if (cache.TryGetValue(path, out var value))
-            {
-                return value;
-            }
+            if (cache.TryGetValue(path, out var value)) return value;
 
             value = Asset.LoadAsync(path, type, completed);
             cache.Add(path, value);
@@ -51,36 +48,23 @@ namespace Versions.Example
         {
             var loaded = 0;
             foreach (var asset in preload)
-            {
                 if (asset.isDone)
-                {
                     loaded++;
-                }
-            }
 
             return loaded * 1f / preload.Count;
         }
 
         public void Clear()
         {
-            foreach (var asset in queue)
-            {
-                asset.Release();
-            }
+            foreach (var asset in queue) asset.Release();
 
             queue.Clear();
 
             foreach (var item in preload)
             {
-                if (item == null)
-                {
-                    continue;
-                }
+                if (item == null) continue;
 
-                if (string.IsNullOrEmpty(item.error))
-                {
-                    item.Release();
-                }
+                if (string.IsNullOrEmpty(item.error)) item.Release();
             }
 
             preload.Clear();

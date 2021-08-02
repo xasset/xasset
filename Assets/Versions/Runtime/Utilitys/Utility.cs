@@ -21,20 +21,11 @@ namespace Versions
 
         public static string GetPlatformName()
         {
-            if (Application.platform == RuntimePlatform.Android)
-            {
-                return "Android";
-            }
+            if (Application.platform == RuntimePlatform.Android) return "Android";
 
-            if (Application.platform == RuntimePlatform.WindowsPlayer)
-            {
-                return "Windows";
-            }
+            if (Application.platform == RuntimePlatform.WindowsPlayer) return "Windows";
 
-            if (Application.platform == RuntimePlatform.IPhonePlayer)
-            {
-                return "iOS";
-            }
+            if (Application.platform == RuntimePlatform.IPhonePlayer) return "iOS";
 
             return Application.platform == RuntimePlatform.WebGLPlayer ? "WebGL" : unsupportedPlatform;
         }
@@ -42,10 +33,7 @@ namespace Versions
         public static string FormatBytes(long bytes)
         {
             var size = "0 B";
-            if (bytes == 0)
-            {
-                return size;
-            }
+            if (bytes == 0) return size;
 
             for (var index = 0; index < byteUnits.Length; index++)
             {
@@ -68,10 +56,7 @@ namespace Versions
 
         public static uint ComputeCRC32(string filename)
         {
-            if (!File.Exists(filename))
-            {
-                return 0;
-            }
+            if (!File.Exists(filename)) return 0;
 
             using (var stream = File.OpenRead(filename))
             {

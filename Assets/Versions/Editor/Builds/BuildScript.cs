@@ -13,16 +13,10 @@ namespace Versions.Editor.Builds
 
         public static void BuildBundles(BuildTask task)
         {
-            if (preprocessBuildBundles != null)
-            {
-                preprocessBuildBundles(task);
-            }
+            if (preprocessBuildBundles != null) preprocessBuildBundles(task);
 
             task.BuildBundles();
-            if (postprocessBuildBundles != null)
-            {
-                postprocessBuildBundles(task);
-            }
+            if (postprocessBuildBundles != null) postprocessBuildBundles(task);
         }
 
         public static void BuildBundles()
@@ -56,10 +50,7 @@ namespace Versions.Editor.Builds
         public static void BuildPlayer()
         {
             var path = Path.Combine(Environment.CurrentDirectory, "Build");
-            if (path.Length == 0)
-            {
-                return;
-            }
+            if (path.Length == 0) return;
 
             BuildPlayer(path);
         }
@@ -68,12 +59,8 @@ namespace Versions.Editor.Builds
         {
             var levels = new List<string>();
             foreach (var scene in EditorBuildSettings.scenes)
-            {
                 if (scene.enabled)
-                {
                     levels.Add(scene.path);
-                }
-            }
 
             if (levels.Count == 0)
             {
@@ -83,10 +70,7 @@ namespace Versions.Editor.Builds
 
             var buildTarget = EditorUserBuildSettings.activeBuildTarget;
             var buildTargetName = GetBuildTargetName(buildTarget);
-            if (buildTargetName == null)
-            {
-                return;
-            }
+            if (buildTargetName == null) return;
 
             var buildPlayerOptions = new BuildPlayerOptions
             {
@@ -104,10 +88,7 @@ namespace Versions.Editor.Builds
         {
             var settings = Settings.GetDefaultSettings();
             var destinationDir = Settings.BuildPlayerDataPath;
-            if (Directory.Exists(destinationDir))
-            {
-                Directory.Delete(destinationDir, true);
-            }
+            if (Directory.Exists(destinationDir)) Directory.Delete(destinationDir, true);
 
             Directory.CreateDirectory(destinationDir);
             var bundles = Settings.GetBundlesInBuild(true);
@@ -122,10 +103,7 @@ namespace Versions.Editor.Builds
                 }
 
                 var dir = Path.GetDirectoryName(destFile);
-                if (!Directory.Exists(dir) && !string.IsNullOrEmpty(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
+                if (!Directory.Exists(dir) && !string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
 
                 File.Copy(srcFile, destFile, true);
             }
@@ -159,10 +137,7 @@ namespace Versions.Editor.Builds
             foreach (var file in files)
             {
                 var name = Path.GetFileName(file);
-                if (usedFiles.Contains(name))
-                {
-                    continue;
-                }
+                if (usedFiles.Contains(name)) continue;
 
                 File.Delete(file);
                 Debug.LogFormat("Delete {0}", file);

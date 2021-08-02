@@ -20,10 +20,7 @@ namespace Versions
         [Conditional("DEBUG")]
         public static void I(string format, params object[] args)
         {
-            if (!Loggable)
-            {
-                return;
-            }
+            if (!Loggable) return;
 
             Debug.LogFormat(format, args);
         }

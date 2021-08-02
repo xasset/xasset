@@ -35,10 +35,7 @@ namespace Versions.Example
         {
             MessageBox.Show("提示", "保留历史版本数据可以获得更快的更新体验，请确认是否清理？", ok =>
             {
-                if (ok)
-                {
-                    Versions.ClearAsync();
-                }
+                if (ok) Versions.ClearAsync();
             }, "清理", "退出");
         }
 
@@ -87,13 +84,9 @@ namespace Versions.Example
                 var messageBox2 = MessageBox.Show("提示！", "下载失败！请检查网络状态后重试。", null);
                 yield return messageBox2;
                 if (messageBox2.ok)
-                {
                     StartDownload(getDownloadSize);
-                }
                 else
-                {
                     OnComplete();
-                }
 
                 yield break;
             }
@@ -114,13 +107,9 @@ namespace Versions.Example
                 yield return MessageBox.Show("提示", "更新版本信息失败，请检测网络链接后重试。", ok =>
                 {
                     if (ok)
-                    {
                         StartUpdate();
-                    }
                     else
-                    {
                         OnComplete();
-                    }
                 }, "重试", "跳过");
                 yield break;
             }

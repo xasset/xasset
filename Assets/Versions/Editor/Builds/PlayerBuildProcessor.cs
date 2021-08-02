@@ -10,16 +10,11 @@ namespace Versions.Editor.Builds
         public void OnPostprocessBuild(BuildReport report)
         {
             var directory = Settings.BuildPlayerDataPath;
-            if (!Directory.Exists(directory))
-            {
-                return;
-            }
+            if (!Directory.Exists(directory)) return;
 
             Directory.Delete(directory, true);
             if (Directory.GetFiles(Application.streamingAssetsPath).Length == 0)
-            {
                 Directory.Delete(Application.streamingAssetsPath);
-            }
         }
 
         public int callbackOrder => 0;

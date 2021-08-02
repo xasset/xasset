@@ -23,10 +23,7 @@ namespace Versions
             Loadable.UpdateAll();
             Operation.UpdateAll();
             Download.UpdateAll();
-            if (updated != null)
-            {
-                updated.Invoke();
-            }
+            if (updated != null) updated.Invoke();
         }
 
         private void OnDestroy()

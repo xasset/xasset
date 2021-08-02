@@ -9,13 +9,8 @@ namespace Versions
         protected override void OnUpdate()
         {
             if (status == LoadableStatus.DependentLoading)
-            {
                 UpdateDependencies();
-            }
-            else if (status == LoadableStatus.Loading)
-            {
-                UpdateLoading();
-            }
+            else if (status == LoadableStatus.Loading) UpdateLoading();
         }
 
         private void UpdateDependencies()
@@ -27,10 +22,7 @@ namespace Versions
             }
 
             progress = dependencies.progress * 0.5f;
-            if (!dependencies.isDone)
-            {
-                return;
-            }
+            if (!dependencies.isDone) return;
 
             var assetBundle = dependencies.assetBundle;
             if (assetBundle == null)
@@ -68,13 +60,11 @@ namespace Versions
         internal static Scene Create(string assetPath, bool additive = false)
         {
             if (!Versions.Contains(assetPath))
-            {
                 return new Scene
                 {
                     pathOrURL = assetPath,
                     loadSceneMode = additive ? LoadSceneMode.Additive : LoadSceneMode.Single
                 };
-            }
 
             return new BundledScene
             {

@@ -15,10 +15,7 @@ namespace Versions.Example
 
         private void OnDestroy()
         {
-            foreach (var instantiateObject in objects)
-            {
-                instantiateObject.Destroy();
-            }
+            foreach (var instantiateObject in objects) instantiateObject.Destroy();
 
             objects.Clear();
         }
