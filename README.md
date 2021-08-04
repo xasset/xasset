@@ -47,6 +47,7 @@ xasset-7.0 体验版提供了以下功能特性：
 成为 xasset 项目的赞助商可以在这里添加自己的链接，可以带 LOGO 或名字：
 
 - [Jojohello](https://www.zhihu.com/people/jojohello)（人民币3000元）
+- [马三小伙儿](https://github.com/XINCGer)（人民币1000元）
 
 如需赞助可以联系作者微信：vmakemore。
 
