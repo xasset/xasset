@@ -31,7 +31,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace Versions.Example
+namespace VEngine.Example
 {
     public class MessageBox : IEnumerator
     {

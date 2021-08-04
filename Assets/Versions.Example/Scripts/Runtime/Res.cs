@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Versions.Example
+namespace VEngine.Example
 {
     public static class Res
     {

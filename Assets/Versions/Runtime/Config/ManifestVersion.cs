@@ -2,7 +2,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace Versions
+namespace VEngine
 {
     public class ManifestVersion : ScriptableObject
     {

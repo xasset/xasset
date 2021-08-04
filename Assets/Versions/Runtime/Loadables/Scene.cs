@@ -5,7 +5,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Versions
+namespace VEngine
 {
     public class Scene : Loadable, IEnumerator
     {
@@ -21,7 +21,7 @@ namespace Versions
         public AsyncOperation operation { get; protected set; }
         public static Scene main { get; private set; }
         public static Scene current { get; private set; }
-
+        protected Scene parent { get; set; }
         protected internal LoadSceneMode loadSceneMode { get; set; }
 
         public bool MoveNext()
@@ -40,8 +40,7 @@ namespace Versions
             if (string.IsNullOrEmpty(assetPath)) throw new ArgumentNullException(nameof(assetPath));
 
             var scene = Versions.CreateScene(assetPath, additive);
-            if (completed != null) scene.completed += completed;
-
+            if (completed != null) scene.completed += completed;  
             current = scene;
             scene.Load();
             return scene;
@@ -105,7 +104,11 @@ namespace Versions
             }
             else
             {
-                if (main != null) main.additives.Add(this);
+                if (main != null)
+                {
+                    main.additives.Add(this);
+                    parent = main;
+                }
             }
         }
 
@@ -119,14 +122,18 @@ namespace Versions
         {
             if (loadSceneMode == LoadSceneMode.Additive)
             {
-                if (main != null) main.additives.Remove(this);
-
-                if (string.IsNullOrEmpty(error)) SceneManager.UnloadSceneAsync(sceneName);
+                if (main != null) main.additives.Remove(this); 
+                if (parent != null && string.IsNullOrEmpty(error)) 
+                    SceneManager.UnloadSceneAsync(sceneName);
+                parent = null;
             }
             else
             {
-                foreach (var item in additives) item.Release();
-
+                foreach (var item in additives)
+                {
+                    item.Release();
+                    item.parent = null;
+                }
                 additives.Clear();
             }
 

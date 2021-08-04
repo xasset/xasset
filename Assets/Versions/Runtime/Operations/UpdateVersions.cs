@@ -1,4 +1,4 @@
-namespace Versions
+namespace VEngine
 {
     public sealed class UpdateVersions : Operation
     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Versions
+namespace VEngine
 {
     public class PlayerSettings : ScriptableObject
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Object = UnityEngine.Object;
 
-namespace Versions.Example
+namespace VEngine.Example
 {
     public class AssetManager
     {

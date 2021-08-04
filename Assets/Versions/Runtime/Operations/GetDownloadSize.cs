@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Versions
+namespace VEngine
 {
     public sealed class GetDownloadSize : Operation
     {

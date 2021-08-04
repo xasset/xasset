@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Versions.Editor.Builds
+namespace VEngine.Editor.Builds
 {
     [Serializable]
     public class Asset

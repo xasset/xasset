@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Versions
+namespace VEngine
 {
     public class CRC32
     {

@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Versions.Example
+namespace VEngine.Example
 {
     [RequireComponent(typeof(Updater))]
     [DisallowMultipleComponent]

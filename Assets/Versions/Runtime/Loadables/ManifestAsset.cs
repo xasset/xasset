@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Versions
+namespace VEngine
 {
     public class ManifestAsset : Loadable
     {

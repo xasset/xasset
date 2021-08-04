@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Versions.Example
+namespace VEngine.Example
 {
     [Serializable]
     public class MenuItem : MonoBehaviour
