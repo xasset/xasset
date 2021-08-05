@@ -11,6 +11,21 @@ namespace VEngine
             request = AssetBundle.LoadFromFileAsync(pathOrURL);
         }
 
+        public override void LoadImmediate()
+        {
+            if (isDone) return;
+
+            assetBundle = request.assetBundle;
+            if (assetBundle == null)
+            {
+                Finish("assetBundle == null");
+                return;
+            }
+
+            Finish();
+            request = null;
+        }
+
         private void OnLoaded()
         {
             if (request == null)
