@@ -100,7 +100,7 @@ namespace VEngine.Example
             PreloadManager.Instance.SetVisible(true);
             PreloadManager.Instance.SetMessage("获取版本信息...", 0);
             ClearUpdate();
-            updateAsync = Versions.UpdateAsync("Arts");
+            updateAsync = Versions.UpdateAsync(nameof(Manifest));
             yield return updateAsync;
             if (updateAsync.status == OperationStatus.Failed)
             {

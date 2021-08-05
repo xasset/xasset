@@ -51,6 +51,18 @@ xasset-7.0 体验版提供了以下功能特性：
 
 如需赞助可以联系作者微信：vmakemore。
 
+## 声望
+
+**小魔女纱代酱**
+
+- https://github.com/DumoeDss
+- 反馈有效问题或建议 +2
+
+**夜莺**
+
+- https://github.com/killop
+- 反馈有效问题或建议 + 5
+
 
 ## 友情链接
 
