@@ -132,10 +132,11 @@ namespace VEngine
         }
 
 
-        public static InitializeVersions InitializeAsync()
+        public static InitializeVersions InitializeAsync(string downloadUrl, string manifestFile)
         {
+            DownloadURL = downloadUrl;
             InitializeOnLoad();
-            var operation = new InitializeVersions();
+            var operation = new InitializeVersions(manifestFile);
             operation.Start();
             return operation;
         }
