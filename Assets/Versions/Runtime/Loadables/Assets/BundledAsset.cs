@@ -39,6 +39,34 @@ namespace VEngine
             asset = null;
         }
 
+        public override void LoadImmediate()
+        {
+            if (isDone) return;
+
+            if (dependencies == null)
+            {
+                Finish("dependencies == null");
+                return;
+            }
+
+            if (!dependencies.isDone) dependencies.LoadImmediate();
+
+            if (dependencies.assetBundle == null)
+            {
+                Finish("dependencies.assetBundle == null");
+                return;
+            }
+
+            asset = dependencies.assetBundle.LoadAsset(pathOrURL, type);
+            if (asset == null)
+            {
+                Finish("target == null");
+                return;
+            }
+
+            Finish();
+        }
+
         protected override void OnUpdate()
         {
             if (status == LoadableStatus.Loading)
