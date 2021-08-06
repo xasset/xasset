@@ -33,10 +33,11 @@ namespace VEngine.Example
 
         public void Clear()
         {
-            MessageBox.Show("提示", "保留历史版本数据可以获得更快的更新体验，请确认是否清理？", ok =>
-            {
-                if (ok) Versions.ClearAsync();
-            }, "清理", "退出");
+            Versions.ClearAsync();
+            //MessageBox.Show("提示", "保留历史版本数据可以获得更快的更新体验，请确认是否清理？", ok =>
+            //{
+            //    if (ok) Versions.ClearAsync();
+            //}, "清理", "退出");
         }
 
         public void StartUpdate()
@@ -100,7 +101,9 @@ namespace VEngine.Example
             PreloadManager.Instance.SetVisible(true);
             PreloadManager.Instance.SetMessage("获取版本信息...", 0);
             ClearUpdate();
-            updateAsync = Versions.UpdateAsync(nameof(Manifest));
+            //测试项目中无Arts资源，这里使用Startup的Manifest跳过下载
+            Startup startup = GameObject.FindObjectOfType<Startup>();
+            updateAsync = Versions.UpdateAsync(startup.manifestFileName);
             yield return updateAsync;
             if (updateAsync.status == OperationStatus.Failed)
             {
