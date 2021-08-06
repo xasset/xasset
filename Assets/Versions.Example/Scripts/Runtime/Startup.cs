@@ -12,13 +12,14 @@ namespace VEngine.Example
         [Tooltip("是否开启日志")] public bool loggable;
         public string nextScene = "Splash.unity";
 
+        public string manifestFileName;
+
         private IEnumerator Start()
         {
             DontDestroyOnLoad(gameObject);
-            var operation = Versions.InitializeAsync();
+            var operation = Versions.InitializeAsync(downloadURL, manifestFileName);
             yield return operation;
             Logger.I("Initialize: {0}", operation.status);
-            Versions.DownloadURL = downloadURL;
             Logger.I("API Version: {0}", Versions.APIVersion);
             Logger.I("Manifests Version: {0}", Versions.ManifestsVersion);
             Logger.I("PlayerDataPath: {0}", Versions.PlayerDataPath);
