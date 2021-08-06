@@ -53,6 +53,12 @@ xasset-7.0 体验版提供了以下功能特性：
 
 ## 声望
 
+**一念永恆**
+
+- https://github.com/putifeng
+
+- 反馈有效问题或建议 +2
+
 **小魔女纱代酱**
 
 - https://github.com/DumoeDss
