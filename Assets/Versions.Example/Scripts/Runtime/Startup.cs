@@ -12,12 +12,10 @@ namespace VEngine.Example
         [Tooltip("是否开启日志")] public bool loggable;
         public string nextScene = "Splash.unity";
 
-        public string manifestFileName;
-
         private IEnumerator Start()
         {
             DontDestroyOnLoad(gameObject);
-            var operation = Versions.InitializeAsync(downloadURL, manifestFileName);
+            var operation = Versions.InitializeAsync(downloadURL);
             yield return operation;
             Logger.I("Initialize: {0}", operation.status);
             Logger.I("API Version: {0}", Versions.APIVersion);
@@ -27,6 +25,7 @@ namespace VEngine.Example
             Logger.I("DownloadURL: {0}", Versions.DownloadURL);
             if (autoUpdate && !Versions.OfflineMode)
             {
+                // TODO：生产环境这里的清单名字应该使用带 hash 的版本
                 var update = Versions.UpdateAsync(operation.file);
                 yield return update;
                 if (update.status == OperationStatus.Success)

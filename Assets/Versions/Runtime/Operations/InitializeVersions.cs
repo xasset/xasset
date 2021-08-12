@@ -5,19 +5,14 @@ namespace VEngine
     public sealed class InitializeVersions : Operation
     {
         public ManifestAsset asset;
-        public string file;
-
-        public InitializeVersions(string file)
-        {
-            this.file = file;
-        }
+        public string file { get; private set; }
 
         public override void Start()
         {
             base.Start();
             var settings = Resources.Load<PlayerSettings>("PlayerSettings");
             if (settings == null) settings = ScriptableObject.CreateInstance<PlayerSettings>();
-
+            file = nameof(Manifest);
             Versions.builtinAssets.AddRange(settings.assets);
             Versions.OfflineMode = settings.offlineMode;
             asset = ManifestAsset.LoadAsync(file, true);

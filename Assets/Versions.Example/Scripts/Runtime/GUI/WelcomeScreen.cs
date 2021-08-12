@@ -100,10 +100,9 @@ namespace VEngine.Example
             buttonStart.gameObject.SetActive(false);
             PreloadManager.Instance.SetVisible(true);
             PreloadManager.Instance.SetMessage("获取版本信息...", 0);
-            ClearUpdate();
-            //测试项目中无Arts资源，这里使用Startup的Manifest跳过下载
-            Startup startup = GameObject.FindObjectOfType<Startup>();
-            updateAsync = Versions.UpdateAsync(startup.manifestFileName);
+            ClearUpdate(); 
+            // TODO：生产环境这里的清单名字应该使用带 hash 的版本
+            updateAsync = Versions.UpdateAsync(nameof(Manifest));
             yield return updateAsync;
             if (updateAsync.status == OperationStatus.Failed)
             {
