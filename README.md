@@ -53,6 +53,11 @@ xasset-7.0 体验版提供了以下功能特性：
 
 ## 声望
 
+**李非莬**
+
+- https://github.com/wynnforthework
+- 反馈有效问题或建议 +2
+
 **一念永恆**
 
 - https://github.com/putifeng
