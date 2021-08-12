@@ -48,7 +48,7 @@ namespace VEngine.Example
 
         private MessageBox(string title, string content, Action<bool> completed, string ok, string no)
         {
-            var prefab = PreloadManager.Instance.assetManager.GetAsset<GameObject>("MessageBox");
+            var prefab = PreloadManager.Instance.assetManager.GetAsset<GameObject>(Res.GameObject_MessageBox);
             gameObject = Object.Instantiate(prefab);
             Object.DontDestroyOnLoad(gameObject);
             _title = GetComponent<Text>("Title");
