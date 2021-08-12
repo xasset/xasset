@@ -20,7 +20,7 @@ namespace VEngine
 
             Versions.builtinAssets.AddRange(settings.assets);
             Versions.OfflineMode = settings.offlineMode;
-            asset = ManifestAsset.LoadAsync(file, settings.offlineMode);
+            asset = ManifestAsset.LoadAsync(file, true);
         }
 
 
