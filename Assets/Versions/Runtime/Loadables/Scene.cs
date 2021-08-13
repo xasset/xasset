@@ -40,7 +40,7 @@ namespace VEngine
             if (string.IsNullOrEmpty(assetPath)) throw new ArgumentNullException(nameof(assetPath));
 
             var scene = Versions.CreateScene(assetPath, additive);
-            if (completed != null) scene.completed += completed;  
+            if (completed != null) scene.completed += completed;
             current = scene;
             scene.Load();
             return scene;
@@ -122,8 +122,8 @@ namespace VEngine
         {
             if (loadSceneMode == LoadSceneMode.Additive)
             {
-                if (main != null) main.additives.Remove(this); 
-                if (parent != null && string.IsNullOrEmpty(error)) 
+                if (main != null) main.additives.Remove(this);
+                if (parent != null && string.IsNullOrEmpty(error))
                     SceneManager.UnloadSceneAsync(sceneName);
                 parent = null;
             }
@@ -134,6 +134,7 @@ namespace VEngine
                     item.Release();
                     item.parent = null;
                 }
+
                 additives.Clear();
             }
 

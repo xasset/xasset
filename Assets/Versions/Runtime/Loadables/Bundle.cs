@@ -6,40 +6,51 @@ namespace VEngine
 {
     public class Bundle : Loadable
     {
+        public static Func<ManifestBundle, Bundle> customBundleCreator;
+
         public static readonly Dictionary<string, Bundle> Cache = new Dictionary<string, Bundle>();
 
         public static readonly List<Bundle> Unused = new List<Bundle>();
 
-        protected ManifestBundle info;
+        public ManifestBundle info;
+
         public AssetBundle assetBundle { get; protected set; }
+
+        protected void OnLoaded(AssetBundle bundle)
+        {
+            assetBundle = bundle;
+            Finish(assetBundle == null ? "assetBundle == null" : null);
+        }
 
         protected override void OnUnused()
         {
             Unused.Add(this);
         }
 
-        internal static Bundle LoadInternal(ManifestBundle info, bool mustCompleteOnNextFrame)
+        internal static Bundle LoadInternal(ManifestBundle bundle, bool mustCompleteOnNextFrame)
         {
-            if (info == null) throw new NullReferenceException();
+            if (bundle == null) throw new NullReferenceException();
 
-            if (!Cache.TryGetValue(info.nameWithAppendHash, out var item))
+            if (!Cache.TryGetValue(bundle.nameWithAppendHash, out var item))
             {
-                var url = Versions.GetBundlePathOrURL(info);
-                if (Application.platform == RuntimePlatform.WebGLPlayer) throw new NotImplementedException();
-                if (url.StartsWith("http://") || url.StartsWith("https://") || url.StartsWith("ftp://"))
-                    item = new DownloadBundle
-                    {
-                        pathOrURL = url,
-                        info = info
-                    };
+                var url = Versions.GetBundlePathOrURL(bundle);
+                if (Application.platform == RuntimePlatform.WebGLPlayer)
+                {
+                    throw new NotImplementedException("开源版不提供 WebGL 支持");
+                }
                 else
-                    item = new LocalBundle
+                {
+                    if (customBundleCreator != null) item = customBundleCreator(bundle);
+                    if (item == null)
                     {
-                        pathOrURL = url,
-                        info = info
-                    };
+                        if (url.StartsWith("http://") || url.StartsWith("https://") || url.StartsWith("ftp://"))
+                            item = new DownloadBundle {pathOrURL = url, info = bundle};
+                        else
+                            item = new LocalBundle {pathOrURL = url, info = bundle};
+                    }
+                }
 
-                Cache.Add(info.nameWithAppendHash, item);
+                Cache.Add(bundle.nameWithAppendHash, item);
             }
 
             item.mustCompleteOnNextFrame = mustCompleteOnNextFrame;
@@ -62,6 +73,7 @@ namespace VEngine
 
                 item.Unload();
                 Cache.Remove(item.info.nameWithAppendHash);
+                if (Updater.Instance.busy) return;
             }
         }
 

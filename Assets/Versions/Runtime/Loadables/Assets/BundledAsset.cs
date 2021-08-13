@@ -57,14 +57,7 @@ namespace VEngine
                 return;
             }
 
-            asset = dependencies.assetBundle.LoadAsset(pathOrURL, type);
-            if (asset == null)
-            {
-                Finish("target == null");
-                return;
-            }
-
-            Finish();
+            OnLoaded(dependencies.assetBundle.LoadAsset(pathOrURL, type));
         }
 
         protected override void OnUpdate()
@@ -85,14 +78,7 @@ namespace VEngine
             progress = 0.5f + request.progress * 0.5f;
             if (!request.isDone) return;
 
-            asset = request.asset;
-            if (asset == null)
-            {
-                Finish("asset == null");
-                return;
-            }
-
-            Finish();
+            OnLoaded(request.asset);
         }
 
         private void UpdateDependencies()

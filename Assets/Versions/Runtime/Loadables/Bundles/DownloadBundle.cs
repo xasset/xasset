@@ -10,8 +10,7 @@ namespace VEngine
         protected override void OnLoad()
         {
             download = Download.DownloadAsync(pathOrURL, Versions.GetDownloadDataPath(info.nameWithAppendHash), null,
-                info.size,
-                info.crc);
+                info.size, info.crc);
             download.completed += OnDownloaded;
         }
 
@@ -44,8 +43,7 @@ namespace VEngine
             progress = 0.5f + request.progress;
             if (!request.isDone) return;
 
-            assetBundle = request.assetBundle;
-            Finish(assetBundle == null ? "assetBundle == null" : null);
+            OnLoaded(request.assetBundle);
             request = null;
         }
     }

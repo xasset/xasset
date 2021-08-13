@@ -26,6 +26,12 @@ namespace VEngine
         {
         }
 
+        protected void OnLoaded(Object target)
+        {
+            asset = target;
+            Finish(asset == null ? "asset == null" : null);
+        }
+
         public object Current => null;
 
         public T Get<T>() where T : Object

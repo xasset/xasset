@@ -10,7 +10,7 @@ namespace VEngine
         public override void Start()
         {
             base.Start();
-            var settings = Resources.Load<PlayerSettings>("PlayerSettings");
+            var settings = Resources.Load<PlayerSettings>(nameof(PlayerSettings));
             if (settings == null) settings = ScriptableObject.CreateInstance<PlayerSettings>();
             file = nameof(Manifest);
             Versions.builtinAssets.AddRange(settings.assets);

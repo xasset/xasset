@@ -9,22 +9,6 @@ namespace VEngine.Editor.Simulation
     {
         protected override void OnLoad()
         {
-            if (mustCompleteOnNextFrame) OnLoaded();
-        }
-
-        private void OnLoaded()
-        {
-            if (string.IsNullOrEmpty(error))
-            {
-                asset = AssetDatabase.LoadAssetAtPath(pathOrURL, type);
-                if (asset == null)
-                {
-                    Finish("asset not found.");
-                    return;
-                }
-            }
-
-            Finish();
         }
 
         protected override void OnUnload()
@@ -40,12 +24,12 @@ namespace VEngine.Editor.Simulation
         {
             if (status != LoadableStatus.Loading) return;
 
-            OnLoaded();
+            OnLoaded(AssetDatabase.LoadAssetAtPath(pathOrURL, type));
         }
 
         public override void LoadImmediate()
         {
-            OnLoaded();
+            OnLoaded(AssetDatabase.LoadAssetAtPath(pathOrURL, type));
         }
 
         internal static EditorAsset Create(string path, Type type)
