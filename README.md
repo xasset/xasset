@@ -43,7 +43,9 @@ xasset-7.0 的订阅版本主要为 Unity 项目的包体大、打包慢、版�
 - **专属对接群**：多位资深行业从业者，提供更迅捷、全面的技术支持服务。
 - **XLua 打包加载支持**：基于 XLua 提供了 Lua 文件编辑器和真机环境打包和加载支持，轻松让 Lua 代码具备热更能力。
 
-阅读[版本比较](https://xasset.github.io/#/compares)可以了解体验版本和订阅版本更具体的差异。xasset-7.0 订阅版主要面向团队提供服务，如需订阅，可以联系：
+阅读[版本比较](https://xasset.github.io/#/compares)可以了解体验版本和订阅版本更具体的差异。
+
+阅读[授权模式](https://xasset.github.io/#/license)可以了解团队订阅的具体内容。如需订阅，可以联系：
 
 - 微信：vmakemore
 - 邮箱：xasset@qq.com
@@ -52,6 +54,18 @@ xasset-7.0 的订阅版本主要为 Unity 项目的包体大、打包慢、版�
 
 - 引擎版本：Unity2018.4+
 - 语言环境：.net 4.x
+
+## 创作成员
+
+**MoMo的奶爸**
+
+- https://github.com/mmdnb
+- https://game4d.cn/
+
+**马三小伙儿**
+
+- https://github.com/XINCGer
+- https://www.cnblogs.com/msxh/
 
 ## 赞助
 
