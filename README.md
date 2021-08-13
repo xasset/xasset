@@ -43,9 +43,7 @@ xasset-7.0 的订阅版本主要为 Unity 项目的包体大、打包慢、版�
 - 专属对接群：多位资深行业从业者，提供更迅捷、全面的技术支持服务。
 - XLua 打包加载支持。
 
-阅读[版本比较](https://xasset.github.io/#/compares)可以了解体验版本和订阅版本更具体的差异。
-
-xasset-7.0 订阅版主要面向团队提供服务，如需订阅，需要订阅可以联系：
+阅读[版本比较](https://xasset.github.io/#/compares)可以了解体验版本和订阅版本更具体的差异。xasset-7.0 订阅版主要面向团队提供服务，如需订阅，可以联系：
 
 - 微信：vmakemore
 - 邮箱：xasset@qq.com
