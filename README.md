@@ -1,12 +1,30 @@
-# xasset-7.0 体验版
+<p align="center">
+  <a href="https://game4d.cn/">
+    <img src="https://game4d.cn/images/logo.png" alt="xasset logo" width="200" height="200">
+  </a>
+</p>
 
-xasset-7.0 体验版是 xasset-7.0 订阅版的简化版本。
+<h3 align="center">xasset</h3>
 
-从开源版本到商业化，xasset 已经持续迭代了近 5 年，通过持续不断地自我迭代和突破，xasset 项目达成了：
+<p align="center">
+  更快，更轻松的解决 Unity 项目的打包慢、包体大、资源更新、内存管理和运行卡顿之类的疑难杂症。
+  <br>
+  <a href="https://xasset.github.io"><strong>浏览文档 »</strong></a>
+  <br>
+  <br>
+  <a href="https://github.com/xasset/xasset/issues/new?template=bug_report.md">报告问题</a>
+  ·
+  <a href="https://github.com/xasset/xasset/issues/new?template=feature_request.md">提交需求</a> 
+</p>
 
-- 1.4k+ 星标的开源项目（1.0-7.0）
+
+## xasset 7.0
+
+xasset 7.0 是全面可靠的 Unity 资源系统。从开源版本到商业化，xasset 已经持续迭代了近 5 年，通过持续不断的自我迭代和突破 xasset 项目达成了：
+
+- 1.4k+ 星标的开源项目（1.0-至今）
 - 150+ 个人付费订阅（5.1-6.1）
-- 35+ 团队付费订阅（持续增长 6.1 + 7.0）
+- 35+ 团队付费订阅（持续增长 6.1-至今）
 - 1k+ 用户的行业内容交流群（持续增长）
 - 15+ 次创作赞助扶持（持续投入）
 
@@ -15,6 +33,79 @@ xasset-7.0 体验版是 xasset-7.0 订阅版的简化版本。
 ——普通技术，如何在没有 buff 的情况下，不通过项目背书、不通过商业炒作，和各种注册资金过亿、千万+、百万+ 的公司、团队或个人建立服务关系。
 
 希望我们探索出来的路，可以为更多的人提供指引。
+
+## 发行版本
+
+目前，xasset 7.0 主要发布了以下几个版本：
+
+1. **体验版本**
+   - MIT授权：https://github.com/xasset/xasset
+2. **团队订阅版本**
+   - 普通授权：https://github.com/mmdnb/xasset-pro
+   - 旗舰授权：https://github.com/mmdnb/xasset-ue
+3. **个人订阅版本**
+   - 长期用户：https://github.com/mmdnb/xasset-lts
+   - 特殊用户：https://github.com/mmdnb/xasset-se
+   - 普通用户：https://github.com/mmdnb/xasset-base
+
+阅读[版本比较](compares.md)可以比较细致的了解体验源版本和团队订阅版本的差异，而订阅版本中，个人相对团队主要是剥离了以下功能：
+
+- 高性能资源加密功能
+- Google Play 分包适配
+- XLua 适配
+
+通常，一般项目用开源版本足够了，而对于体量比较大，或是对更新机能、安全性以及性能等方面有更高标准的项目来说，订阅团队版本，不仅可以帮老板省钱，也能帮自己节省时间。
+
+## 新的改进
+
+对比上一个开源版本（4.x），7.0 最大的变化是：
+
+- 编辑器和运行时高度剥离，代码结构更精炼和模块化。
+- 使用只读的物理文件数据进行版本管理，版本检测稳定性和效率得到前所未有的提高。 
+- 打包后的文件的文件名自带文件内容的版本信息，天生可以避免CDN缓存问题以及一些其他的冲突。
+- 全新的多线程文件下载组件，真机环境比之前 UnityWebRequest 版本更稳定。
+- 自动分帧机制为程序运行的流畅度提供保障。
+- 加载资源默认支持自动更新。
+
+> 注：开源版本中，同步加载如果触发自动更新可能会报错，订阅版本会更强大一些。
+
+对比上一个订阅版本（6.1），7.0 最大的变化是：
+
+- 全新的分布式构建系统，可以更快更灵活的大包。
+- 编辑器+运行时的代码量减少了近 3000 行，程序结构更精炼，且更好扩展。
+- Android App Bundle + Play Asset Delivery 适配（仅限团队版本）。
+- 基于 XLua 的 Lua 文件打包加载适配（仅限团队版本）。
+- 高性能安装包资源加密（仅限团队版本）。
+- 自动热重载技术。
+
+## 最近更新
+
+### 7.0.5(2021年8月13日)
+
+**新特性**
+
+- 自动热重载，已经加载的 AB 更新后，再次加载时自动卸载旧的，然后再加载新的版本
+- Versions.GetDownloadSizeAsync 支持使用 不带 hash 的 bundle 名字，资源路径依旧有效
+- 编辑器菜单层级优化，增加查看文档、提交问题等编辑器工具
+- 命令行打包工具支持输入版本号
+
+**其他**
+
+- RawAsset 去掉 bytes 属性，建议使用 savePath 自行按需加载数据
+
+### 7.0.4(2021年8月12日)
+
+**新特性**
+
+- 母包资源加密支持（仅限团队版本，含 PlayAssetDelivery 部分）
+- 独立 Unity 的源码工程，可以制作 dll（仅限团队版本，参考 Source 文件夹）
+
+**其他**
+
+- 原 AAB 包文件夹和名字空间改成 PAD
+- AssetDatabase.FindAssets 调用优化，使用完整名字空间避免同名类型资源出现冲突。
+
+> 阅读[修改记录](changes.md)可以了解更多历史内容。
 
 ## 功能特性
 
@@ -30,8 +121,6 @@ xasset-7.0 体验版提供了以下功能特性：
 
 > 注：体验版没有提供分布式打包工具，以及自动分析依赖、自动优化冗余、自动解决冲突的支持。可以结合 Unity 的 [AssetBundleBrowser](https://github.com/Unity-Technologies/AssetBundles-Browser) 可视化的创建资源的 AssetBundle 打包分组。
 
-xasset-7.0 的订阅版本主要为 Unity 项目的包体大、打包慢、版本更新、边玩边下、运行卡顿等疑难杂症提供全面有效的解决方案。
-
 对比体验版本，xasset-7.0 订阅版本主要的优势在于：
 
 - **分布式增量打包**：对于大体量的项目，可以根据一些规则把资源拆分为多个 Build 模块，然后选择局部内容构建，加快打包效率。
@@ -39,16 +128,11 @@ xasset-7.0 的订阅版本主要为 Unity 项目的包体大、打包慢、版�
 - **[安装包资源分包](https://xasset.github.io/#/splitbuild)**：可以预定义多组配置，按需分离安装包的资源，支持空包启动，最小包包体轻松控制到 30 MB。
 - **局部资源下载更新功能**：可以根据资源加载路径或分组名字查询和下载更新，支持自动热重载，资源更新后无需重启。
 - **提供了多线程下载工具**：支持限速，断点续传，网络异常自修复，文件指纹校验机制。
-- **Android App Bundle（Google Play）支持**：适配了 PlayAssetDelivery 服务，安装包大小可以轻松突破 150MB 的限制。
+- **谷歌分包技术适配**：适配了 PlayAssetDelivery 服务，安装包大小可以轻松突破 150MB 的限制。
 - **专属对接群**：多位资深行业从业者，提供更迅捷、全面的技术支持服务。
 - **XLua 打包加载支持**：基于 XLua 提供了 Lua 文件编辑器和真机环境打包和加载支持，轻松让 Lua 代码具备热更能力。
 
-阅读[版本比较](https://xasset.github.io/#/compares)可以了解体验版本和订阅版本更具体的差异。无疑，对于只需要全量资源更新的小项目，用开源版本足以。而对于比较大的项目，或者说对分包、加密、流畅度把控有较高追求的项目来说，订阅不仅是给老板省钱，也是给自己节省时间。
-
-阅读[授权模式](https://xasset.github.io/#/license)可以了解团队订阅的具体内容。如需订阅，可以联系：
-
-- 微信：vmakemore
-- 邮箱：xasset@qq.com
+有关 xasset 的疑问或建议，请加作者微信号 vmakemore 反馈。
 
 ## 系统需求
 
@@ -77,6 +161,11 @@ xasset-7.0 的订阅版本主要为 Unity 项目的包体大、打包慢、版�
 如需赞助可以联系作者微信：vmakemore。
 
 ## 声望
+
+**刘家君**
+
+- https://github.com/suixin567
+- 反馈有效问题或建议 +2
 
 **李非莬**
 
