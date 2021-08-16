@@ -48,7 +48,7 @@ xasset 7.0 是全面可靠的 Unity 资源系统。从开源版本到商业化�
    - 特殊用户：https://github.com/mmdnb/xasset-se
    - 普通用户：https://github.com/mmdnb/xasset-base
 
-阅读[版本比较](compares.md)可以比较细致的了解体验源版本和团队订阅版本的差异，而订阅版本中，个人相对团队主要是剥离了以下功能：
+阅读[版本比较](https://xasset.github.io/docs/#/compares)可以比较细致的了解体验开源版本和团队订阅版本的差异，而订阅版本中，个人相对团队主要是剥离了以下功能：
 
 - 高性能资源加密功能
 - Google Play 分包适配
