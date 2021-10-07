@@ -33,11 +33,10 @@ namespace VEngine.Example
 
         public void Clear()
         {
-            Versions.ClearAsync();
-            //MessageBox.Show("提示", "保留历史版本数据可以获得更快的更新体验，请确认是否清理？", ok =>
-            //{
-            //    if (ok) Versions.ClearAsync();
-            //}, "清理", "退出");
+            MessageBox.Show("提示", "保留历史版本数据可以获得更快的更新体验，请确认是否清理？", ok =>
+            {
+                if (ok) Versions.ClearAsync();
+            }, "清理", "退出");
         }
 
         public void StartUpdate()

@@ -9,15 +9,16 @@
 <p align="center">
   xasset 是全面可靠的 Unity 资源框架。
   <br>
-  专业解决 UNITY 项目的打包慢、包体大、热更新、内存管理和运行卡顿之类的疑难杂症。
+  专业解决 Unity 项目的打包慢、包体大、热更新、内存管理和运行卡顿之类的疑难杂症。
   <br>
-  <a href="https://xasset.github.io"><strong>浏览文档 »</strong></a>
+  <a href="https://xasset.github.io"><strong>浏览文档（仅限订阅版本） »</strong></a>
   <br>
   <br>
   <a href="https://github.com/xasset/xasset/issues/new?template=bug_report.md">报告问题</a>
   ·
   <a href="https://github.com/xasset/xasset/issues/new?template=feature_request.md">提交需求</a> 
 </p>
+
 
 
 
@@ -72,6 +73,22 @@ xasset-7.0 体验版提供了以下功能特性：
 - **XLua 打包加载支持**：基于 XLua 提供了 Lua 文件编辑器和真机环境打包和加载支持，轻松让 Lua 代码具备热更能力。
 
 有关 xasset 的疑问或建议，请加作者微信号 vmakemore 反馈。
+
+## 快速开始
+
+要体验 xasset 的体验版本可以：
+
+- 克隆仓库：https://github.com/xasset/xasset.git
+- 打包资源：**Assets/Versions/Build Bundles**
+- 打包安装包：**Assets/Versions/Build Player**
+
+运行时 API 可以参考：
+
+- https://xasset.github.io/guide/coreapi.html
+
+如何为资源分配 AssetBundle 可以参考：
+
+- https://docs.unity3d.com/cn/current/Manual/AssetBundles-Workflow.html
 
 ## 系统需求
 
@@ -133,4 +150,3 @@ xasset-7.0 体验版提供了以下功能特性：
 - [ET](https://github.com/egametang/ET) Unity3D Client And C# Server Framework
 - [TinaX Framework](https://tinax.corala.space/) “开箱即用”的Unity独立游戏开发工具
 - [LuaProfiler-For-Unity](https://github.com/ElPsyCongree/LuaProfiler-For-Unity) Lua Profiler For Unity支持 XLua、SLua、ToLua
-- [JEngine](https://github.com/JasonXuDeveloper/JEngine) 一个基于XAsset&ILRuntime，精简好用的热更框架（JEngine 目前是 4.x 版本的 xasset 慎用）

@@ -16,13 +16,13 @@ namespace VEngine.Editor
             Debug.LogFormat("ComputeCRC for {0} with {1}", path, crc32);
         }
 
-        [MenuItem("Assets/Versions/Build/Bundles")]
+        [MenuItem("Assets/Versions/Build Bundles")]
         public static void BuildBundles()
         {
             BuildScript.BuildBundles();
         }
 
-        [MenuItem("Assets/Versions/Build/Player")]
+        [MenuItem("Assets/Versions/Build Player")]
         public static void BuildPlayer()
         {
             BuildScript.BuildPlayer();
@@ -44,43 +44,43 @@ namespace VEngine.Editor
             }
         }
 
-        [MenuItem("Assets/Versions/Clear/History")]
+        [MenuItem("Assets/Versions/Clear History")]
         public static void ClearHistory()
         {
             BuildScript.ClearHistory();
         }
 
-        [MenuItem("Assets/Versions/Clear/Download")]
+        [MenuItem("Assets/Versions/Clear Download")]
         public static void ClearDownload()
         {
             Directory.Delete(Application.persistentDataPath, true);
         }
 
-        [MenuItem("Assets/Versions/Clear/Temporary")]
+        [MenuItem("Assets/Versions/Clear Temporary")]
         public static void ClearTemporary()
         {
             Directory.Delete(Application.temporaryCachePath, true);
         }
 
-        [MenuItem("Assets/Versions/View/Settings")]
+        [MenuItem("Assets/Versions/View Settings")]
         public static void ViewSettings()
         {
             Settings.PingWithSelected(Settings.GetDefaultSettings());
         }
 
-        [MenuItem("Assets/Versions/View/Build")]
+        [MenuItem("Assets/Versions/View Build")]
         public static void ViewBuild()
         {
             EditorUtility.OpenWithDefaultApp(Settings.PlatformBuildPath);
         }
 
-        [MenuItem("Assets/Versions/View/Download")]
+        [MenuItem("Assets/Versions/View Download")]
         public static void ViewDownload()
         {
             EditorUtility.OpenWithDefaultApp(Application.persistentDataPath);
         }
 
-        [MenuItem("Assets/Versions/View/Temporary")]
+        [MenuItem("Assets/Versions/View Temporary")]
         public static void ViewTemporary()
         {
             EditorUtility.OpenWithDefaultApp(Application.temporaryCachePath);
