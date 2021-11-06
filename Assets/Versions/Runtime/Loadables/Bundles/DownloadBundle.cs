@@ -7,6 +7,15 @@ namespace VEngine
         private Download download;
         private AssetBundleCreateRequest request;
 
+        public override void LoadImmediate()
+        {
+            if (isDone) return;
+
+            while (!download.isDone) Download.UpdateAll();
+            OnLoaded(request == null ? AssetBundle.LoadFromFile(download.info.savePath) : request.assetBundle);
+            request = null;
+        }
+
         protected override void OnLoad()
         {
             download = Download.DownloadAsync(pathOrURL, Versions.GetDownloadDataPath(info.nameWithAppendHash), null,

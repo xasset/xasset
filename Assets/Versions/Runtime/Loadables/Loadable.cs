@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace VEngine
@@ -18,7 +19,9 @@ namespace VEngine
 
     public class Loadable
     {
-        protected internal static readonly List<Loadable> Loading = new List<Loadable>();
+        public static readonly List<Loadable> Loading = new List<Loadable>();
+        public static readonly List<Loadable> Unused = new List<Loadable>();
+
         protected readonly Reference reference = new Reference();
         public LoadableStatus status { get; protected set; } = LoadableStatus.Wait;
         public string pathOrURL { get; set; }
@@ -29,7 +32,11 @@ namespace VEngine
                               status == LoadableStatus.FailedToLoad;
 
         public float progress { get; protected set; }
+        public long elapsed { get; private set; }
+        private Stopwatch watch;
+        private int startFrame;
 
+        public int frames { get; set; }
 
         protected void Finish(string errorCode = null)
         {
@@ -38,8 +45,12 @@ namespace VEngine
             progress = 1;
         }
 
+        public static bool IsBlockingRemoveUnused
+        {
+            get { return Scene.current != null && !Scene.current.isDone; }
+        }
 
-        public static void UpdateAll()
+        public static void UpdateLoadingAndUnused()
         {
             for (var index = 0; index < Loading.Count; index++)
             {
@@ -54,15 +65,21 @@ namespace VEngine
                 item.Complete();
             }
 
-            Asset.UpdateAssets();
-            Scene.UpdateScenes();
-            Bundle.UpdateBundles();
-            ManifestAsset.UpdateManifestAssets();
-        }
+            if (IsBlockingRemoveUnused) return;
 
-        internal static void Add(Loadable loadable)
-        {
-            Loading.Add(loadable);
+            for (var index = 0; index < Unused.Count; index++)
+            {
+                var item = Unused[index];
+                if (Updater.Instance.busy) break;
+
+                if (!item.isDone) continue;
+
+                Unused.RemoveAt(index);
+                index--;
+                if (!item.reference.unused) continue;
+
+                item.Unload();
+            }
         }
 
         internal void Update()
@@ -76,6 +93,13 @@ namespace VEngine
             {
                 Logger.E("Unable to load {0} {1} with error: {2}", GetType().Name, pathOrURL, error);
                 Release();
+            }
+
+            if (elapsed == 0)
+            {
+                watch.Stop();
+                elapsed = watch.ElapsedMilliseconds;
+                frames = UnityEngine.Time.frameCount - startFrame;
             }
 
             OnComplete();
@@ -104,13 +128,19 @@ namespace VEngine
 
         protected internal void Load()
         {
+            if (status != LoadableStatus.Wait && reference.unused)
+                Unused.Remove(this);
+
             reference.Retain();
-            Add(this);
+            Loading.Add(this);
             if (status != LoadableStatus.Wait) return;
 
             Logger.I("Load {0} {1}.", GetType().Name, Path.GetFileName(pathOrURL));
             status = LoadableStatus.Loading;
             progress = 0;
+            watch = new Stopwatch();
+            watch.Start();
+            startFrame = UnityEngine.Time.frameCount;
             OnLoad();
         }
 
@@ -134,6 +164,7 @@ namespace VEngine
             reference.Release();
             if (!reference.unused) return;
 
+            Unused.Add(this);
             OnUnused();
         }
 

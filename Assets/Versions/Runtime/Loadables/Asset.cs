@@ -7,9 +7,19 @@ namespace VEngine
 {
     public class Asset : Loadable, IEnumerator
     {
-        public static readonly Dictionary<string, Asset> Cache = new Dictionary<string, Asset>();
+        public static Func<string, Type, Asset> Creator { get; set; } = BundledAsset.Create;
 
-        public static readonly List<Asset> Unused = new List<Asset>();
+        private static Asset CreateInstance(string path, Type type)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentException(nameof(path));
+            }
+
+            return Creator(path, type);
+        }
+
+        public static readonly Dictionary<string, Asset> Cache = new Dictionary<string, Asset>();
 
         public Action<Asset> completed;
 
@@ -52,7 +62,11 @@ namespace VEngine
         protected override void OnUnused()
         {
             completed = null;
-            Unused.Add(this);
+        }
+
+        protected override void OnUnload()
+        {
+            Cache.Remove(pathOrURL);
         }
 
         public static Asset LoadAsync(string path, Type type, Action<Asset> completed = null)
@@ -65,7 +79,7 @@ namespace VEngine
             return LoadInternal(path, type, true);
         }
 
-        internal static Asset LoadInternal(string path, Type type, bool mustCompleteOnNextFrame,
+        private static Asset LoadInternal(string path, Type type, bool mustCompleteOnNextFrame,
             Action<Asset> completed = null)
         {
             if (!Versions.Contains(path))
@@ -76,7 +90,7 @@ namespace VEngine
 
             if (!Cache.TryGetValue(path, out var item))
             {
-                item = Versions.CreateAsset(path, type);
+                item = CreateInstance(path, type);
                 Cache.Add(path, item);
             }
 
@@ -87,22 +101,6 @@ namespace VEngine
             if (mustCompleteOnNextFrame) item.LoadImmediate();
 
             return item;
-        }
-
-        public static void UpdateAssets()
-        {
-            for (var index = 0; index < Unused.Count; index++)
-            {
-                var item = Unused[index];
-                if (!item.isDone) continue;
-
-                Unused.RemoveAt(index);
-                index--;
-                if (!item.reference.unused) continue;
-
-                item.Unload();
-                Cache.Remove(item.pathOrURL);
-            }
         }
     }
 }

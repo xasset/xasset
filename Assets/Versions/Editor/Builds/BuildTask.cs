@@ -10,7 +10,6 @@ namespace VEngine.Editor.Builds
     {
         private readonly BuildAssetBundleOptions buildAssetBundleOptions;
         private readonly List<Asset> bundledAssets = new List<Asset>();
-        private readonly string bundleExtension;
         public readonly string name;
         private readonly Dictionary<string, Asset> pathWithAssets = new Dictionary<string, Asset>();
 
@@ -19,7 +18,6 @@ namespace VEngine.Editor.Builds
             name = nameof(Manifest);
             buildAssetBundleOptions = BuildAssetBundleOptions.ChunkBasedCompression |
                                       BuildAssetBundleOptions.AppendHashToAssetBundleName;
-            bundleExtension = ".unity3d";
         }
 
         public Record record { get; private set; }
@@ -136,8 +134,6 @@ namespace VEngine.Editor.Builds
         {
             var pos = assetBundle.LastIndexOf("_", StringComparison.Ordinal) + 1;
             var hash = assetBundle.Substring(pos);
-            if (!string.IsNullOrEmpty(bundleExtension)) hash = hash.Replace(bundleExtension, "");
-
             var originBundle = $"{assetBundle.Replace("_" + hash, "")}";
             return originBundle;
         }

@@ -3702,7 +3702,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "@GAME4D 2021\uFF0C\u4FDD\u7559\u6240\u6709\u6743\u5229"
+  m_Text: "Copyright@2021, xasset \u521B\u4F5C\u56E2\u961F"
 --- !u!222 &1854586500
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -255,7 +255,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "@GAME4D 2021\uFF0C\u4FDD\u7559\u6240\u6709\u6743\u5229"
+  m_Text: "Copyright@2021, xasset \u521B\u4F5C\u56E2\u961F"
 --- !u!222 &285559888
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1051,7 +1051,7 @@ RectTransform:
   m_GameObject: {fileID: 2060078720}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0500768, y: 1.0500768, z: 1.0500768}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2111248297}
   m_RootOrder: 0
@@ -1142,7 +1142,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonStart: {fileID: 824854623}
   version: {fileID: 1414128926}
-  assetGroup: {fileID: 11400000, guid: f2bf481367424bf4abde37353aab58d8, type: 2}
 --- !u!114 &2111248294
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -37,8 +37,7 @@ namespace VEngine.Editor.Builds
             }
         }
 
-        public static string BuildPlayerDataPath =>
-            string.Format("{0}/{1}", Application.streamingAssetsPath, Utility.buildPath);
+        public static string BuildPlayerDataPath => $"{Application.streamingAssetsPath}/{Utility.buildPath}";
 
         public static PlayerSettings GetPlayerSettings()
         {
@@ -78,21 +77,19 @@ namespace VEngine.Editor.Builds
             var bundles = new List<ManifestBundle>();
             var manifest = GetManifest();
             bundles.AddRange(manifest.bundles);
-            if (includeManifest)
+            if (!includeManifest) return bundles;
+            var manifestName = $"{manifest.name}";
+            var manifestVersionName = Manifest.GetVersionFile(manifestName);
+            bundles.Add(new ManifestBundle
             {
-                var manifestName = $"{manifest.name}";
-                var manifestVersionName = Manifest.GetVersionFile(manifestName);
-                bundles.Add(new ManifestBundle
-                {
-                    name = manifestVersionName,
-                    nameWithAppendHash = manifestVersionName
-                });
-                bundles.Add(new ManifestBundle
-                {
-                    name = manifestName,
-                    nameWithAppendHash = manifestName
-                });
-            }
+                name = manifestVersionName,
+                nameWithAppendHash = manifestVersionName
+            });
+            bundles.Add(new ManifestBundle
+            {
+                name = manifestName,
+                nameWithAppendHash = manifestName
+            });
 
             return bundles;
         }
@@ -128,7 +125,7 @@ namespace VEngine.Editor.Builds
             EditorGUIUtility.PingObject(target);
         }
 
-        public static T LoadAsset<T>(string path) where T : ScriptableObject
+        private static T LoadAsset<T>(string path) where T : ScriptableObject
         {
             var asset = AssetDatabase.LoadAssetAtPath<T>(path);
             if (asset != null) return asset;
@@ -146,13 +143,6 @@ namespace VEngine.Editor.Builds
             EditorUtility.SetDirty(asset);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-        }
-
-        public static IEnumerable<string> GetDependencies(string path)
-        {
-            var set = new HashSet<string>(AssetDatabase.GetDependencies(path, true));
-            set.Remove(path);
-            return set;
         }
     }
 }

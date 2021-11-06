@@ -40,3 +40,6 @@ Library
 Temp
 DLC
 UnityPackageManager
+Assets/Plugins/Editor/JetBrains.meta
+Assets/Plugins/Editor.meta
+Assets/Plugins.meta

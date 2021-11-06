@@ -19,11 +19,7 @@ namespace VEngine
 
         protected override void OnLoad()
         {
-            dependencies = new Dependencies
-            {
-                pathOrURL = pathOrURL
-            };
-            dependencies.Load();
+            dependencies = Dependencies.Load(pathOrURL, mustCompleteOnNextFrame);
             status = LoadableStatus.DependentLoading;
         }
 
@@ -31,12 +27,14 @@ namespace VEngine
         {
             if (dependencies != null)
             {
-                dependencies.Unload();
+                dependencies.Release();
                 dependencies = null;
             }
 
             request = null;
             asset = null;
+
+            base.OnUnload();
         }
 
         public override void LoadImmediate()

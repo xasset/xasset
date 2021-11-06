@@ -9,15 +9,24 @@ namespace VEngine
 {
     public class Scene : Loadable, IEnumerator
     {
-        internal static readonly List<Scene> Unused = new List<Scene>();
+        public static Func<string, bool, Scene> Creator { get; set; } = BundledScene.Create;
+
+        private static Scene CreateInstance(string path, bool additive)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentException(nameof(path));
+            }
+
+            return Creator(path, additive);
+        }
 
         public static Action<Scene> onSceneUnloaded;
         public static Action<Scene> onSceneLoaded;
-        internal readonly List<Scene> additives = new List<Scene>();
         public Action<Scene> completed;
-        protected string sceneName;
         public Action<Scene> updated;
-
+        public readonly List<Scene> additives = new List<Scene>();
+        protected string sceneName;
         public AsyncOperation operation { get; protected set; }
         public static Scene main { get; private set; }
         public static Scene current { get; private set; }
@@ -39,7 +48,7 @@ namespace VEngine
         {
             if (string.IsNullOrEmpty(assetPath)) throw new ArgumentNullException(nameof(assetPath));
 
-            var scene = Versions.CreateScene(assetPath, additive);
+            var scene = CreateInstance(assetPath, additive);
             if (completed != null) scene.completed += completed;
             current = scene;
             scene.Load();
@@ -49,6 +58,15 @@ namespace VEngine
         public static Scene LoadAdditiveAsync(string assetPath, Action<Scene> completed = null)
         {
             return LoadAsync(assetPath, completed, true);
+        }
+
+        public static Scene Load(string assetPath, bool additive = false)
+        {
+            var scene = CreateInstance(assetPath, additive);
+            current = scene;
+            scene.mustCompleteOnNextFrame = true;
+            scene.Load();
+            return scene;
         }
 
         protected override void OnUpdate()
@@ -86,7 +104,15 @@ namespace VEngine
         protected override void OnLoad()
         {
             PrepareToLoad();
-            operation = SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
+            if (mustCompleteOnNextFrame)
+            {
+                SceneManager.LoadScene(sceneName, loadSceneMode);
+                Finish();
+            }
+            else
+            {
+                operation = SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
+            }
         }
 
         protected void PrepareToLoad()
@@ -151,23 +177,6 @@ namespace VEngine
             if (completed != null) completed(this);
 
             completed -= saved;
-        }
-
-        public static void UpdateScenes()
-        {
-            if (current == null || !current.isDone) return;
-
-            for (var index = 0; index < Unused.Count; index++)
-            {
-                var item = Unused[index];
-                if (Updater.Instance.busy) break;
-
-                if (!item.isDone) continue;
-
-                Unused.RemoveAt(index);
-                index--;
-                item.Unload();
-            }
         }
     }
 }

@@ -10,9 +10,7 @@ namespace VEngine
 
         public static readonly Dictionary<string, Bundle> Cache = new Dictionary<string, Bundle>();
 
-        public static readonly List<Bundle> Unused = new List<Bundle>();
-
-        public ManifestBundle info;
+        protected ManifestBundle info;
 
         public AssetBundle assetBundle { get; protected set; }
 
@@ -20,11 +18,6 @@ namespace VEngine
         {
             assetBundle = bundle;
             Finish(assetBundle == null ? "assetBundle == null" : null);
-        }
-
-        protected override void OnUnused()
-        {
-            Unused.Add(this);
         }
 
         internal static Bundle LoadInternal(ManifestBundle bundle, bool mustCompleteOnNextFrame)
@@ -36,18 +29,16 @@ namespace VEngine
                 var url = Versions.GetBundlePathOrURL(bundle);
                 if (Application.platform == RuntimePlatform.WebGLPlayer)
                 {
-                    throw new NotImplementedException("开源版不提供 WebGL 支持");
+                    throw new NotImplementedException("开源版不支持 WebGL");
                 }
-                else
+
+                if (customBundleCreator != null) item = customBundleCreator(bundle);
+                if (item == null)
                 {
-                    if (customBundleCreator != null) item = customBundleCreator(bundle);
-                    if (item == null)
-                    {
-                        if (url.StartsWith("http://") || url.StartsWith("https://") || url.StartsWith("ftp://"))
-                            item = new DownloadBundle {pathOrURL = url, info = bundle};
-                        else
-                            item = new LocalBundle {pathOrURL = url, info = bundle};
-                    }
+                    if (url.StartsWith("http://") || url.StartsWith("https://") || url.StartsWith("ftp://"))
+                        item = new DownloadBundle {pathOrURL = url, info = bundle};
+                    else
+                        item = new LocalBundle {pathOrURL = url, info = bundle};
                 }
 
                 Cache.Add(bundle.nameWithAppendHash, item);
@@ -60,29 +51,10 @@ namespace VEngine
             return item;
         }
 
-        internal static void UpdateBundles()
-        {
-            for (var index = 0; index < Unused.Count; index++)
-            {
-                var item = Unused[index];
-                if (!item.isDone) continue;
-
-                Unused.RemoveAt(index);
-                index--;
-                if (!item.reference.unused) continue;
-
-                item.Unload();
-                Cache.Remove(item.info.nameWithAppendHash);
-                if (Updater.Instance.busy) return;
-            }
-        }
-
         protected override void OnUnload()
         {
             if (assetBundle == null) return;
-
-            assetBundle.Unload(true);
-            assetBundle = null;
+            Cache.Remove(info.nameWithAppendHash);
         }
     }
 }

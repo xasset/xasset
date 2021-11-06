@@ -17,4 +17,4 @@ MonoBehaviour:
   - .giparams
   - LightingData.asset
   offlineMode: 0
-  scriptPlayMode: 1
+  scriptPlayMode: 0

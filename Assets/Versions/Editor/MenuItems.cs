@@ -7,6 +7,52 @@ namespace VEngine.Editor
 {
     public static class MenuItems
     {
+        [MenuItem("Assets/Versions/Pack by file")]
+        public static void PackByFile()
+        {
+            foreach (var o in Selection.GetFiltered<Object>(SelectionMode.DeepAssets))
+            {
+                var assetPath = AssetDatabase.GetAssetPath(o);
+                if (string.IsNullOrEmpty(assetPath))
+                {
+                    continue;
+                }
+
+                if (Directory.Exists(assetPath))
+                {
+                    continue;
+                }
+
+                var assetImport = AssetImporter.GetAtPath(assetPath);
+                var dir = Path.GetDirectoryName(assetPath)?.Replace('\\', '/').Replace('/', '_');
+                var name = Path.GetFileNameWithoutExtension(assetPath);
+                var type = Path.GetExtension(assetPath);
+                assetImport.assetBundleName = string.Format("{0}_{1}{2}", dir, name, type).ToLower().Replace('.', '_');
+            }
+        }
+
+        [MenuItem("Assets/Versions/Pack by dir")]
+        public static void PackByDir()
+        {
+            foreach (var o in Selection.GetFiltered<Object>(SelectionMode.DeepAssets))
+            {
+                var assetPath = AssetDatabase.GetAssetPath(o);
+                if (string.IsNullOrEmpty(assetPath))
+                {
+                    continue;
+                }
+
+                if (Directory.Exists(assetPath))
+                {
+                    continue;
+                }
+
+                var assetImport = AssetImporter.GetAtPath(assetPath);
+                var dir = Path.GetDirectoryName(assetPath)?.Replace('\\', '/').Replace('/', '_').Replace('.', '_');
+                assetImport.assetBundleName = dir;
+            }
+        }
+
         [MenuItem("Assets/Compute CRC")]
         public static void ComputeCRC()
         {
@@ -16,25 +62,25 @@ namespace VEngine.Editor
             Debug.LogFormat("ComputeCRC for {0} with {1}", path, crc32);
         }
 
-        [MenuItem("Assets/Versions/Build Bundles")]
+        [MenuItem("Versions/Build Bundles")]
         public static void BuildBundles()
         {
             BuildScript.BuildBundles();
         }
 
-        [MenuItem("Assets/Versions/Build Player")]
+        [MenuItem("Versions/Build Player")]
         public static void BuildPlayer()
         {
             BuildScript.BuildPlayer();
         }
 
-        [MenuItem("Assets/Versions/Copy To StreamingAssets")]
+        [MenuItem("Versions/Copy To StreamingAssets")]
         public static void CopyToStreamingAssets()
         {
             BuildScript.CopyToStreamingAssets();
         }
 
-        [MenuItem("Assets/Versions/Clear/Build")]
+        [MenuItem("Versions/Clear Build")]
         public static void ClearBuild()
         {
             if (EditorUtility.DisplayDialog("提示", "清理构建数据将无法正常增量打包，确认清理？", "确定"))
@@ -44,43 +90,43 @@ namespace VEngine.Editor
             }
         }
 
-        [MenuItem("Assets/Versions/Clear History")]
+        [MenuItem("Versions/Clear History")]
         public static void ClearHistory()
         {
             BuildScript.ClearHistory();
         }
 
-        [MenuItem("Assets/Versions/Clear Download")]
+        [MenuItem("Versions/Clear Download")]
         public static void ClearDownload()
         {
             Directory.Delete(Application.persistentDataPath, true);
         }
 
-        [MenuItem("Assets/Versions/Clear Temporary")]
+        [MenuItem("Versions/Clear Temporary")]
         public static void ClearTemporary()
         {
             Directory.Delete(Application.temporaryCachePath, true);
         }
 
-        [MenuItem("Assets/Versions/View Settings")]
+        [MenuItem("Versions/View Settings")]
         public static void ViewSettings()
         {
             Settings.PingWithSelected(Settings.GetDefaultSettings());
         }
 
-        [MenuItem("Assets/Versions/View Build")]
+        [MenuItem("Versions/View Build")]
         public static void ViewBuild()
         {
             EditorUtility.OpenWithDefaultApp(Settings.PlatformBuildPath);
         }
 
-        [MenuItem("Assets/Versions/View Download")]
+        [MenuItem("Versions/View Download")]
         public static void ViewDownload()
         {
             EditorUtility.OpenWithDefaultApp(Application.persistentDataPath);
         }
 
-        [MenuItem("Assets/Versions/View Temporary")]
+        [MenuItem("Versions/View Temporary")]
         public static void ViewTemporary()
         {
             EditorUtility.OpenWithDefaultApp(Application.temporaryCachePath);

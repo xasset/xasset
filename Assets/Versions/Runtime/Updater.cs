@@ -20,7 +20,7 @@ namespace VEngine
         private void Update()
         {
             time = Time.realtimeSinceStartup;
-            Loadable.UpdateAll();
+            Loadable.UpdateLoadingAndUnused();
             Operation.UpdateAll();
             Download.UpdateAll();
             if (updated != null) updated.Invoke();

@@ -5,8 +5,27 @@ namespace VEngine
 {
     public class Dependencies : Loadable
     {
-        protected readonly List<Bundle> bundles = new List<Bundle>();
-        protected Bundle mainBundle;
+        private static readonly Dictionary<string, Dependencies> Cache = new Dictionary<string, Dependencies>();
+
+        internal static Dependencies Load(string path, bool mustCompleteOnNextFrame)
+        {
+            if (!Cache.TryGetValue(path, out var item))
+            {
+                item = new Dependencies() {pathOrURL = path, mustCompleteOnNextFrame = mustCompleteOnNextFrame};
+                Cache.Add(path, item);
+            }
+
+            item.Load();
+            if (mustCompleteOnNextFrame)
+            {
+                item.LoadImmediate();
+            }
+
+            return item;
+        }
+
+        private readonly List<Bundle> bundles = new List<Bundle>();
+        private Bundle mainBundle;
 
         public AssetBundle assetBundle => mainBundle?.assetBundle;
 
@@ -26,9 +45,9 @@ namespace VEngine
 
             mainBundle = Bundle.LoadInternal(info, mustCompleteOnNextFrame);
             bundles.Add(mainBundle);
-            if (infos != null && infos.Length > 0)
-                foreach (var item in infos)
-                    bundles.Add(Bundle.LoadInternal(item, mustCompleteOnNextFrame));
+            if (infos == null || infos.Length <= 0) return;
+            foreach (var item in infos)
+                bundles.Add(Bundle.LoadInternal(item, mustCompleteOnNextFrame));
         }
 
         public override void LoadImmediate()
@@ -50,6 +69,8 @@ namespace VEngine
             }
 
             mainBundle = null;
+
+            Cache.Remove(pathOrURL);
         }
 
         protected override void OnUpdate()

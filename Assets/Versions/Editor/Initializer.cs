@@ -19,9 +19,9 @@ namespace VEngine.Editor
             switch (settings.scriptPlayMode)
             {
                 case ScriptPlayMode.Simulation:
-                    Versions.FuncCreateAsset = EditorAsset.Create;
-                    Versions.FuncCreateScene = EditorScene.Create;
-                    Versions.FuncCreateManifest = EditorManifestAsset.Create;
+                    Asset.Creator = EditorAsset.Create;
+                    Scene.Creator = EditorScene.Create;
+                    ManifestAsset.Creator = EditorManifestAsset.Create;
                     config.offlineMode = true;
                     break;
                 case ScriptPlayMode.Preload:

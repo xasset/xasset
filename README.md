@@ -1,101 +1,96 @@
-<p align="center">
-  <a href="https://game4d.cn/">
-    <img src="https://game4d.cn/images/logo.png" alt="xasset logo" width="200" height="200">
-  </a>
-</p>
+# [xasset](https://xasset.github.io) · ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
-<h3 align="center">xasset</h3>
+xasset 是开箱即用的 Unity 分包，加密和热更框架。
 
-<p align="center">
-  <br>
-  专治Unity项目打包慢、包体大、边玩边下和运行卡顿之类的疑难杂症。
-  <br>
-  <a href="https://xasset.github.io"><strong>浏览文档（仅限订阅版本） »</strong></a>
-  <br>
-  <br>
-  <a href="https://github.com/xasset/xasset/issues/new?template=bug_report.md">报告问题</a>
-  ·
-  <a href="https://github.com/xasset/xasset/issues/new?template=feature_request.md">提交需求</a> 
-</p>
+使用 xasset 可以加快你的 Unity 项目的迭代速度和减少用户等待时间，并为程序运行时的流畅度和稳定性带来更多保障。**[了解更多 »](https://xasset.github.io)**
 
+从发布至今，xasset 项目已经持续迭代了近 5 年，并始终在为化繁为简，节省时间的目标发力，也收获了：
 
-
-
-
-
-## xasset 7.0
-
-这里是 xasset 7.0 的体验版本。对比上一个开源版本（4.x），7.0 最大的变化是：
-
-- 编辑器和运行时高度剥离，代码结构更精炼和模块化。
-- 使用只读的物理文件数据进行版本管理，版本检测稳定性和效率得到前所未有的提高。 
-- 打包后的文件的文件名自带文件内容的版本信息，天生可以避免CDN缓存问题以及一些其他的冲突。
-- 全新的多线程文件下载组件，真机环境比之前 UnityWebRequest 版本更稳定。
-- 自动分帧机制为程序运行的流畅度提供保障。
-- 加载资源默认支持自动更新。
-
-> 注：开源版本中，同步加载如果触发自动更新可能会报错，订阅版本会更强大一些。
-
-对比上一个订阅版本（6.1），7.0 最大的变化是：
-
-- 全新的分布式构建系统，可以更快更灵活地打包。
-- 编辑器+运行时的代码量减少了近 3000 行，程序结构更精炼，且更好扩展。
-- Android App Bundle + Play Asset Delivery 适配（仅限团队版本）。
-- 基于 XLua 的 Lua 文件打包加载适配（仅限团队版本）。
-- 高性能安装包资源加密（仅限团队版本）。
-- 自动热重载技术。
-
-从发布至今已经持续迭代了近 5 年，我们收获了 1500+ 星标、180+ 订阅用户，并始终在为化繁为简，节省时间的目标发力。
+| 星标关注 | 付费订阅 | 公司资助 |
+| -------- | -------- | -------- |
+| 1500+    | 200+     | 50+      |
 
 非常感谢新老用户的支持和鼓励！你们的成功，才是我们的成功！
 
-## 功能特性
+## xasset 7
 
-xasset-7.0 体验版提供了以下功能特性：
+这里是最新的 xasset 7 的开源版本，可以使用以下 3 种开发模式进行快速开发和迭代：
 
-- 增量打包（Unity构建管线自带机制），输出文件默认以追加hash的方式命名，天生不会有CDN同名缓存问题。
-- 全量更新、加载资源自动更新，最稳定可靠的只读模式的版本管理机制。
-- 简便的跨平台资源（同步和异步）、场景（异步）加载能力、~~支持异步转同步~~。
-- 仿真模式：编辑器有效，只需设置好打包分组、可以跳过打包直接运行。
-- 预加载模式：编辑器有效，需要先打包才能运行，直接加载最新的打包数据，不会触发更新。
-- 增量模式：需要先打包才能运行，可以在编辑器下模拟和真机一样的版本更新流程。
-- 离线模式：真机有效、开启后不会触发更新。
+- **编辑器仿真模式**：只需设置好打包分组、可以跳过打包直接运行。
+- **编辑器预加载模式**：在编辑器调试真机的加载环境，需要先打包才能运行，不会触发更新。
+- **编辑器增量模式**：在编辑器调试真机一样的热更加载环境，需要先打包并部署服后才能运行，会触发更新。
 
-> 注：体验版没有提供分布式打包工具，以及自动分析依赖、自动优化冗余、自动解决冲突的支持。可以结合 Unity 的 [AssetBundleBrowser](https://github.com/Unity-Technologies/AssetBundles-Browser) 可视化的创建资源的 AssetBundle 打包分组。
+另外，xasset 还提供了离线模式，可以让程序在真机上一键关闭更新，方便提审需要。
 
-对比体验版本，xasset-7.0 订阅版本主要的优势在于：
+比较简明的是，不论在编辑器、还是真机、不论在安装包内还是更新目录、不论在本地还是服务器，这个版本的 xasset 都是统一使用资源在工程的相对路径加载资源，同时，还提供了：
 
-- **分布式增量打包**：对于大体量的项目，可以根据一些规则把资源拆分为多个 Build 模块，然后选择局部内容构建，加快打包效率。
-- **[安装包资源加密](https://xasset.github.io/guide/binarymode.html)**：不仅可以防止安装包资源被 AssetStudio 之类的工具轻易提取，并且 Android 真机测试加载资源的耗时有 10% 左右的提升。
-- **[安装包资源分包](https://xasset.github.io/guide/splitbuild.html)**：可以预定义多组配置，按需分离安装包的资源，支持空包启动，最小包包体轻松控制到 30 MB。
+- **基于只读清单配置的全局资源增量更新技术**：只读意味着不易变，不易变的东西自然最可靠。
+- **加载资源自动更新技术**：本地没有的资源自动去服务器下载，下载后自动加载，避免业务中断。
+- **自动管理依赖**：不论是加载还是更新，都不用为各种（循环依赖，重复加载或更新等）依赖处理问题烦恼。
+- **基于引用计数的内存管理技术**：Profiler 测试具备**进多少，出多少**的稳定性。
+
+开源版本提供了快速对选中资源进行按文件夹或文件进行打包分组的编辑器工具，但没有提供分布式打包工具，以及自动分析依赖、自动优化冗余、自动解决冲突的支持。可以结合 Unity 的 [AssetBundleBrowser](https://github.com/Unity-Technologies/AssetBundles-Browser) 可视化的创建资源的 AssetBundle 打包分组。
+
+对个人，我们提供免费的开源版，甚至可以在商业项目中使用。
+
+对于公司，我们提供功能更强大的付费团队订阅版本，需要获得授权才能使用。通过你们的支持, 我们不断为每个人改进 xasset。
+
+阅读[版本比较](https://xasset.github.io/compares)可以比较细致的了解开源版本和团队订阅版本的差异。
+
+## 订阅的优势
+
+对比开源版本，订阅版本主要的优势在于：
+
+- [分布式增量打包支持](https://xasset.github.io/docs/getting-started/buildbundles)：对于大体量的项目，可以根据一些规则把资源拆分为多个 Build 模块，然后选择局部内容构建，加快打包效率。
+- [安装包资源加密支持](https://xasset.github.io/docs/advance/binarymode)：不仅可以防止安装包资源被 AssetStudio 之类的工具轻易提取，并且 Android 真机测试加载资源的耗时有 10% 左右的提升。
+- [安装包资源分包](https://xasset.github.io/docs/getting-started/splitbuild)：可以预定义多组配置，按需分离安装包的资源，支持空包启动，最小包包体轻松控制到 30 MB。
 - **局部资源下载更新功能**：可以根据资源加载路径或分组名字查询和下载更新，支持自动热重载，资源更新后无需重启。
 - **提供了多线程下载工具**：支持限速，断点续传，网络异常自修复，文件指纹校验机制。
-- **谷歌分包技术适配**：适配了 PlayAssetDelivery 服务，安装包大小可以轻松突破 150MB 的限制。
+- [谷歌分包技术适配](https://xasset.github.io/docs/advance/pad)：适配了 PlayAssetDelivery 服务，安装包大小可以轻松突破 150MB 的限制。
 - **专属对接群**：多位资深行业从业者，提供更迅捷、全面的技术支持服务。
 - **XLua 打包加载支持**：基于 XLua 提供了 Lua 文件编辑器和真机环境打包和加载支持，轻松让 Lua 代码具备热更能力。
 
-有关 xasset 的疑问或建议，请加作者微信号 vmakemore 反馈。
+了解订阅价格和更多信息，可以前往这里查看：https://xasset.github.io/price
 
 ## 快速开始
 
-要体验 xasset 的体验版本可以：
+### 系统需求
 
-- 克隆仓库：https://github.com/xasset/xasset.git
-- 打包资源：**Assets/Versions/Build Bundles**
-- 打包安装包：**Assets/Versions/Build Player**
+- 引擎版本：Unity 2018.4+
+- 语言环境：.net 4.6+
 
-运行时 API 可以参考：
+### 操作步骤
 
-- https://xasset.github.io/guide/coreapi.html
+1. 可以使用命令行把仓库下载到本地：
+	```sh
+	git clone https://github.com/xasset/xasset.git
+	```
+
+2. 用 Unity 打开下载下来的工程后，执行资源打包的编辑器菜单命令：
+
+   - **Versions/Build Bundles** 打包资源
+
+3. 打开 Startup 场景，点击运行，或者执行后启动 exe：
+
+   - **Versions/Build Player** 打包播放器
+
+### 更多资料
+
+运行时 API 可以参考团队版的文档：
+
+- https://xasset.github.io/docs/getting-started/coreapi
 
 如何为资源分配 AssetBundle 可以参考：
 
 - https://docs.unity3d.com/cn/current/Manual/AssetBundles-Workflow.html
 
-## 系统需求
+## 文档
 
-- 引擎版本：Unity2018.4+
-- 语言环境：.net 4.x
+前往 https://xasset.github.io/ 可以了解 xasset 的来龙去脉。
+
+## 授权许可
+
+请注意，xasset 具有特殊许可证，并且在某些情况下需要获得公司许可证。阅读 [LICENSE](LICENSE.md) 文档以获取更多信息。
 
 ## 创作成员
 

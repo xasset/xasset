@@ -7,54 +7,18 @@ namespace VEngine
 {
     public static class Versions
     {
-        public const string APIVersion = "7.0";
-
+        public const string APIVersion = "7.1";
         public static Manifest Manifest;
-
         private static readonly Dictionary<string, string> BundleWithPathOrUrLs = new Dictionary<string, string>();
-
         public static bool SimulationMode;
-
         public static readonly List<string> builtinAssets = new List<string>();
-
         public static bool OfflineMode { get; set; }
-
-        public static Func<string, Type, Asset> FuncCreateAsset { get; set; }
-        public static Func<string, bool, Scene> FuncCreateScene { get; set; }
-        public static Func<string, bool, ManifestAsset> FuncCreateManifest { get; set; }
-
         public static string ManifestsVersion => Manifest == null ? string.Empty : Manifest.version.ToString();
-
         public static string PlayerDataPath { get; set; }
-
         public static string DownloadURL { get; set; }
-
         public static string DownloadDataPath { get; set; }
-
         internal static string LocalProtocol { get; set; }
-
         public static string PlatformName { get; set; }
-
-        public static Asset CreateAsset(string path, Type type)
-        {
-            if (string.IsNullOrEmpty(path)) throw new ArgumentException(nameof(path));
-
-            return FuncCreateAsset(path, type);
-        }
-
-        public static Scene CreateScene(string path, bool additive)
-        {
-            if (string.IsNullOrEmpty(path)) throw new ArgumentException(nameof(path));
-
-            return FuncCreateScene(path, additive);
-        }
-
-        public static ManifestAsset CreateManifest(string name, bool builtin)
-        {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentException(nameof(name));
-
-            return FuncCreateManifest(name, builtin);
-        }
 
         public static void Override(Manifest value)
         {
@@ -85,7 +49,10 @@ namespace VEngine
         {
             var ret = $"{Application.temporaryCachePath}/{file}";
             var dir = Path.GetDirectoryName(ret);
-            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
 
             return ret;
         }
@@ -99,36 +66,44 @@ namespace VEngine
 
         public static void InitializeOnLoad()
         {
-            if (FuncCreateAsset == null) FuncCreateAsset = BundledAsset.Create;
-
-            if (FuncCreateScene == null) FuncCreateScene = BundledScene.Create;
-
-            if (FuncCreateManifest == null) FuncCreateManifest = ManifestAsset.Create;
-
             if (Application.platform != RuntimePlatform.OSXEditor &&
                 Application.platform != RuntimePlatform.OSXPlayer &&
                 Application.platform != RuntimePlatform.IPhonePlayer)
             {
                 if (Application.platform == RuntimePlatform.WindowsEditor ||
                     Application.platform == RuntimePlatform.WindowsPlayer)
+                {
                     LocalProtocol = "file:///";
+                }
                 else
+                {
                     LocalProtocol = string.Empty;
+                }
             }
             else
             {
                 LocalProtocol = "file://";
             }
 
-            if (string.IsNullOrEmpty(PlatformName)) PlatformName = Utility.GetPlatformName();
+            if (string.IsNullOrEmpty(PlatformName))
+            {
+                PlatformName = Utility.GetPlatformName();
+            }
 
             if (string.IsNullOrEmpty(PlayerDataPath))
+            {
                 PlayerDataPath = $"{Application.streamingAssetsPath}/{Utility.buildPath}";
+            }
 
             if (string.IsNullOrEmpty(DownloadDataPath))
+            {
                 DownloadDataPath = $"{Application.persistentDataPath}/{Utility.buildPath}";
+            }
 
-            if (!Directory.Exists(DownloadDataPath)) Directory.CreateDirectory(DownloadDataPath);
+            if (!Directory.Exists(DownloadDataPath))
+            {
+                Directory.CreateDirectory(DownloadDataPath);
+            }
         }
 
 
@@ -163,7 +138,10 @@ namespace VEngine
         public static GetDownloadSize GetDownloadSizeAsync(UpdateVersions updateVersion)
         {
             var getDownloadSize = new GetDownloadSize();
-            if (updateVersion.asset != null) getDownloadSize.bundles.AddRange(updateVersion.asset.asset.bundles);
+            if (updateVersion.asset != null)
+            {
+                getDownloadSize.bundles.AddRange(updateVersion.asset.asset.bundles);
+            }
 
             getDownloadSize.Start();
             return getDownloadSize;
@@ -179,7 +157,10 @@ namespace VEngine
 
         public static bool IsDownloaded(ManifestBundle bundle)
         {
-            if (OfflineMode || builtinAssets.Contains(bundle.nameWithAppendHash)) return true;
+            if (OfflineMode || builtinAssets.Contains(bundle.nameWithAppendHash))
+            {
+                return true;
+            }
 
             var path = GetDownloadDataPath(bundle.nameWithAppendHash);
             var file = new FileInfo(path);
@@ -194,7 +175,10 @@ namespace VEngine
         internal static string GetBundlePathOrURL(ManifestBundle bundle)
         {
             var assetBundleName = bundle.nameWithAppendHash;
-            if (BundleWithPathOrUrLs.TryGetValue(assetBundleName, out var path)) return path;
+            if (BundleWithPathOrUrLs.TryGetValue(assetBundleName, out var path))
+            {
+                return path;
+            }
 
             if (OfflineMode || builtinAssets.Contains(assetBundleName))
             {

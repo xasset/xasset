@@ -99,7 +99,7 @@ namespace VEngine.Example
             buttonStart.gameObject.SetActive(false);
             PreloadManager.Instance.SetVisible(true);
             PreloadManager.Instance.SetMessage("获取版本信息...", 0);
-            ClearUpdate(); 
+            ClearUpdate();
             // TODO：生产环境这里的清单名字应该使用带 hash 的版本
             updateAsync = Versions.UpdateAsync(nameof(Manifest));
             yield return updateAsync;

@@ -20,12 +20,10 @@ namespace VEngine
 
     public class Manifest : ScriptableObject
     {
-        public static readonly ManifestBundle[] EmptyBundles = new ManifestBundle[0];
         public int version;
         public string appVersion;
         public List<ManifestBundle> bundles = new List<ManifestBundle>();
-        private Dictionary<string, ManifestBundle> nameWithBundles = new Dictionary<string, ManifestBundle>();
-        public Action<string> onReadAsset;
+        private readonly Dictionary<string, ManifestBundle> nameWithBundles = new Dictionary<string, ManifestBundle>();
 
         public Dictionary<string, ManifestBundle> GetBundles()
         {
@@ -48,16 +46,9 @@ namespace VEngine
 
         public ManifestBundle[] GetDependencies(ManifestBundle bundle)
         {
-            if (bundle == null) return EmptyBundles;
+            if (bundle == null) return Array.Empty<ManifestBundle>();
 
             return Array.ConvertAll(bundle.dependencies, input => bundles[input]);
-        }
-
-        public void Override(Manifest manifest)
-        {
-            version = manifest.version;
-            bundles = manifest.bundles;
-            nameWithBundles = manifest.nameWithBundles;
         }
 
         public static string GetVersionFile(string file)
@@ -70,28 +61,19 @@ namespace VEngine
             var json = File.ReadAllText(path);
             JsonUtility.FromJsonOverwrite(json, this);
             nameWithBundles.Clear();
-            if (onReadAsset != null)
-                foreach (var bundle in bundles)
+            foreach (var bundle in bundles)
+            {
+                nameWithBundles[bundle.nameWithAppendHash] = bundle;
+                foreach (var asset in bundle.assets)
                 {
-                    nameWithBundles[bundle.nameWithAppendHash] = bundle;
-                    foreach (var asset in bundle.assets)
-                    {
-                        nameWithBundles[asset] = bundle;
-                        onReadAsset.Invoke(asset);
-                    }
+                    nameWithBundles[asset] = bundle;
                 }
-            else
-                foreach (var bundle in bundles)
-                {
-                    nameWithBundles[bundle.nameWithAppendHash] = bundle;
-                    foreach (var asset in bundle.assets) nameWithBundles[asset] = bundle;
-                }
+            }
         }
 
         public void AddAsset(string assetPath)
         {
             nameWithBundles[assetPath] = ManifestBundle.Empty;
-            if (onReadAsset != null) onReadAsset(assetPath);
         }
     }
 }
