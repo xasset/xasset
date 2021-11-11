@@ -51,7 +51,6 @@ namespace VEngine
         {
             PrepareToLoad();
             dependencies = Dependencies.Load(pathOrURL, mustCompleteOnNextFrame);
-            dependencies.Load();
             if (mustCompleteOnNextFrame)
             {
                 SceneManager.LoadScene(sceneName, loadSceneMode);
