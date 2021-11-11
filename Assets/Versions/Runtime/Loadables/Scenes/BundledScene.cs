@@ -4,27 +4,28 @@ namespace VEngine
 {
     public class BundledScene : Scene
     {
-        protected Dependencies dependencies;
+        private Dependencies _dependencies;
 
         protected override void OnUpdate()
         {
             if (status == LoadableStatus.DependentLoading)
                 UpdateDependencies();
-            else if (status == LoadableStatus.Loading) UpdateLoading();
+            else if (status == LoadableStatus.Loading)
+                UpdateLoading();
         }
 
         private void UpdateDependencies()
         {
-            if (dependencies == null)
+            if (_dependencies == null)
             {
                 Finish("dependencies == null");
                 return;
             }
 
-            progress = dependencies.progress * 0.5f;
-            if (!dependencies.isDone) return;
+            progress = _dependencies.progress * 0.5f;
+            if (!_dependencies.isDone) return;
 
-            var assetBundle = dependencies.assetBundle;
+            var assetBundle = _dependencies.assetBundle;
             if (assetBundle == null)
             {
                 Finish("assetBundle == null");
@@ -37,20 +38,18 @@ namespace VEngine
 
         protected override void OnUnload()
         {
-            if (dependencies != null)
+            if (_dependencies != null)
             {
-                dependencies.Release();
-                dependencies = null;
-            }
-
+                _dependencies.Release();
+                _dependencies = null;
+            } 
             base.OnUnload();
         }
-
 
         protected override void OnLoad()
         {
             PrepareToLoad();
-            dependencies = Dependencies.Load(pathOrURL, mustCompleteOnNextFrame);
+            _dependencies = Dependencies.Load(pathOrURL, mustCompleteOnNextFrame);
             if (mustCompleteOnNextFrame)
             {
                 SceneManager.LoadScene(sceneName, loadSceneMode);
@@ -60,22 +59,6 @@ namespace VEngine
             {
                 status = LoadableStatus.DependentLoading;
             }
-        }
-
-        internal static Scene Create(string assetPath, bool additive = false)
-        {
-            if (!Versions.Contains(assetPath))
-                return new Scene
-                {
-                    pathOrURL = assetPath,
-                    loadSceneMode = additive ? LoadSceneMode.Additive : LoadSceneMode.Single
-                };
-
-            return new BundledScene
-            {
-                pathOrURL = assetPath,
-                loadSceneMode = additive ? LoadSceneMode.Additive : LoadSceneMode.Single
-            };
         }
     }
 }

@@ -22,9 +22,9 @@ namespace VEngine
         public static readonly List<Loadable> Loading = new List<Loadable>();
         public static readonly List<Loadable> Unused = new List<Loadable>();
 
-        protected readonly Reference reference = new Reference();
+        private readonly Reference refer = new Reference();
         public LoadableStatus status { get; protected set; } = LoadableStatus.Wait;
-        public string pathOrURL { get; set; }
+        public string pathOrURL { get; protected set; }
         protected bool mustCompleteOnNextFrame { get; set; }
         public string error { get; internal set; }
 
@@ -43,12 +43,7 @@ namespace VEngine
             error = errorCode;
             status = string.IsNullOrEmpty(errorCode) ? LoadableStatus.SuccessToLoad : LoadableStatus.FailedToLoad;
             progress = 1;
-        }
-
-        public static bool IsBlockingRemoveUnused
-        {
-            get { return Scene.current != null && !Scene.current.isDone; }
-        }
+        } 
 
         public static void UpdateLoadingAndUnused()
         {
@@ -64,10 +59,10 @@ namespace VEngine
                 index--;
                 item.Complete();
             }
+            
+            if (Scene.IsLoadingOrUnloading()) return;
 
-            if (IsBlockingRemoveUnused) return;
-
-            for (var index = 0; index < Unused.Count; index++)
+            for (int index = 0, max = Unused.Count; index < max; index++)
             {
                 var item = Unused[index];
                 if (Updater.Instance.busy) break;
@@ -76,18 +71,19 @@ namespace VEngine
 
                 Unused.RemoveAt(index);
                 index--;
-                if (!item.reference.unused) continue;
+                max--;
+                if (!item.refer.unused) continue;
 
-                item.Unload();
+                item.Unload(); 
             }
         }
 
-        internal void Update()
+        private void Update()
         {
             OnUpdate();
         }
 
-        internal void Complete()
+        private void Complete()
         {
             if (status == LoadableStatus.FailedToLoad)
             {
@@ -126,12 +122,12 @@ namespace VEngine
             throw new InvalidOperationException();
         }
 
-        protected internal void Load()
+        protected void Load()
         {
-            if (status != LoadableStatus.Wait && reference.unused)
+            if (status != LoadableStatus.Wait && refer.unused)
                 Unused.Remove(this);
 
-            reference.Retain();
+            refer.Retain();
             Loading.Add(this);
             if (status != LoadableStatus.Wait) return;
 
@@ -144,7 +140,7 @@ namespace VEngine
             OnLoad();
         }
 
-        protected internal void Unload()
+        private void Unload()
         {
             if (status == LoadableStatus.Unloaded) return;
 
@@ -155,14 +151,14 @@ namespace VEngine
 
         public void Release()
         {
-            if (reference.count <= 0)
+            if (refer.count <= 0)
             {
                 Logger.W("Release {0} {1}.", GetType().Name, Path.GetFileName(pathOrURL));
                 return;
             }
 
-            reference.Release();
-            if (!reference.unused) return;
+            refer.Release();
+            if (!refer.unused) return;
 
             Unused.Add(this);
             OnUnused();
@@ -170,6 +166,6 @@ namespace VEngine
 
         protected virtual void OnUnused()
         {
-        }
+        } 
     }
 }

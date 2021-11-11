@@ -54,6 +54,8 @@ namespace VEngine
         protected override void OnUnload()
         {
             if (assetBundle == null) return;
+            assetBundle.Unload(true);
+            assetBundle = null;
             Cache.Remove(info.nameWithAppendHash);
         }
     }

@@ -9,15 +9,11 @@ namespace VEngine
 {
     public class Scene : Loadable, IEnumerator
     {
-        public static Func<string, bool, Scene> Creator { get; set; } = BundledScene.Create;
+        public static Func<string, bool, Scene> Creator { get; set; } = Create;
 
         private static Scene CreateInstance(string path, bool additive)
         {
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new ArgumentException(nameof(path));
-            }
-
+            if (string.IsNullOrEmpty(path)) throw new ArgumentException(nameof(path));
             return Creator(path, additive);
         }
 
@@ -28,10 +24,10 @@ namespace VEngine
         public readonly List<Scene> additives = new List<Scene>();
         protected string sceneName;
         public AsyncOperation operation { get; protected set; }
-        public static Scene main { get; private set; }
+        private static Scene main { get; set; }
         public static Scene current { get; private set; }
-        protected Scene parent { get; set; }
-        protected internal LoadSceneMode loadSceneMode { get; set; }
+        private Scene parent { get; set; }
+        protected LoadSceneMode loadSceneMode { get; set; }
 
         public bool MoveNext()
         {
@@ -49,9 +45,9 @@ namespace VEngine
             if (string.IsNullOrEmpty(assetPath)) throw new ArgumentNullException(nameof(assetPath));
 
             var scene = CreateInstance(assetPath, additive);
-            if (completed != null) scene.completed += completed;
             current = scene;
             scene.Load();
+            if (completed != null) scene.completed += completed;
             return scene;
         }
 
@@ -71,11 +67,9 @@ namespace VEngine
 
         protected override void OnUpdate()
         {
-            if (status == LoadableStatus.Loading)
-            {
-                UpdateLoading();
-                if (updated != null) updated(this);
-            }
+            if (status != LoadableStatus.Loading) return;
+            UpdateLoading();
+            updated?.Invoke(this);
         }
 
         protected void UpdateLoading()
@@ -97,7 +91,6 @@ namespace VEngine
                 // https://docs.unity3d.com/ScriptReference/AsyncOperation-allowSceneActivation.html
                 if (operation.progress < 0.9f) return;
             }
-
             Finish();
         }
 
@@ -130,27 +123,53 @@ namespace VEngine
             }
             else
             {
-                if (main != null)
-                {
-                    main.additives.Add(this);
-                    parent = main;
-                }
+                if (main == null) return;
+                main.additives.Add(this);
+                parent = main;
             }
         }
 
         protected override void OnUnused()
         {
             completed = null;
-            Unused.Add(this);
+        }
+
+        private static void UnloadSceneAsync(string sceneName)
+        {
+            var unloadSceneAsync = SceneManager.UnloadSceneAsync(sceneName);
+            if (unloadSceneAsync == null)
+                return;
+            Unloading.Add(unloadSceneAsync);
+        }
+
+        private static readonly List<AsyncOperation> Unloading = new List<AsyncOperation>();
+
+        public static bool IsLoadingOrUnloading()
+        {
+            if (current != null && !current.isDone)
+                return true;
+
+            for (var i = 0; i < Unloading.Count; i++)
+            {
+                var item = Unloading[i];
+                if (!item.isDone)
+                {
+                    return true;
+                }
+                Unloading.RemoveAt(i);
+                i--;
+            }
+
+            return false;
         }
 
         protected override void OnUnload()
         {
             if (loadSceneMode == LoadSceneMode.Additive)
             {
-                if (main != null) main.additives.Remove(this);
+                main?.additives.Remove(this);
                 if (parent != null && string.IsNullOrEmpty(error))
-                    SceneManager.UnloadSceneAsync(sceneName);
+                    UnloadSceneAsync(sceneName);
                 parent = null;
             }
             else
@@ -164,19 +183,32 @@ namespace VEngine
                 additives.Clear();
             }
 
-            if (onSceneUnloaded != null) onSceneUnloaded.Invoke(this);
+            onSceneUnloaded?.Invoke(this);
         }
 
         protected override void OnComplete()
         {
-            if (onSceneLoaded != null) onSceneLoaded.Invoke(this);
-
+            onSceneLoaded?.Invoke(this);
             if (completed == null) return;
-
             var saved = completed;
-            if (completed != null) completed(this);
-
+            completed?.Invoke(this);
             completed -= saved;
+        }
+
+        internal static Scene Create(string assetPath, bool additive = false)
+        { 
+            if (!Versions.Contains(assetPath))
+                return new Scene
+                {
+                    pathOrURL = assetPath,
+                    loadSceneMode = additive ? LoadSceneMode.Additive : LoadSceneMode.Single
+                };
+
+            return new BundledScene
+            {
+                pathOrURL = assetPath,
+                loadSceneMode = additive ? LoadSceneMode.Additive : LoadSceneMode.Single
+            };
         }
     }
 }

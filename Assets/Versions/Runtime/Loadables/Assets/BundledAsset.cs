@@ -5,8 +5,8 @@ namespace VEngine
 {
     public class BundledAsset : Asset
     {
-        private Dependencies dependencies;
-        private AssetBundleRequest request;
+        private Dependencies _dependencies;
+        private AssetBundleRequest _request;
 
         internal static BundledAsset Create(string path, Type type)
         {
@@ -19,19 +19,19 @@ namespace VEngine
 
         protected override void OnLoad()
         {
-            dependencies = Dependencies.Load(pathOrURL, mustCompleteOnNextFrame);
+            _dependencies = Dependencies.Load(pathOrURL, mustCompleteOnNextFrame);
             status = LoadableStatus.DependentLoading;
         }
 
         protected override void OnUnload()
         {
-            if (dependencies != null)
+            if (_dependencies != null)
             {
-                dependencies.Release();
-                dependencies = null;
+                _dependencies.Release();
+                _dependencies = null;
             }
 
-            request = null;
+            _request = null;
             asset = null;
 
             base.OnUnload();
@@ -41,63 +41,64 @@ namespace VEngine
         {
             if (isDone) return;
 
-            if (dependencies == null)
+            if (_dependencies == null)
             {
                 Finish("dependencies == null");
                 return;
             }
 
-            if (!dependencies.isDone) dependencies.LoadImmediate();
+            if (!_dependencies.isDone) _dependencies.LoadImmediate();
 
-            if (dependencies.assetBundle == null)
+            if (_dependencies.assetBundle == null)
             {
                 Finish("dependencies.assetBundle == null");
                 return;
             }
 
-            OnLoaded(dependencies.assetBundle.LoadAsset(pathOrURL, type));
+            OnLoaded(_dependencies.assetBundle.LoadAsset(pathOrURL, type));
         }
 
         protected override void OnUpdate()
         {
             if (status == LoadableStatus.Loading)
                 UpdateLoading();
-            else if (status == LoadableStatus.DependentLoading) UpdateDependencies();
+            else if (status == LoadableStatus.DependentLoading)
+                UpdateDependencies();
         }
 
         private void UpdateLoading()
         {
-            if (request == null)
+            if (_request == null)
             {
                 Finish("request == null");
                 return;
             }
 
-            progress = 0.5f + request.progress * 0.5f;
-            if (!request.isDone) return;
+            progress = 0.5f + _request.progress * 0.5f;
+            if (!_request.isDone) return;
 
-            OnLoaded(request.asset);
+            OnLoaded(_request.asset);
         }
 
         private void UpdateDependencies()
         {
-            if (dependencies == null)
+            if (_dependencies == null)
             {
                 Finish("dependencies == null");
                 return;
             }
 
-            progress = 0.5f * dependencies.progress;
-            if (!dependencies.isDone) return;
+            progress = 0.5f * _dependencies.progress;
+            if (!_dependencies.isDone) return;
 
-            var assetBundle = dependencies.assetBundle;
+            var assetBundle = _dependencies.assetBundle;
             if (assetBundle == null)
             {
                 Finish("assetBundle == null");
                 return;
             }
 
-            request = assetBundle.LoadAssetAsync(pathOrURL, type);
+            _request = assetBundle.LoadAssetAsync(pathOrURL, type);
             status = LoadableStatus.Loading;
         }
     }

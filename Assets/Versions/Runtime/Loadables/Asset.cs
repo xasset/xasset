@@ -7,17 +7,13 @@ namespace VEngine
 {
     public class Asset : Loadable, IEnumerator
     {
-        public static Func<string, Type, Asset> Creator { get; set; } = BundledAsset.Create;
-
         private static Asset CreateInstance(string path, Type type)
         {
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new ArgumentException(nameof(path));
-            }
-
+            if (string.IsNullOrEmpty(path)) throw new ArgumentException(nameof(path));
             return Creator(path, type);
         }
+
+        public static Func<string, Type, Asset> Creator { get; set; } = BundledAsset.Create;
 
         public static readonly Dictionary<string, Asset> Cache = new Dictionary<string, Asset>();
 
@@ -54,7 +50,7 @@ namespace VEngine
             if (completed == null) return;
 
             var saved = completed;
-            if (completed != null) completed(this);
+            completed?.Invoke(this);
 
             completed -= saved;
         }
@@ -79,7 +75,7 @@ namespace VEngine
             return LoadInternal(path, type, true);
         }
 
-        private static Asset LoadInternal(string path, Type type, bool mustCompleteOnNextFrame,
+        internal static Asset LoadInternal(string path, Type type, bool mustCompleteOnNextFrame,
             Action<Asset> completed = null)
         {
             if (!Versions.Contains(path))
