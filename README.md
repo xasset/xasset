@@ -12,6 +12,8 @@ xasset 是开箱即用的 Unity 分包，加密和热更框架。
 </video>
 
 
+如果视频不能显示出来，可以点击这里前往观看：https://xasset.github.io/video/example.mp4
+
 从发布至今，xasset 项目已经持续迭代了近 5 年，并始终在为化繁为简，节省时间的目标发力，也收获了：
 
 | 星标关注 | 付费订阅 | 公司资助 |
