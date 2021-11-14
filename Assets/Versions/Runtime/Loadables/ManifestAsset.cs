@@ -5,6 +5,14 @@ using UnityEngine.Networking;
 
 namespace VEngine
 {
+    public class DefaultCertificateHandler: CertificateHandler
+    {
+        protected override bool ValidateCertificate(byte[] certificateData)
+        {
+            return true;
+        }
+    }
+
     public class ManifestAsset : Loadable
     {
         public static Func<string, bool, ManifestAsset> Creator { get; set; } = Create;
@@ -25,6 +33,8 @@ namespace VEngine
         public ManifestVersion assetVersion { get; protected set; }
         protected string name { get; set; }
 
+        public DefaultCertificateHandler certificateHandler { get; set; } = new DefaultCertificateHandler();
+        
         public bool changed
         {
             get
@@ -122,6 +132,7 @@ namespace VEngine
 
             Logger.I("Load {0}", url);
             request = UnityWebRequest.Get(url);
+            request.certificateHandler = certificateHandler;
             request.downloadHandler = new DownloadHandlerFile(savePath);
             request.SendWebRequest();
         }
