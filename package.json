@@ -1,0 +1,24 @@
+{
+    "name": "xasset.github.io",
+    "version": "7.2",
+    "displayName": "xasset",
+    "description": "开箱即用的 Unity 分包，加密和热更技术。加快你的 Unity 项目的迭代速度和减少用户等待时间，并为程序运行时的流畅度和稳定性带来更多保障。",
+    "unity": "2018.4",
+    "unityRelease": "36f1",
+    "documentationUrl": "xasset.github.io",
+    "changelogUrl": "https://xasset.github.io/changes",
+    "licensesUrl": "https://github.com/xasset/xasset/blob/main/LICENSE.md",
+    "dependencies": {},
+    "keywords": [
+        "xasset",
+        "assetBundle",
+        "hotreload",
+        "unity",
+        "splitbuild"
+    ],
+    "author": {
+        "name": "MoMo的奶爸",
+        "email": "xasset@qq.com",
+        "url": "https://github.com/mmdnb"
+    }
+}
