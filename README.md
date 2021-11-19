@@ -1,30 +1,22 @@
-# [xasset](https://xasset.github.io) · ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+# [xasset](https://xasset.github.io)
 
 xasset 是开箱即用的 Unity 分包，加密和热更框架。
 
 使用 xasset 可以加快你的 Unity 项目的迭代速度和减少用户等待时间，并为程序运行时的流畅度和稳定性带来更多保障。**[了解更多 »](https://xasset.github.io)**
 
-这里是最新的 xasset 的 Example 工程的演示，编辑器开启增量模式，体验真机加载和局部热更环境，涵盖了循环依赖加载，异步转同步等各种极端示例。全程 profiler，**进多少、出多少**：
+观看这个现场视频，可以了解 xasset 团队订阅版示例工程在编辑器运行真机资源热更加载的全过程：
 
 
 <video width="100%" height="100%" playsinline autoplay muted loop>
 	<source src="https://xasset.github.io/video/example.mp4" type="video/mp4" /> Your browser does not support the video tag.
 </video>
-
+场景加载，循环依赖加载，异步转同步，局部更新，自动更新，全程 Profiler，进多少，出多少...视频所演示的这些就是 xasset 的根基。
 
 如果视频不能显示出来，可以点击这里前往观看：https://xasset.github.io/video/example.mp4
 
-从发布至今，xasset 项目已经持续迭代了近 5 年，并始终在为化繁为简，节省时间的目标发力，也收获了：
+## 功能特点
 
-| 星标关注 | 付费订阅 | 公司合作 |
-| -------- | -------- | -------- |
-| 1500+    | 200+     | 50+      |
-
-非常感谢新老用户的支持和鼓励！你们的成功，才是我们的成功！
-
-## xasset 7
-
-这里是最新的 xasset 7 的开源版本，可以使用以下 3 种开发模式进行快速开发和迭代：
+这里是最新的 xasset 的开源版本，可以使用以下 3 种开发模式进行快速开发和迭代：
 
 - **编辑器仿真模式**：只需设置好打包分组、可以跳过打包直接运行。
 - **编辑器预加载模式**：在编辑器调试真机的加载环境，需要先打包才能运行，不会触发更新。
@@ -41,26 +33,40 @@ xasset 是开箱即用的 Unity 分包，加密和热更框架。
 
 开源版本提供了快速对选中资源进行按文件夹或文件进行打包分组的编辑器工具，但没有提供分布式打包工具，以及自动分析依赖、自动优化冗余、自动解决冲突的支持。可以结合 Unity 的 [AssetBundleBrowser](https://github.com/Unity-Technologies/AssetBundles-Browser) 可视化的创建资源的 AssetBundle 打包分组。
 
-对个人，我们提供免费的开源版，甚至可以在商业项目中使用。
-
-对于公司，我们提供功能更强大的付费团队订阅版本，需要获得授权才能使用。通过你们的支持, 我们不断为每个人改进 xasset。
-
-阅读[版本比较](https://xasset.github.io/compares)可以比较细致的了解开源版本和团队订阅版本的差异。
-
 ## 订阅的优势
 
 对比开源版本，订阅版本主要的优势在于：
 
-- [分布式增量打包支持](https://xasset.github.io/docs/getting-started/buildbundles)：对于大体量的项目，可以根据一些规则把资源拆分为多个 Build 模块，然后选择局部内容构建，加快打包效率。
-- [安装包资源加密支持](https://xasset.github.io/docs/advance/binarymode)：不仅可以防止安装包资源被 AssetStudio 之类的工具轻易提取，并且 Android 真机测试加载资源的耗时有 10% 左右的提升。
-- [安装包资源分包](https://xasset.github.io/docs/getting-started/splitbuild)：可以预定义多组配置，按需分离安装包的资源，支持空包启动，最小包包体轻松控制到 30 MB。
-- **局部资源下载更新功能**：可以根据资源加载路径或分组名字查询和下载更新，支持自动热重载，资源更新后无需重启。
+- [分布式增量打包支持](https://xasset.github.io/docs/getting-started/buildbundles)：支持自动分组，更快更轻松的解决打包慢和资源冗余的问题。
+- [安装包资源加密支持](https://xasset.github.io/docs/advance/binarymode)：不仅可以防止资源被破解，而且 Android 真机测试有 ~10% 的性能提升。
+- [安装包资源分包](https://xasset.github.io/docs/getting-started/splitbuild)：使用配置把控 app 安装大小，自动处理依赖，优化包体，减少用户等待。
+- **局部资源下载更新功能**：支持自动热重载，资源更新后无需重启。
 - **提供了多线程下载工具**：支持限速，断点续传，网络异常自修复，文件指纹校验机制。
 - [谷歌分包技术适配](https://xasset.github.io/docs/advance/pad)：适配了 PlayAssetDelivery 服务，安装包大小可以轻松突破 150MB 的限制。
 - **专属对接群**：多位资深行业从业者，提供更迅捷、全面的技术支持服务。
-- **XLua 打包加载支持**：基于 XLua 提供了 Lua 文件编辑器和真机环境打包和加载支持，轻松让 Lua 代码具备热更能力。
+- **xLua 打包加载支持**：基于 xLua 的 Lua 文件打包和加载支持，快速让 Lua 代码具备热更能力。
+- 资源加载分析工具：统计运行时资源加载的耗时和帧数，方便分析资源制作的合理性。
+- 资源依赖分析工具：统计编辑器打包后的资源的大小和依赖关系，方便分析和打包粒度的合理性。
 
-了解订阅价格和更多信息，可以前往这里查看：https://xasset.github.io/price
+阅读[版本比较](https://xasset.github.io/compares)可以比较细致的了解开源版本和团队订阅版本的差异。了解订阅价格和更多信息，可以前往这里查看：https://xasset.github.io/price
+
+对个人，我们提供免费的开源版，甚至可以在商业项目中使用。
+
+对于公司，我们提供功能更强大的付费团队订阅版本，需要获得授权才能使用。
+
+通过你们的支持, 我们不断为每个人改进 xasset。
+
+## 发展历程
+
+从发布至今，xasset 已经持续迭代了近 5 年，并始终在为化繁为简，节省时间的目标发力，也收获了：
+
+- 50+ 公司合作
+- 200+ 付费订阅
+- 1600+ 星标关注
+
+xasset 的付费订阅用户覆盖了 IGG、腾讯、网易、米哈游、字节、雷霆、点点互动等各类游戏公司的团队或个体，xasset 也被多个注册资金千万或注资过亿的公司的团队信赖。
+
+非常感谢新老用户的支持和鼓励！你们的成功，才是 xasset 的成功！ 
 
 ## 快速开始
 
@@ -100,61 +106,34 @@ xasset 是开箱即用的 Unity 分包，加密和热更框架。
 
 需要注意的是，该文档主要针对团队订阅用户，开源版可以参考核心接口使用部分。
 
-## 授权许可
+## 许可
 
 请注意，xasset 具有特殊许可证，并且在某些情况下需要获得公司许可证。阅读 [LICENSE](LICENSE.md) 文档以获取更多信息。
 
-## 创作成员
+## 创作者
 
-**MoMo的奶爸**
-
-- https://github.com/mmdnb
-- https://game4d.cn/
-
-**马三小伙儿**
-
-- https://github.com/XINCGer
-- https://www.cnblogs.com/msxh/
+- [MoMo的奶爸](https://github.com/mmdnb)
+- [马三小伙儿](https://github.com/XINCGer)
 
 ## 赞助
 
-成为 xasset 项目的赞助商可以在这里添加自己的链接，可以带 LOGO 或名字：
+成为 xasset 的赞助商可以在这里添加自己的链接，可以带 LOGO 或名字：
 
 - [Jojohello](https://www.zhihu.com/people/jojohello)（人民币3000元）
 - [马三小伙儿](https://github.com/XINCGer)（人民币1000元）
 
-如需赞助可以联系作者微信：vmakemore。
+如需赞助可以联系MoMo的奶爸的微信：vmakemore。
 
 ## 声望
 
-**刘家君**
-
-- https://github.com/suixin567
-- 反馈有效问题或建议 +2
-
-**李非莬**
-
-- https://github.com/wynnforthework
-- 反馈有效问题或建议 +2
-
-**一念永恆**
-
-- https://github.com/putifeng
-
-- 反馈有效问题或建议 +2
-
-**小魔女纱代酱**
-
-- https://github.com/DumoeDss
-- 反馈有效问题或建议 +2
-
-**夜莺**
-
-- https://github.com/killop
-- 反馈有效问题或建议 + 5
+- [刘家君](https://github.com/suixin567)：反馈有效问题或建议 +2
+- [李非莬](https://github.com/wynnforthework)：反馈有效问题或建议 +2
+- [一念永恆](https://github.com/putifeng)：反馈有效问题或建议 +2
+- [小魔女纱代酱](https://github.com/DumoeDss)：反馈有效问题或建议 +2
+- [夜莺](https://github.com/killop)：反馈有效问题或建议 + 5
 
 
-## 友情链接
+## 友链
 
 - [ET](https://github.com/egametang/ET) Unity3D Client And C# Server Framework
 - [TinaX Framework](https://tinax.corala.space/) “开箱即用”的Unity独立游戏开发工具
