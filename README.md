@@ -14,13 +14,13 @@ xasset 的理念是用户的成功才是 xasset 的成功。
 
 观看这个现场视频，可以了解 xasset 团队订阅版示例工程在编辑器运行真机资源热更加载的全过程：
 
+如果视频不能显示出来，可以点击这里前往观看：https://xasset.github.io/video/example.mp4
+
 
 <video width="100%" height="100%" playsinline autoplay muted loop>
 	<source src="https://xasset.github.io/video/example.mp4" type="video/mp4" /> Your browser does not support the video tag.
 </video>
 场景加载，循环依赖加载，异步转同步，局部更新，自动更新，全程 Profiler，进多少，出多少...视频所演示的这些就是 xasset 的根基。
-
-如果视频不能显示出来，可以点击这里前往观看：https://xasset.github.io/video/example.mp4
 
 ## 功能特点
 
