@@ -1,8 +1,8 @@
-# [xasset](https://xasset.github.io)
+# [xasset](https://www.xasset.pro/)
 
 xasset 是开箱即用的 Unity 分包、加密热更框架。
 
-xasset 专注于解决Unity项目包体大、打包慢、运行卡顿等问题。使用 xasset 可以让你的 Unity 项目具备**快速打包**和**流畅运行**的能力。[了解更多 »](https://xasset.github.io) 
+xasset 专注于解决Unity项目包体大、打包慢、运行卡顿等问题。使用 xasset 可以让你的 Unity 项目具备**快速打包**和**流畅运行**的能力。[了解更多 »](https://www.xasset.pro/) 
 
 从发布至今，已经持续迭代了 5 年+，并始终在为 化繁为简，节省时间 的目标发力，也收获了：
 
