@@ -14,11 +14,11 @@ xasset 的理念是用户的成功才是 xasset 的成功。
 
 观看这个现场视频，可以了解 xasset 团队订阅版示例工程在编辑器运行真机资源热更加载的全过程：
 
-如果视频不能显示出来，可以点击这里前往观看：https://xasset.github.io/video/example.mp4
+如果视频不能显示出来，可以点击这里前往观看：https://www.xasset.pro/video/example.mp4
 
 
 <video width="100%" height="100%" playsinline autoplay muted loop>
-	<source src="https://xasset.github.io/video/example.mp4" type="video/mp4" /> Your browser does not support the video tag.
+	<source src="https://www.xasset.pro/video/example.mp4" type="video/mp4" /> Your browser does not support the video tag.
 </video>
 场景加载，循环依赖加载，异步转同步，局部更新，自动更新，全程 Profiler，进多少，出多少...视频所演示的这些就是 xasset 的根基。
 
@@ -45,9 +45,9 @@ xasset 的理念是用户的成功才是 xasset 的成功。
 
 对比开源版本，订阅版本主要的优势在于：
 
-- [分布式增量打包支持](https://xasset.github.io/docs/getting-started/buildbundles)：支持自动分组，更快更轻松的解决打包慢和资源冗余的问题。
-- [安装包资源加密支持](https://xasset.github.io/docs/advance/binarymode)：不仅可以防止资源被破解，而且 Android 真机测试有 ~10% 的性能提升。
-- [安装包资源分包](https://xasset.github.io/docs/getting-started/splitbuild)：使用配置把控 app 安装大小，自动处理依赖，优化包体，减少用户等待。
+- [分布式增量打包支持](https://www.xasset.pro/docs/buildbundles)：支持自动分组，更快更轻松的解决打包慢和资源冗余的问题。
+- [安装包资源加密支持](https://www.xasset.pro/docs/binarymode)：不仅可以防止资源被破解，而且 Android 真机测试有 ~10% 的性能提升。
+- [安装包资源分包](https://www.xasset.pro/docs/splitbuild)：使用配置把控 app 安装大小，自动处理依赖，优化包体，减少用户等待。
 - **局部资源下载更新功能**：支持自动热重载，资源更新后无需重启。
 - **提供了多线程下载工具**：支持限速，断点续传，网络异常自修复，文件指纹校验机制。
 - [谷歌分包技术适配](https://xasset.github.io/docs/advance/pad)：适配了 PlayAssetDelivery 服务，安装包大小可以轻松突破 150MB 的限制。
@@ -56,7 +56,7 @@ xasset 的理念是用户的成功才是 xasset 的成功。
 - 资源加载分析工具：统计运行时资源加载的耗时和帧数，方便分析资源制作的合理性。
 - 资源依赖分析工具：统计编辑器打包后的资源的大小和依赖关系，方便分析和打包粒度的合理性。
 
-阅读[版本比较](https://xasset.github.io/compares)可以比较细致的了解开源版本和团队订阅版本的差异。了解订阅价格和更多信息，可以前往这里查看：https://xasset.github.io/price
+阅读[版本比较](https://www.xasset.pro/compares)可以比较细致的了解开源版本和团队订阅版本的差异。了解订阅价格和更多信息，可以前往这里查看：https://www.xasset.pro/price
 
 对个人，我们提供免费的开源版，甚至可以在商业项目中使用。
 
@@ -90,7 +90,7 @@ xasset 的理念是用户的成功才是 xasset 的成功。
 
 运行时 API 可以参考团队版的文档：
 
-- https://xasset.github.io/docs/getting-started/coreapi
+- https://www.xasset.pro/docs/api/versions
 
 如何为资源分配 AssetBundle 可以参考：
 
@@ -98,7 +98,7 @@ xasset 的理念是用户的成功才是 xasset 的成功。
 
 ## 文档
 
-前往 https://xasset.github.io/ 可以了解 xasset 的来龙去脉。
+前往 https://www.xasset.pro/ 可以了解 xasset 的来龙去脉。
 
 需要注意的是，该文档主要针对团队订阅用户，开源版可以参考核心接口使用部分。
 
