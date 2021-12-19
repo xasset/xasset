@@ -1,6 +1,6 @@
 # 关于
 
-xasset 是最先进的 Unity 资源热更框架。xasset 提供了开箱即用的分布式打包、分包、加密、按需加载和异步更新技术。各种注资百万+、千万+、甚至过亿的公司的团队都在使用 xasset 解决 Unity 项目的打包慢、包体大、运行卡顿等疑难杂症。
+xasset 是最先进的 Unity 资源热更框架。xasset 提供了开箱即用的分布式打包、分包、加密、按需加载和异步更新技术，可以更快更轻松的解决 Unity 项目的打包慢、包体大、运行卡顿等疑难杂症。
 
 - 官网：https://xasset.pro
 - 文档：https://xasset.pro/docs/getstarted
