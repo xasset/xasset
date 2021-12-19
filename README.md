@@ -4,7 +4,10 @@ xasset 是最先进的 Unity 资源热更框架。xasset 提供了开箱即用�
 
 - 官网：https://xasset.pro
 - 文档：https://xasset.pro/docs/getstarted
-- 示例：https://xasset.pro/img/example.gif
+
+下面是 xasset 示例运行的效果：
+
+![hotreload](https://xasset.pro/img/hotreload.gif)
 
 如果你喜欢 xasset, 请在 GitHub 给一个星标支持下！
 
