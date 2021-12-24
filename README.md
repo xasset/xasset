@@ -1,6 +1,6 @@
 # 关于
 
-xasset 致力于为 Unity 创造最快的打包和运行环境。
+xasset 致力于让 Unity 快速打包和运行。
 
 - 官网：https://xasset.pro
 - 文档：https://xasset.pro/docs/getstarted
