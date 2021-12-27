@@ -65,13 +65,13 @@ xasset 2022 团队版已经发布。
 	git clone https://github.com/xasset/xasset.git
 	```
 
-2. 用 Unity 打开下载下来的工程后，执行资源打包的编辑器菜单命令：
+2. 把 unitypackage 导入到 Unity 工程，后执行以下命令：
 
-   - **Versions/Build Bundles** 打包资源
+   - **xasset/Build Bundles** 打包资源
 
 3. 打开 Startup 场景，点击运行，或者执行后启动 exe：
 
-   - **Versions/Build Player** 打包播放器
+   - **xasset/Build Player** 打包播放器
 
 ### 更多资料
 
