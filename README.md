@@ -29,6 +29,7 @@ xasset 2022 团队版已经发布。
 - 增量部署，快速校验，最可靠的版本管理机制。
 - 预加载或边玩边下，自动更新不在本地的资源。
 - 基于引用计数的内存管理技术，并自动管理依赖。
+- 统一使用相对路径加载资源或场景，可以自定义别名。
 
 开源版本提供了快速对选中资源进行按文件夹或文件进行打包分组的编辑器工具，可以结合 Unity 的 [AssetBundleBrowser](https://github.com/Unity-Technologies/AssetBundles-Browser) 可视化的创建资源的 AssetBundle 打包分组。
 
