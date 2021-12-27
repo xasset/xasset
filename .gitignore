@@ -32,14 +32,6 @@ sysinfo.txt
 
 # Builds
 *.apk
-*.unitypackage
 *.DS_Store
 .idea
 .vscode
-Library
-Temp
-DLC
-UnityPackageManager
-Assets/Plugins/Editor/JetBrains.meta
-Assets/Plugins/Editor.meta
-Assets/Plugins.meta
