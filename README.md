@@ -102,6 +102,7 @@ xasset 2022 团队版已经发布。
 
 成为 xasset 的赞助商可以在这里添加自己的链接，可以带 LOGO 或名字：
 
+- 花花 （人民币3848元）
 - [Jojohello](https://www.zhihu.com/people/jojohello)（人民币3000元）
 - [马三小伙儿](https://github.com/XINCGer)（人民币1000元）
 
