@@ -1,15 +1,22 @@
 # 关于
 
-xasset 致力于让 Unity 快速打包和运行。
+xasset 致力于让 Unity 程序快速交付。
 
 - 官网：https://xasset.pro
 - 文档：https://xasset.pro/docs/getstarted
+- 示例：https://xasset.pro/example
 
-下面是 xasset 示例运行的效果：
+> 注：示例使用 WebGL 运行，部分功能可能无法使用。
 
-![hotreload](https://xasset.pro/img/hotreload.gif)
+xasset 提供了提供了以下这些出色的特性让 Unity 程序更快更好的打包、发布和运行：
 
-如果你喜欢 xasset, 请在 GitHub 给一个星标支持下！
+- 强大的分布式打包工具：可视化编辑，自动优化打包质量。
+- 自动分包：灵活把控安装大小，快速发布到应用商店。
+- 高性能加密：不仅更安全，而且部分设备测试可以提升约 10% 的 IO 性能。
+- 按需加载：针对局部内容预加载，快速体验或测试。
+- 异步更新：动态计算 CPU 负荷，自动调度更新时机，通过分而治之减少卡顿。
+
+如果你喜欢 xasset, 可以通过公司订阅或在 GitHub 给一个星标支持下！通过你们的支持，我们不断为每个人改进 xasset。
 
 ## 最新变化
 
