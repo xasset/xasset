@@ -107,7 +107,7 @@ xasset 专注于为团队提供技术支持，个人或 3 人以下的小团队�
 
 - 花花 （人民币3848元）
 - [Jojohello](https://www.zhihu.com/people/jojohello)（人民币3000元）
-- [马三小伙儿](https://github.com/XINCGer)（人民币1000元）
+- [马三小伙儿](https://github.com/XINCGer)（人民币2200元）
 
 如需赞助可以联系MoMo的奶爸的微信：vmakemore。
 
