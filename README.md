@@ -106,13 +106,14 @@ xasset 专注于为团队提供技术支持，个人或 3 人以下的小团队�
 成为 xasset 的赞助商可以在这里添加自己的链接，可以带 LOGO 或名字：
 
 - 花花 （人民币3848元）
+- [马三小伙儿](https://github.com/XINCGer)（人民币3600元）
 - [Jojohello](https://www.zhihu.com/people/jojohello)（人民币3000元）
-- [马三小伙儿](https://github.com/XINCGer)（人民币2200元）
 
 如需赞助可以联系MoMo的奶爸的微信：vmakemore。
 
 ## 声望
 
+- [Connor Aaron Roberts](https://github.com/c0nd3v):反馈有效问题或建议 +10
 - [刘家君](https://github.com/suixin567)：反馈有效问题或建议 +2
 - [李非莬](https://github.com/wynnforthework)：反馈有效问题或建议 +2
 - [一念永恆](https://github.com/putifeng)：反馈有效问题或建议 +2
