@@ -35,7 +35,7 @@ xasset 是开箱即用的 Unity 资源分包、加密、热更框架。
 请参考以下步骤来接入这个版本的 xasset 到你的 Unity 项目中：
 
 - 第一步：下载仓库中最新的 unitypackage 文件到本地。
-- 第二步：把下载的 unitypackage 导入到你的 Unity 项目。**注意：**在导入新版本的 xasset 前，你应该删除旧版本的 xasset。
+- 第二步：把下载的 unitypackage 导入到你的 Unity 项目。**注意：** 在导入新版本的 xasset 前，你应该删除旧版本的 xasset。
 - 第三步：在 Unity 编辑器中，选择使用 **xasset>Build Bundles** 打包资源。
 - 第四步：打开 Startup 场景，并让 Unity 进入播放模式，体验示例的运行效果。
 - 第五步：在 Unity 编辑器中，选择使用 **xasset>Build Player** 可以一键打包安装包。
