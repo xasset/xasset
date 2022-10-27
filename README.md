@@ -4,16 +4,16 @@ xasset 是开箱即用的 Unity 资源分包、加密、热更框架。
 
 使用 xasset 可以轻松快速地开发跨平台的 Unity 游戏或应用程序，并灵活把控程序的安装大小和缩短程序的交付时间。
 
-- 官网：https://xasset.pro
-- 文档：https://xasset.pro/docs/getstarted
-- 示例：https://xasset.pro/example
+- 官网：https://xasset.cc
+- 文档：https://xasset.cc/docs/getstarted
+- 示例：https://xasset.cc/example
 
 ## xasset-2022.2 发布说明
 
 - 目标用户：注重时间价值，尊重知识产权，且需要快速发布安装大小可控支持边玩边下的程序到 Google Play 或者 WebGL 的 Unity 游戏或应用开发团队。
 
-- 文档和特性：https://xasset.pro/docs/next
-- 主要变化：https://xasset.pro/docs/next/change-log
+- 文档和特性：https://xasset.cc/docs/next
+- 主要变化：https://xasset.cc/docs/next/change-log
 - 时间：2022年9月1日（已发布）
 
 ## xasset-2022.1 开源版
@@ -44,7 +44,7 @@ xasset 是开箱即用的 Unity 资源分包、加密、热更框架。
 
 运行时 API 可以参考团队版的文档：
 
-- https://www.xasset.pro/docs/api/versions
+- https://xasset.cc/docs/api/versions
 
 如何为资源分配 AssetBundle 可以参考：
 
@@ -52,26 +52,26 @@ xasset 是开箱即用的 Unity 资源分包、加密、热更框架。
 
 ## 为什么订阅？
 
-个人或 3 人以下的小团队可以使用免费的开源版。对于公司，需要获得我们的授权许可才能使用，我们的授权有专门的[用户协议](https://www.xasset.pro/license)，只有接受用户协议的条款才能订阅。通过你们的支持，我们不断为大家改进 xasset。相对免费开源版本，付费订阅的版本还具有以下优势：
+个人或 3 人以下的小团队可以使用免费的开源版。对于公司，需要获得我们的授权许可才能使用，我们的授权有专门的[用户协议](https://xasset.cc/license)，只有接受用户协议的条款才能订阅。通过你们的支持，我们不断为大家改进 xasset。相对免费开源版本，付费订阅的版本还具有以下优势：
 
 - 分布式增量打包：相互独立的资源分批次提交，减少算力浪费，加快打包速度。
 - 按需配置自动分组：根据引用关系生成按需加载的最优分组，减少打包冗余，快速优化打包质量。
 - 实时预览打包粒度和依赖关系：帮助团队提前发现问题并解决问题。
 - 万能打包模式：所有格式的资源全部能够打包，并参与版本管理。
-- [高效资源加密](https://www.xasset.pro/docs/encryption)：不仅可以防止资源被轻易破解，而且几乎不损耗程序运行的性能（2022.1版本WebGL不能加密，2022.2版本WebGL也能加密）。
-- [安装包资源分包](https://www.xasset.pro/docs/splitbuild)：使用配置把控 app 安装大小，自动处理依赖关系并剥离包体资源，并且适配了谷歌分包技术，可以节省大量业务对接时间。
+- [高效资源加密](https://xasset.cc/docs/encryption)：不仅可以防止资源被轻易破解，而且几乎不损耗程序运行的性能（2022.1版本WebGL不能加密，2022.2版本WebGL也能加密）。
+- [安装包资源分包](https://xasset.cc/docs/splitbuild)：使用配置把控 app 安装大小，自动处理依赖关系并剥离包体资源，并且适配了谷歌分包技术，可以节省大量业务对接时间。
 - 按需加载：整体或局部按需更新，边玩边下自动热重载。
 - 多线程下载工具：支持限速，断点续传，网络异常自修复，文件指纹校验机制。
 - 丰富的工具链：提供了版本管理、打包管理、清单管理、加载管理等工具，可以有效帮助团队提前发现问题和解决问题。
 - 专属对接群：多位资深行业从业者，提供更迅捷、全面的技术支持服务。 
 
-了解订阅价格和更多信息，可以前往 https://xasset.pro/price 查看。
+了解订阅价格和更多信息，可以前往 https://xasset.cc/price 查看。
 
 **注：xasset 订阅版本默认都是一次付费，长期使用，1年免费更新支持。且我们只为注重时间价值，尊重知识产权的团队提供服务。**
 
 ## 文档
 
-前往 https://www.xasset.pro/ 可以了解 xasset 的来龙去脉。
+前往 https://xasset.cc/ 可以了解 xasset 的来龙去脉。
 
 需要注意的是，该文档主要针对团队订阅用户，开源版可以参考核心接口使用部分。
 
