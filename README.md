@@ -70,7 +70,7 @@ xasset 使用负载均衡技术让程序更流畅。 xasset 提供开箱即用�
 
 ## 文档
 
-前往 https://xasset.cc/ 可以了解 xasset 的来龙去脉。
+前往 [xasset.cc](https://xasset.cc/price) 可以了解 xasset 的来龙去脉。
 
 需要注意的是，该文档主要针对团队订阅用户，开源版可以参考核心接口使用部分。
 
