@@ -1,20 +1,19 @@
 # 关于
 
-xasset 是开箱即用的 Unity 资源分包、加密、热更框架。
+xasset 是专业 Unity 资源系统。 
 
-使用 xasset 可以轻松快速地开发跨平台的 Unity 游戏或应用程序，并灵活把控程序的安装大小和缩短程序的交付时间。
+xasset 使用负载均衡技术让程序更流畅。 xasset 提供开箱即用的打包、分包、加密、边玩边下和跨平台加载等技术让Unity项目的开发更快更轻松！
 
 - 官网：https://xasset.cc
 - 文档：https://xasset.cc/docs/getstarted
-- 示例：https://xasset.cc/example
+
+![example](https://xasset.cc/img/example.gif)
 
 ## xasset-2022.2 发布说明
 
-- 目标用户：注重时间价值，尊重知识产权，且需要快速发布安装大小可控支持边玩边下的程序到 Google Play 或者 WebGL 的 Unity 游戏或应用开发团队。
-
 - 文档和特性：https://xasset.cc/docs/next
 - 主要变化：https://xasset.cc/docs/next/change-log
-- 时间：2022年9月1日（已发布）
+- 发布状态：2022年9月1日（已发布）
 
 ## xasset-2022.1 开源版
 
