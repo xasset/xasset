@@ -2,10 +2,12 @@
 
 xasset 是专业 Unity 资源系统。
 
-xasset 提供了开箱即用的打包、分包、加密、边玩边下和负载均衡机制。借助 xasset 可以让 Unity 资源管理更轻松！进一步了解xasset的更多特性，可以前往xasset 产品的[官网](https://xasset.cc)查看。
+xasset 提供了开箱即用的打包、分包、加密、边玩边下和负载均衡机制。借助 xasset 可以让 Unity 资源管理更轻松！
 
 - 官网：https://xasset.cc
 - 文档：https://xasset.cc/docs/next/getting-started
+
+进一步了解 xasset的更多特性，可以前往 xasset 的[官网](https://xasset.cc)查看。
 
 ![example](https://xasset.cc/img/example.gif)
 
