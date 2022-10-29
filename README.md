@@ -54,6 +54,8 @@ xasset 提供了开箱即用的打包、分包、加密、边玩边下和负载�
 - [马三小伙儿](https://github.com/XINCGer)
 - [寒晟](https://github.com/huangchaoqun)
 
+前往[xasset.cc/about](https://xasset.cc/about)可以了解更多关于我们团队的介绍。 
+
 ## 赞助
 
 成为 xasset 的赞助商可以在这里添加自己的链接，可以带 LOGO 或名字：
