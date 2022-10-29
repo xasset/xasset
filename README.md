@@ -60,7 +60,7 @@ xasset 提供了开箱即用的打包、分包、加密、边玩边下和负载�
 
 成为 xasset 的赞助商可以在这里添加自己的链接，可以带 LOGO 或名字：
 
-- Miss_Lynn_W(人民币50000元)
+- Miss_Lynn(人民币50000元)
 - [马三小伙儿](https://github.com/XINCGer)（人民币4800元）
 - 花花 （人民币3848元）
 - [Jojohello](https://www.zhihu.com/people/jojohello)（人民币3000元）
