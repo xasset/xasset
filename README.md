@@ -7,7 +7,7 @@ xasset 提供了开箱即用的打包、分包、加密、边玩边下和负载�
 - 官网：https://xasset.cc
 - 文档：https://xasset.cc/docs/next/getting-started
 
-进一步了解 xasset的更多特性，可以前往 xasset 的[官网](https://xasset.cc)查看。
+进一步了解 xasset 的更多产品特性，可以前往 xasset 的[官网](https://xasset.cc)查看。
 
 ![example](https://xasset.cc/img/example.gif)
 
