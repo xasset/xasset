@@ -77,6 +77,7 @@ xasset 提供了开箱即用的打包、分包、加密、边玩边下和负载�
 - [一念永恆](https://github.com/putifeng)：反馈有效问题或建议 +2
 - [小魔女纱代酱](https://github.com/DumoeDss)：反馈有效问题或建议 +2
 - [夜莺](https://github.com/killop)：反馈有效问题或建议 + 5
+- [MrJLY](https://github.com/MrJLY)：反馈有效问题或建议 +5
 
 
 ## 友链
