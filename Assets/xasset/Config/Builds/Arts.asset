@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a742b6dc77d4f9c4ca2284e0b86b9a23, type: 3}
+  m_Name: Arts
+  m_EditorClassIdentifier: 
+  parameters:
+    buildNumber: 0
+    autoGrouping: 1
+    forceRebuild: 0
+    options: 256
+    groups:
+    - {fileID: 11400000, guid: d4c60234e4402234daa6609fa9f05e70, type: 2}
+    - {fileID: 11400000, guid: b51da1dfcce8de146a1dd352542344fa, type: 2}
+    - {fileID: 11400000, guid: 7c6a82dfff178744f96c710bbbf2ffd7, type: 2}
+    - {fileID: 11400000, guid: eac0c270ed20542beb4a61325e0a8bfd, type: 2}
+    - {fileID: 11400000, guid: cfbf579c2f79442a4bb942da0e19f4bc, type: 2}
