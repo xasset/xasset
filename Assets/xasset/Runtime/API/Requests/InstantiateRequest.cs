@@ -59,12 +59,14 @@ namespace xasset
         {
             _assetRequest?.Release();
             _assetRequest = null;
-            AutoreleaseCache.Get(gameObject).Remove(this);
-            if (gameObject == null) return;
-            Object.DestroyImmediate(gameObject);
-            gameObject = null;
+            if (gameObject != null)
+            {
+                AutoreleaseCache.Get(gameObject).Remove(this);
+                Object.DestroyImmediate(gameObject);
+                gameObject = null;
+            }
+
             Unused.Enqueue(this);
-            Reset();
         }
 
         internal static InstantiateRequest InstantiateAsync(string path, Transform parent = null,
@@ -72,6 +74,7 @@ namespace xasset
         {
             if (!Assets.Versions.TryGetAsset(path, out var info)) return null;
             var request = Unused.Count > 0 ? Unused.Dequeue() : new InstantiateRequest();
+            request.Reset();
             request.path = info.path;
             request.parent = parent;
             request.worldPositionStays = worldPositionStays;

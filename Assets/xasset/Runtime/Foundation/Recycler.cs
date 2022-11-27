@@ -13,27 +13,21 @@ namespace xasset
 
     public class Recycler : MonoBehaviour
     {
-        private static readonly Dictionary<int, IRecyclable> Recyclables = new Dictionary<int, IRecyclable>();
+        private static readonly List<IRecyclable> Recyclables = new List<IRecyclable>();
         private static readonly List<IRecyclable> Progressing = new List<IRecyclable>();
-        private static readonly Queue<IRecyclable> Unused = new Queue<IRecyclable>();
-
-
+        
         private void Update()
         {
             if (Scheduler.Working) return; // 有加载的时候不回收资源，防止 Unity 引擎底层出异常。 
 
-            foreach (var pair in Recyclables)
+            for (var index = 0; index < Recyclables.Count; index++)
             {
-                var request = pair.Value;
+                var request = Recyclables[index];
                 if (!request.CanRecycle()) continue;
-                request.RecycleAsync();
-                Unused.Enqueue(request);
-            }
 
-            while (Unused.Count > 0)
-            {
-                var request = Unused.Dequeue();
-                Recyclables.Remove(request.GetHashCode());
+                Recyclables.RemoveAt(index);
+                index--;
+                request.RecycleAsync();
                 Progressing.Add(request);
             }
 
@@ -50,12 +44,16 @@ namespace xasset
 
         public static void RecycleAsync(IRecyclable recyclable)
         {
-            Recyclables[recyclable.GetHashCode()] = recyclable;
+            Logger.I($"RecycleAsync {recyclable}");
+            Recyclables.Add(recyclable);
         }
 
         public static void CancelRecycle(IRecyclable recyclable)
         {
-            Recyclables.Remove(recyclable.GetHashCode());
+            if (Recyclables.Remove(recyclable))
+            {
+                Logger.I($"CancelRecycle {recyclable}");
+            }
         }
     }
 }

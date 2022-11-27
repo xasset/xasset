@@ -137,7 +137,6 @@ namespace xasset
             if (withAdditive) Additives.Remove(this);
             Unused.Enqueue(this);
             _step = Step.Waiting;
-            Reset();
             handler.Release();
         }
 

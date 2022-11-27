@@ -52,8 +52,6 @@ namespace xasset
                 RemoveAssetBundle(info.name);
                 assetBundle = null;
             }
-
-            Reset();
         }
 
         #region Hotreload

@@ -67,7 +67,7 @@ namespace xasset
 
         public virtual bool CanRecycle()
         {
-            return true;
+            return isDone;
         }
 
         public virtual void RecycleAsync()
