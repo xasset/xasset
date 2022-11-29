@@ -14,8 +14,7 @@ namespace xasset
             while (_queue.Count > 0)
             {
                 var request = _queue.Dequeue();
-                if (string.IsNullOrEmpty(request.error))
-                    request.Release();
+                request.Release();
             }
 
             Unused.Enqueue(this);

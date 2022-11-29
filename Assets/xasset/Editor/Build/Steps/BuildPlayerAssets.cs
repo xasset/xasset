@@ -2,12 +2,32 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 namespace xasset.editor
 {
-    public class BuildPlayerAssets
+    public class BuildPlayerAssets : IPreprocessBuildWithReport, IPostprocessBuildWithReport
     {
+        public void OnPostprocessBuild(BuildReport report)
+        {
+            var dataPath = $"{Application.streamingAssetsPath}/{Assets.Bundles}";
+            if (!Directory.Exists(dataPath)) return;
+            FileUtil.DeleteFileOrDirectory(dataPath);
+            FileUtil.DeleteFileOrDirectory(dataPath + ".meta");
+            if (Directory.GetFiles(Application.streamingAssetsPath).Length != 0) return;
+            FileUtil.DeleteFileOrDirectory(Application.streamingAssetsPath);
+            FileUtil.DeleteFileOrDirectory(Application.streamingAssetsPath + ".meta");
+        }
+
+        public int callbackOrder { get; }
+
+        public void OnPreprocessBuild(BuildReport report)
+        {
+            StartNew();
+        }
+
         public static Action<BuildPlayerAssets> CustomBuilder { get; set; }
         private Versions versions { get; set; }
 
@@ -25,16 +45,16 @@ namespace xasset.editor
                 return;
             }
 
+            var dataPath = $"{Application.streamingAssetsPath}/{Assets.Bundles}";
             var settings = Settings.GetDefaultSettings();
-            Bundler.Initialize(settings);
             var playerAssets = ScriptableObject.CreateInstance<PlayerAssets>();
-            if (Directory.Exists(Assets.PlayerDataPath))
+            if (Directory.Exists(dataPath))
             {
-                FileUtil.DeleteFileOrDirectory(Assets.PlayerDataPath);
-                FileUtil.DeleteFileOrDirectory($"{Assets.PlayerDataPath}.meta");
+                FileUtil.DeleteFileOrDirectory(dataPath);
+                FileUtil.DeleteFileOrDirectory($"{dataPath}.meta");
             }
 
-            var bundles = Builder.GetBundlesInBuild(versions);
+            var bundles = Builder.GetBundlesInBuild(settings, versions);
             if (bundles.Length > 0)
                 CopyBundles(bundles, playerAssets);
 
@@ -66,8 +86,8 @@ namespace xasset.editor
         {
             foreach (var bundle in bundles)
             {
-                var from = Settings.GetDataPath(bundle.nameWithAppendHash);
-                var to = Assets.GetPlayerDataPath(bundle.nameWithAppendHash);
+                var from = Settings.GetDataPath(bundle.file);
+                var to = Assets.GetPlayerDataPath(bundle.file);
                 var file = new FileInfo(from);
                 if (file.Exists)
                 {

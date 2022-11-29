@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.3587269, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -170,8 +170,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startWithScene: 0
   loggable: 1
-  fastVerifyMode: 1
+  autoUpdate: 1
   simulationMode: 1
+  offlineMode: 1
+  benchmarkMode: 1
   baseUpdateURL: http://127.0.0.1/Bundles
 --- !u!114 &1715045639
 MonoBehaviour:
@@ -199,7 +201,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxRequests: 10
   maxUpdateTimeSlice: 0.016666668
-  autoSlicingEnabled: 1
+  autoSlicing: 1
 --- !u!114 &1715045641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,7 +215,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxRequests: 5
-  simulationMode: 0
+  maxRetryTimes: 2
+  simulationMode: 1
 --- !u!114 &1715045643
 MonoBehaviour:
   m_ObjectHideFlags: 0

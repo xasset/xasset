@@ -20,8 +20,7 @@ namespace xasset
             Complete
         }
 
-        public Action<Request> completed;
-
+        public Action<Request> completed; 
         public Result result { get; protected set; } = Result.Default;
         public Status status { get; protected set; } = Status.Wait;
         public bool isDone => status == Status.Complete;

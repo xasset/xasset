@@ -7,15 +7,16 @@ namespace xasset.editor
     {
         public void Start(BuildJob job)
         {
-            var path = Settings.GetCachePath(job.parameters.build + ".json");
+            var path = Settings.GetCachePath(job.parameters.name + ".json");
             if (!File.Exists(path))
             {
                 job.error = $"File not found {path}.";
                 return;
             }
 
-            var buildAssets = ScriptableObject.CreateInstance<BuildCache>();
+            var buildAssets = ScriptableObject.CreateInstance<BuildAssets>();
             JsonUtility.FromJsonOverwrite(File.ReadAllText(path), buildAssets);
+            job.rawAssets.AddRange(buildAssets.rawAssets);
             job.bundledAssets.AddRange(buildAssets.bundledAssets);
         }
     }

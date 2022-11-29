@@ -14,7 +14,8 @@ namespace xasset.editor
         public readonly List<BuildAsset> bundledAssets = new List<BuildAsset>();
         public readonly List<BuildBundle> bundles = new List<BuildBundle>();
         public readonly List<string> changes = new List<string>();
-        public string error;
+        public readonly List<BuildAsset> rawAssets = new List<BuildAsset>();
+        public string error { get; set; }
 
         public BuildJob(BuildParameters buildParameters)
         {
@@ -25,7 +26,10 @@ namespace xasset.editor
 
         public void AddAsset(BuildAsset asset)
         {
-            bundledAssets.Add(asset);
+            if (asset.group.bundleMode == BundleMode.PackByRaw)
+                rawAssets.Add(asset);
+            else
+                bundledAssets.Add(asset);
         }
 
         public static BuildJob StartNew(BuildParameters parameters, params IBuildJobStep[] steps)
@@ -37,10 +41,6 @@ namespace xasset.editor
 
         public void Start(params IBuildJobStep[] steps)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            Logger.I($"Start build job with {parameters.build}.");
             foreach (var step in steps)
             {
                 var sw = new Stopwatch();
@@ -51,17 +51,14 @@ namespace xasset.editor
                 }
                 catch (Exception e)
                 {
-                    Logger.E(e.Message);
+                    Logger.E($"{e.Message}:{e.StackTrace}");
                     error = e.Message;
                 }
 
                 sw.Stop();
-                Logger.I($"{step.GetType().Name} for {parameters.build} {(string.IsNullOrEmpty(error) ? "success" : "failed")} with {sw.ElapsedMilliseconds / 1000f}s.");
+                Logger.I($"{step.GetType().Name} for {parameters.name} {(string.IsNullOrEmpty(error) ? "success" : "failed")} with {sw.ElapsedMilliseconds / 1000f}s.");
                 if (!string.IsNullOrEmpty(error)) break;
             }
-
-            stopwatch.Stop();
-            Logger.I($"Complete build job for {parameters.build} {(string.IsNullOrEmpty(error) ? "success" : $"failed({error})")} with {stopwatch.ElapsedMilliseconds / 1000f}s.");
         }
 
         public void TreatError(string e)

@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 namespace xasset.editor
 {
+    /// <summary>
+    ///     清理重复设置打包分组的资源
+    /// </summary>
     public class ClearDuplicateAssets : IBuildJobStep
     {
         public void Start(BuildJob job)

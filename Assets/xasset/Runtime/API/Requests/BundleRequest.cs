@@ -4,37 +4,37 @@ using UnityEngine;
 
 namespace xasset
 {
-    [Serializable]
     public sealed class BundleRequest : LoadRequest
     {
-        internal BundleRequestHandler handler;
+        internal IBundleHandler handler;
         internal AssetBundle assetBundle { get; set; }
         public ManifestBundle info { get; set; }
 
+        public static Func<BundleRequest, IBundleHandler> CreateHandler { get; set; } = null;
+
         protected override void OnStart()
         {
-            handler.OnStart();
+            handler.OnStart(this);
         }
 
         protected override void OnUpdated()
         {
-            handler.Update();
+            handler.Update(this);
         }
 
         protected override void OnWaitForCompletion()
         {
-            handler.WaitForCompletion();
+            handler.WaitForCompletion(this);
         }
 
-        public void LoadAssetBundle(string filename, ulong offset = 0)
+        public void LoadAssetBundle(string filename)
         {
-            Logger.D($"Load {info.nameWithAppendHash} from {filename} with offset {offset}");
             ReloadAssetBundle(info.name);
-            assetBundle = AssetBundle.LoadFromFile(filename, 0, offset);
+            assetBundle = AssetBundle.LoadFromFile(filename);
             progress = 1;
             if (assetBundle == null)
             {
-                SetResult(Result.Failed, $"assetBundle == null, {info.nameWithAppendHash}");
+                SetResult(Result.Failed, $"assetBundle == null, {info.file}");
                 return;
             }
 
@@ -45,7 +45,7 @@ namespace xasset
         protected override void OnDispose()
         {
             Remove(this);
-            handler.Dispose();
+            handler.Dispose(this);
             if (assetBundle != null)
             {
                 assetBundle.Unload(true);
@@ -82,37 +82,40 @@ namespace xasset
         private static readonly Queue<BundleRequest> Unused = new Queue<BundleRequest>();
         public static readonly Dictionary<string, BundleRequest> Loaded = new Dictionary<string, BundleRequest>();
 
-        private static BundleRequestHandler GetHandler(BundleRequest request)
+        private static IBundleHandler GetHandler(BundleRequest request)
         {
-            if (Assets.IsWebGLPlatform)
-                throw new NotImplementedException("开源版不支持 WebGL");
-
             var bundle = request.info;
+            var handler = CreateHandler?.Invoke(request);
+            if (handler != null) return handler;
+
             if (Assets.IsPlayerAsset(bundle.hash))
-                return new BundleRequestHandlerFile {path = Assets.GetPlayerDataPath(bundle.nameWithAppendHash), request = request};
+                if (Assets.IsWebGLPlatform)
+                    return new RuntimeDownloadBundleHandler();
+                else
+                    return new RuntimeLocalBundleHandler {path = Assets.GetPlayerDataPath(bundle.file)};
 
             if (Assets.IsDownloaded(bundle))
-                return new BundleRequestHandlerFile {path = Assets.GetDownloadDataPath(bundle.nameWithAppendHash), request = request};
+                return new RuntimeLocalBundleHandler {path = Assets.GetDownloadDataPath(bundle.file)};
 
-            throw new NotImplementedException("开源版不支持直接从服务器下载");
+            return new RuntimeDownloadBundleHandler();
         }
 
         private static void Remove(BundleRequest request)
         {
-            Loaded.Remove(request.info.nameWithAppendHash);
+            Loaded.Remove(request.info.file);
             Unused.Enqueue(request);
         }
 
         internal static BundleRequest Load(ManifestBundle bundle)
         {
-            if (!Loaded.TryGetValue(bundle.nameWithAppendHash, out var request))
+            if (!Loaded.TryGetValue(bundle.file, out var request))
             {
                 request = Unused.Count > 0 ? Unused.Dequeue() : new BundleRequest();
                 request.Reset();
                 request.info = bundle;
-                request.path = bundle.nameWithAppendHash;
+                request.path = bundle.file;
                 request.handler = GetHandler(request);
-                Loaded[bundle.nameWithAppendHash] = request;
+                Loaded[bundle.file] = request;
             }
 
             request.LoadAsync();

@@ -14,14 +14,13 @@ namespace xasset
             Downloading
         }
 
-        private static readonly Dictionary<string, DownloadContent> Contents = new Dictionary<string, DownloadContent>();
+        private static Dictionary<string, DownloadContent> Contents = new Dictionary<string, DownloadContent>();
         public string hash;
         public string savePath;
         public ulong size;
         public string url;
         public ulong downloadedBytes;
         public ulong downloadSize => size - downloadedBytes;
-        public int assets { get; set; } = 1;
 
         public Status status { get; set; } = Status.Default;
 

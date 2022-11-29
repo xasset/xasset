@@ -5,14 +5,73 @@ using UnityEngine;
 
 namespace xasset
 {
+    /// <summary>
+    ///     寻址模式
+    /// </summary>
+    public enum AddressMode
+    {
+        /// <summary>
+        ///     按 Assets 路径加载，始终有效。
+        /// </summary>
+        LoadByPath,
+
+        /// <summary>
+        ///     按 文件名 加载。
+        /// </summary>
+        LoadByName,
+
+        /// <summary>
+        ///     按 不带扩展名的文件名 加载。
+        /// </summary>
+        LoadByNameWithoutExtension,
+
+        /// <summary>
+        ///     按 依赖 加载。
+        /// </summary>
+        LoadByDependencies,
+    }
+
+    [Serializable]
+    public class ManifestAsset
+    {
+        public int id { get; set; }
+        public string name;
+        public int bundle;
+        public int dir;
+        public int[] deps = Array.Empty<int>();
+        public AddressMode addressMode = AddressMode.LoadByPath;
+        public string path { get; set; }
+        public Manifest manifest { get; set; }
+    }
+
+    [Serializable]
+    public class ManifestBundle : Downloadable
+    {
+        public int[] deps = Array.Empty<int>();
+        public Manifest manifest { get; set; }
+    }
+
     public class Manifest : ScriptableObject, ISerializationCallbackReceiver
     {
         public string build;
         public string[] dirs = Array.Empty<string>();
         public ManifestAsset[] assets = Array.Empty<ManifestAsset>();
         public ManifestBundle[] bundles = Array.Empty<ManifestBundle>();
+
         private readonly Dictionary<string, List<int>> directoryWithAssets = new Dictionary<string, List<int>>();
-        private readonly Dictionary<string, ManifestAsset> nameWithAssets = new Dictionary<string, ManifestAsset>();
+        private readonly Dictionary<string, ManifestAsset> addressWithAssets = new Dictionary<string, ManifestAsset>();
+        private readonly Dictionary<string, ManifestBundle[]> nameWithDependencies = new Dictionary<string, ManifestBundle[]>();
+
+        public void Clear()
+        {
+            dirs = Array.Empty<string>();
+
+            bundles = Array.Empty<ManifestBundle>();
+            assets = Array.Empty<ManifestAsset>();
+
+            addressWithAssets.Clear();
+            directoryWithAssets.Clear();
+        }
 
         public void OnBeforeSerialize()
         {
@@ -33,23 +92,26 @@ namespace xasset
                 }
             }
 
+
             foreach (var bundle in bundles)
             {
                 var extension = Path.GetExtension(bundle.name);
-                var nameWithAppendHash = string.IsNullOrEmpty(extension)
+                var key = string.IsNullOrEmpty(extension)
                     ? $"{bundle.name}_{bundle.hash}"
                     : $"{bundle.name.Replace(extension, string.Empty)}_{bundle.hash}{extension}";
-                bundle.nameWithAppendHash = nameWithAppendHash;
+                bundle.file = key;
+                bundle.manifest = this;
             }
 
-            foreach (var asset in assets)
+            for (var index = 0; index < assets.Length; index++)
             {
+                var asset = assets[index];
                 var dir = dirs[asset.dir];
                 var path = $"{dir}/{asset.name}";
                 asset.path = path;
                 asset.manifest = this;
                 AddAsset(asset);
-                if (directoryWithAssets.TryGetValue(dir, out var value)) value.Add(asset.id);
+                if (directoryWithAssets.TryGetValue(dir, out var value)) value.Add(index);
             }
         }
 
@@ -76,15 +138,35 @@ namespace xasset
 
         private void AddAsset(ManifestAsset asset)
         {
-            nameWithAssets[asset.path] = asset;
-            // 场景和预设默认生成短链接
-            if (asset.auto) return;
-            if (!asset.path.EndsWith(".unity") && !asset.path.EndsWith(".prefab")) return;
-            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(asset.path);
-            if (nameWithAssets.TryGetValue(fileNameWithoutExtension, out var value))
-                Logger.W($"{fileNameWithoutExtension} already exist {value.path}");
+            switch (asset.addressMode)
+            {
+                case AddressMode.LoadByName:
+                    addressWithAssets[asset.path] = asset;
+                    SetAddress(asset, Path.GetFileName(asset.path));
+                    break;
+                case AddressMode.LoadByDependencies:
+                    break;
+                case AddressMode.LoadByNameWithoutExtension:
+                    addressWithAssets[asset.path] = asset;
+                    SetAddress(asset, Path.GetFileNameWithoutExtension(asset.path));
+                    break;
+                case AddressMode.LoadByPath:
+                    addressWithAssets[asset.path] = asset;
+                    break;
+            }
+        }
+
+        private void SetAddress(ManifestAsset asset, string address)
+        {
+            if (addressWithAssets.TryGetValue(address, out var value))
+            {
+                if (value.path != asset.path)
+                {
+                    Logger.W($"{address} already exist {value.path}");
+                }
+            }
             else
-                nameWithAssets[fileNameWithoutExtension] = asset;
+                addressWithAssets[address] = asset;
         }
 
         public bool IsDirectory(string path)
@@ -94,12 +176,12 @@ namespace xasset
 
         public bool ContainsAsset(string path)
         {
-            return nameWithAssets.ContainsKey(path);
+            return addressWithAssets.ContainsKey(path);
         }
 
         public bool TryGetAsset(string path, out ManifestAsset asset)
         {
-            return nameWithAssets.TryGetValue(path, out asset);
+            return addressWithAssets.TryGetValue(path, out asset);
         }
 
         public ManifestBundle GetBundle(string assetPath)
@@ -109,9 +191,10 @@ namespace xasset
 
         public ManifestBundle[] GetDependencies(ManifestBundle bundle)
         {
-            return bundle.deps == null
-                ? Array.Empty<ManifestBundle>()
-                : Array.ConvertAll(bundle.deps, input => bundles[input]);
+            if (nameWithDependencies.TryGetValue(bundle.name, out var value)) return value;
+            value = bundle.deps == null ? Array.Empty<ManifestBundle>() : Array.ConvertAll(bundle.deps, input => bundles[input]);
+            nameWithDependencies[bundle.name] = value;
+            return value;
         }
     }
 }

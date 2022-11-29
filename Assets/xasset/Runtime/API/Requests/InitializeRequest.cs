@@ -1,33 +1,33 @@
 using System;
+using UnityEngine;
 
 namespace xasset
 {
     public class InitializeRequest : Request
     {
-        private readonly InitializeRequestHandler _handler;
+        public static Func<IInitializeHandler> CreateHandler { get; set; } = RuntimeInitializeHandler.CreateInstance;
 
-        public InitializeRequest()
-        {
-            _handler = CreateHandler(this);
-        }
-
-        public static Func<InitializeRequest, InitializeRequestHandler> CreateHandler { get; set; } = InitializeRequestHandlerRuntime.CreateInstance;
+        public IInitializeHandler handler { get; } = CreateHandler();
 
         protected override void OnUpdated()
         {
-            _handler.OnUpdated();
+            handler.OnUpdated(this);
         }
 
         protected override void OnStart()
         {
-            _handler.OnStart();
+            handler.OnStart(this);
         }
 
         protected override void OnCompleted()
         {
+            if (!Application.isEditor && Assets.IsWebGLPlatform)
+                Assets.DownloadURL = Assets.PlayerDataPath;
+
             Logger.D($"Initialize with: {result}.");
             Logger.D($"API Version:{Assets.APIVersion}");
             Logger.D($"Simulation Mode: {Assets.SimulationMode}");
+            Logger.D($"Offline Mode: {Assets.OfflineMode}");
             Logger.D($"Versions: {Assets.Versions}");
             Logger.D($"Platform: {Assets.Platform}");
         }

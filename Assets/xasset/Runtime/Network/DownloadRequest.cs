@@ -1,114 +1,141 @@
-using System;
-using System.Collections;
+﻿using System;
+using System.IO;
 
 namespace xasset
 {
-    public abstract class DownloadRequest : IEnumerator
+    public sealed class DownloadRequest : DownloadRequestBase
     {
-        public enum Result
+        public IDownloadHandler handler { get; set; }
+        public Action<DownloadRequest> completed { get; set; }
+        public DownloadContent content { get; set; }
+        public string savePath => content.savePath;
+        public string url => content.url;
+
+        internal void OnGetDownloadSize(ulong size)
         {
-            Default,
-            Success,
-            Failed,
-            Cancelled
+            downloadSize = size;
+            content.size = size;
         }
 
-        public enum Status
+        public void Start()
         {
-            Wait,
-            Progressing,
-            Paused,
-            Completed
-        }
+            if (status == Status.Progressing) return;
 
-        private double _bandwidthSampleTime;
-        private ulong _lastDownloadedBytes;
+            downloadedBytes = content.GetDownloadedBytes();
+            if (downloadedBytes > 0 && downloadedBytes == content.size)
+            {
+                SetResult(Result.Success, DownloadErrors.NothingToDownload);
+                return;
+            }
 
-        public Result result { get; private set; } = Result.Default;
-        public string error { get; protected set; }
-        public Status status { get; protected set; } = Status.Wait;
-        public ulong downloadedBytes { get; protected internal set; }
-        public ulong downloadSize { get; set; }
-        public float progress { get; protected set; }
-        public ulong bandwidth { get; protected set; }
-
-        public bool isDone => status == Status.Completed;
-
-        public bool MoveNext()
-        {
-            return !isDone;
-        }
-
-        public void Reset()
-        {
-            downloadedBytes = 0;
-            downloadSize = 0;
-            SetResult(Result.Default);
-        }
-
-        public object Current => null;
-
-        protected void SetResult(Result value, string msg = null)
-        {
-            result = value;
-            status = result == Result.Default ? Status.Wait : status = Status.Completed;
-            error = msg;
-        }
-
-        protected void BeganSample()
-        {
-            bandwidth = 0;
-            _lastDownloadedBytes = 0;
-            _bandwidthSampleTime = DateTime.Now.TimeOfDay.TotalMilliseconds;
-        }
-
-        private double GetRealtimeSinceBeganSample()
-        {
-            return DateTime.Now.TimeOfDay.TotalMilliseconds - _bandwidthSampleTime;
-        }
-
-        public void Pause()
-        {
-            if (status == Status.Paused) return;
-            status = Status.Paused;
-            bandwidth = 0;
-            OnPause(status == Status.Paused);
-        }
-
-        public void UnPause()
-        {
-            if (status != Status.Paused) return;
+            OnStart();
             status = Status.Progressing;
-            OnPause(status == Status.Paused);
         }
 
-        public void Cancel()
+        protected override void OnPause(bool paused)
         {
-            SetResult(Result.Cancelled, DownloadErrors.UserCancel);
-            OnCancel();
+            handler.OnPause(paused);
         }
 
-        protected virtual void OnPause(bool paused)
+        protected override void OnCancel()
         {
+            handler.OnCancel();
         }
 
-        protected virtual void OnCancel()
+        public void SendRequest()
         {
+            Downloader.Queue.Enqueue(this);
         }
 
-        protected void OnReceiveBytes(ulong len)
+        public void WaitForCompletion()
         {
-            _lastDownloadedBytes += len;
-            downloadedBytes += len;
-            progress = downloadedBytes * 1f / downloadSize;
-            var elapsed = GetRealtimeSinceBeganSample();
-            if (elapsed > 1000) BeganSample();
-            if (elapsed > 0 && _lastDownloadedBytes > 0)
-                bandwidth = (ulong) (_lastDownloadedBytes / elapsed) * 1000;
+            if (isDone) return;
+            if (Assets.IsWebGLPlatform)
+            {
+                SetResult(Result.Failed, "WaitForCompletion is not supported on WebGL.");
+                return;
+            }
+
+            if (status == Status.Wait) Start();
+
+            while (!isDone) Update();
         }
 
-        public virtual void Retry()
+        public override void Retry()
         {
+            Reset();
+            SendRequest();
+        }
+
+        internal void VerifyContent()
+        {
+            if (result == Result.Failed || result == Result.Cancelled) return;
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                SetResult(Result.Failed, error);
+                return;
+            }
+
+            var file = new FileInfo(savePath);
+            if (!file.Exists)
+            {
+                SetResult(Result.Failed, DownloadErrors.FileNotExist);
+                return;
+            }
+
+            if (file.Length != (long) content.size)
+            {
+                SetResult(Result.Failed, string.Format(DownloadErrors.DownloadSizeMismatch, file.Length, content.size));
+                return;
+            }
+
+            if (string.IsNullOrEmpty(content.hash))
+            {
+                content.status = DownloadContent.Status.Downloaded;
+                SetResult(Result.Success);
+                return;
+            }
+
+            var computeHash = Utility.ComputeHash(savePath);
+            if (content.hash.Equals(computeHash))
+            {
+                content.status = DownloadContent.Status.Downloaded;
+                SetResult(Result.Success);
+                return;
+            }
+
+            SetResult(Result.Failed,
+                string.Format(DownloadErrors.DownloadHashMismatch, computeHash, content.hash));
+        }
+
+        private void OnStart()
+        {
+            content.status = DownloadContent.Status.Downloading;
+            handler.OnStart();
+        }
+
+        public void Update()
+        {
+            handler.Update();
+        }
+
+        public void Complete()
+        {
+            content.downloadedBytes = downloadedBytes;
+            Logger.D($"Download {url} {result} {error}");
+            var saved = completed;
+            completed?.Invoke(this);
+            completed -= saved;
+        }
+
+        public void Clear()
+        {
+            Cancel();
+            downloadedBytes = 0;
+            progress = 0;
+            bandwidth = 0;
+            content.Clear();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace xasset.example
     {
         public Text version;
         public UnityEvent completed;
-        private DownloadRequest _downloadRequest;
+        private DownloadRequestBase _downloadAsync;
         private Versions versions;
 
         private void Start()
@@ -34,7 +34,9 @@ namespace xasset.example
 
         private IEnumerator Updating()
         {
-            LoadingScreen.Instance.SetVisible(true);
+            // 预加载
+            yield return Asset.LoadAsync(MessageBox.Filename, typeof(GameObject));
+            yield return Asset.InstantiateAsync(LoadingScreen.Filename);
             var getUpdateInfoAsync = Assets.GetUpdateInfoAsync();
             yield return getUpdateInfoAsync;
             if (getUpdateInfoAsync.result == Request.Result.Success)
@@ -60,9 +62,9 @@ namespace xasset.example
                         yield return update;
                         if (update.result == Request.Result.Success)
                         {
-                            _downloadRequest = getDownloadSizeAsync.DownloadAsync();
+                            _downloadAsync = getDownloadSizeAsync.DownloadAsync();
                             yield return Downloading();
-                            if (_downloadRequest.result == DownloadRequest.Result.Success)
+                            if (_downloadAsync.result == DownloadRequestBase.Result.Success)
                             {
                                 yield return Clearing();
                                 Assets.Versions = versions;
@@ -80,18 +82,18 @@ namespace xasset.example
 
         private IEnumerator Downloading()
         {
-            while (_downloadRequest.result != DownloadRequest.Result.Success)
+            while (_downloadAsync.result != DownloadRequestBase.Result.Success)
             {
-                var downloadedBytes = Utility.FormatBytes(_downloadRequest.downloadedBytes);
-                var downloadSize = Utility.FormatBytes(_downloadRequest.downloadSize);
-                var bandwidth = Utility.FormatBytes(_downloadRequest.bandwidth);
+                var downloadedBytes = Utility.FormatBytes(_downloadAsync.downloadedBytes);
+                var downloadSize = Utility.FormatBytes(_downloadAsync.downloadSize);
+                var bandwidth = Utility.FormatBytes(_downloadAsync.bandwidth);
                 var msg = $"{Constants.Text.Loading}{downloadedBytes}/{downloadSize}, {bandwidth}/s";
-                LoadingScreen.Instance.SetProgress(msg, _downloadRequest.progress);
+                LoadingScreen.Instance.SetProgress(msg, _downloadAsync.progress);
                 yield return null;
-                if (!_downloadRequest.isDone || string.IsNullOrEmpty(_downloadRequest.error)) continue;
+                if (!_downloadAsync.isDone || string.IsNullOrEmpty(_downloadAsync.error)) continue;
                 var retry = MessageBox.Show(Constants.Text.Tips, Constants.Text.TipsDownloadFailed);
                 yield return retry;
-                if (retry.result == Request.Result.Success) _downloadRequest.Retry();
+                if (retry.result == Request.Result.Success) _downloadAsync.Retry();
                 else break;
             }
         }
@@ -103,7 +105,7 @@ namespace xasset.example
             {
                 bundles.Add(item.file);
                 foreach (var bundle in item.manifest.bundles)
-                    bundles.Add(bundle.nameWithAppendHash);
+                    bundles.Add(bundle.file);
             }
 
             var files = new List<string>();
@@ -112,7 +114,7 @@ namespace xasset.example
                 if (!bundles.Contains(item.file))
                     files.Add(item.file);
                 foreach (var bundle in item.manifest.bundles)
-                    if (!bundles.Contains(bundle.nameWithAppendHash))
+                    if (!bundles.Contains(bundle.file))
                         files.Add(item.file);
             }
 

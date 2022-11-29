@@ -3,15 +3,14 @@ using UnityEngine;
 
 namespace xasset
 {
-    internal class Dependencies
+    public class Dependencies
     {
         private static readonly Dictionary<string, Dependencies> Loaded = new Dictionary<string, Dependencies>();
         private readonly List<BundleRequest> _bundles = new List<BundleRequest>();
         private readonly List<BundleRequest> _loading = new List<BundleRequest>();
-        private ManifestAsset _asset;
+        public ManifestAsset asset { get; private set; }
         private BundleRequest _bundleRequest;
         private int _refCount;
-        public AssetBundle assetBundle => _bundleRequest.assetBundle;
         public bool isDone => _loading.Count == 0;
         public float progress => (_bundles.Count - _loading.Count) * 1f / _bundles.Count;
 
@@ -27,8 +26,8 @@ namespace xasset
         {
             if (_refCount == 0)
             {
-                var bundles = _asset.manifest.bundles;
-                var bundle = bundles[_asset.bundle];
+                var bundles = asset.manifest.bundles;
+                var bundle = bundles[asset.bundle];
                 _bundleRequest = Load(bundle);
                 foreach (var dep in bundle.deps)
                     Load(bundles[dep]);
@@ -37,8 +36,9 @@ namespace xasset
             _refCount++;
         }
 
-        public bool CheckResult(LoadRequest request)
+        public bool CheckResult(LoadRequest request, out AssetBundle assetBundle)
         {
+            assetBundle = null;
             foreach (var bundle in _bundles)
             {
                 if (bundle.result != Request.Result.Failed) continue;
@@ -46,7 +46,10 @@ namespace xasset
                 return false;
             }
 
-            return true;
+            assetBundle = _bundleRequest.assetBundle;
+            if (assetBundle != null) return true;
+            request.SetResult(Request.Result.Failed, "assetBundle == null");
+            return false;
         }
 
         public void WaitForCompletion()
@@ -74,7 +77,7 @@ namespace xasset
         {
             if (!Loaded.TryGetValue(asset.path, out var value))
             {
-                value = new Dependencies {_asset = asset};
+                value = new Dependencies {asset = asset};
                 Loaded[asset.path] = value;
             }
 

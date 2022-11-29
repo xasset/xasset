@@ -13,11 +13,12 @@ namespace xasset.editor
             Application.OpenURL("https://xasset.cc");
         }
 
-        [MenuItem("xasset/Check for Updates", false, 1)]
-        public static void CheckForUpdates()
+        [MenuItem("xasset/Get Unity Online Services", false, 1)]
+        public static void GetUnityOnlineServices()
         {
-            Application.OpenURL("https://xasset.cc/docs/next/change-log");
+            Application.OpenURL("https://uos.unity.cn");
         }
+
 
         [MenuItem("xasset/Open/Settings", false, 100)]
         public static void PingSettings()
@@ -54,7 +55,7 @@ namespace xasset.editor
         [MenuItem("xasset/Build Player", false, 100)]
         public static void BuildPlayer()
         {
-            Builder.BuildPlayer();
+            editor.BuildPlayer.Build();
         }
 
         [MenuItem("xasset/Build Player Assets", false, 100)]
@@ -100,7 +101,28 @@ namespace xasset.editor
         [MenuItem("xasset/Clear History", false, 200)]
         public static void ClearHistory()
         {
-            Builder.ClearHistory();
+            editor.ClearHistory.Start();
+        }
+
+        [MenuItem("xasset/Check for Updates", false, 300)]
+        public static void CheckForUpdates()
+        {
+            Application.OpenURL("https://xasset.cc/docs/next/change-log");
+        }
+
+        [MenuItem("xasset/Print Changes", false, 300)]
+        public static void PrintChanges()
+        {
+            var path = EditorUtility.OpenFilePanelWithFilters("Select", Settings.PlatformDataPath,
+                new[] {"versions", "json"});
+            if (string.IsNullOrEmpty(path)) return;
+            var versions = Utility.LoadFromFile<Versions>(path);
+            var filename = versions.GetFilename();
+            var records = Utility.LoadFromFile<BuildRecords>(Settings.GetCachePath(BuildRecords.Filename));
+            if (records.TryGetValue(filename, out var value))
+            {
+                Builder.GetChanges(value.changes, filename);
+            }
         }
 
         [MenuItem("Assets/To Json")]

@@ -16,7 +16,7 @@ namespace xasset
 
         private Step _step = Step.Waiting;
         private AsyncOperation _unloadAsync;
-        private SceneRequestHandler handler { get; set; }
+        private ISceneHandler handler { get; set; }
         public ManifestAsset info { get; private set; }
         public bool withAdditive { get; private set; }
 
@@ -33,19 +33,20 @@ namespace xasset
             }
         }
 
-        public static Func<SceneRequest, SceneRequestHandler> CreateHandler { get; set; } =
-            SceneRequestHandlerRuntime.CreateInstance;
+        public static Func<ISceneHandler> CreateHandler { get; set; } =
+            RuntimeSceneHandler.CreateInstance;
 
         public static SceneRequest main { get; private set; }
 
         protected override void OnStart()
         {
-            handler.OnStart();
+            References.Retain(path);
+            handler.OnStart(this);
         }
 
         protected override void OnWaitForCompletion()
         {
-            handler.WaitForCompletion();
+            handler.WaitForCompletion(this);
         }
 
         public override void RecycleAsync()
@@ -80,7 +81,7 @@ namespace xasset
         protected override void OnUpdated()
         {
             if (isDone) return;
-            handler.Update();
+            handler.Update(this);
             switch (_step)
             {
                 case Step.Waiting:
@@ -117,8 +118,8 @@ namespace xasset
                 UnActives.Clear();
             }
 
-            if (!handler.IsReady()) return;
-            _loadAsync = handler.LoadSceneAsync();
+            if (!handler.IsReady(this)) return;
+            _loadAsync = handler.LoadSceneAsync(this);
             if (_loadAsync == null)
             {
                 SetResult(Result.Failed, "_loadAsync == null");
@@ -131,25 +132,26 @@ namespace xasset
 
         protected override void OnDispose()
         {
+            References.Release(path);
             allowSceneActivation = true;
             _loadAsync = null;
             _unloadAsync = null;
             if (withAdditive) Additives.Remove(this);
             Unused.Enqueue(this);
             _step = Step.Waiting;
-            handler.Release();
+            handler.Release(this);
         }
 
         internal static SceneRequest LoadInternal(string path, bool withAdditive)
         {
-            if (!Assets.Versions.TryGetAsset(path, out var info)) return null;
+            if (!Assets.TryGetAsset(ref path, out var info)) return null;
 
             var request = Unused.Count > 0 ? Unused.Dequeue() : new SceneRequest();
             request.Reset();
             request.info = info;
-            request.path = info.path;
+            request.path = path;
             request.withAdditive = withAdditive;
-            request.handler = CreateHandler(request);
+            request.handler = CreateHandler();
             request.LoadAsync();
 
             if (!withAdditive)

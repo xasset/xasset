@@ -12,7 +12,7 @@ namespace xasset.example
 
         public void Unload()
         {
-            foreach (var request in _requests) request.Release();
+            foreach (var request in _requests) request?.Release();
             _requests.Clear();
         }
 

@@ -6,12 +6,11 @@ namespace xasset
     public class VersionsRequest : Request
     {
         private static readonly List<VersionsRequest> AllRequests = new List<VersionsRequest>();
-        private readonly Queue<Version> _queue = new Queue<Version>();
-        private DownloadContentRequestBatch _contents;
-        private DownloadContentRequest _downloadContent;
-        private int _retryCount;
+        private readonly Queue<Version> queue = new Queue<Version>();
+        private DownloadRequestBatch _contents;
+        private DownloadRequest _download;
+        private int _retryTimes;
         private Step _step = Step.DownloadHeader;
-        public byte retryTimes { get; set; } = 2;
         public Versions versions { get; private set; }
         public string url { get; set; }
         public string hash { get; set; }
@@ -21,7 +20,7 @@ namespace xasset
         {
             AllRequests.Add(this);
 
-            if (Assets.SimulationMode)
+            if (Assets.SimulationMode || Assets.OfflineMode)
             {
                 SetResult(Result.Success);
                 return;
@@ -31,7 +30,7 @@ namespace xasset
             var savePath = Assets.GetTemporaryCachePath(Versions.Filename);
             var content = DownloadContent.Get(url, savePath, hash, size);
             content.Clear();
-            _downloadContent = Downloader.DownloadAsync(content);
+            _download = Downloader.DownloadAsync(content);
             _step = Step.DownloadHeader;
         }
 
@@ -58,10 +57,10 @@ namespace xasset
 
         private void UpdateLoadVersions()
         {
-            while (_queue.Count > 0)
+            while (queue.Count > 0)
             {
-                var version = _queue.Dequeue();
-                if (Assets.Versions.TryGetVersion(version.build, out var value) && value.hash.Equals(version.hash))
+                var version = queue.Dequeue();
+                if (Assets.Versions.TryGetVersion(version.name, out var value) && value.hash.Equals(version.hash))
                 {
                     version.manifest = value.manifest;
                 }
@@ -69,7 +68,7 @@ namespace xasset
                 {
                     var path = Assets.GetDownloadDataPath(version.file);
                     var manifest = Utility.LoadFromFile<Manifest>(path);
-                    manifest.build = version.build;
+                    manifest.build = version.name;
                     manifest.name = version.file;
                     version.manifest = manifest;
                 }
@@ -84,34 +83,34 @@ namespace xasset
         {
             progress = 0.3f + _contents.progress * 0.7f;
             if (!_contents.isDone) return;
-            if (_contents.result == DownloadRequest.Result.Failed)
+            if (_contents.result == DownloadRequestBase.Result.Failed)
             {
                 Logger.W($"Failed to download versions with error {_contents.error}.");
-                if (_retryCount > retryTimes)
+                if (_retryTimes > Downloader.MaxRetryTimes)
                 {
                     SetResult(Result.Failed, _contents.error);
                     return;
                 }
 
                 _contents.Retry();
-                _retryCount++;
+                _retryTimes++;
                 return;
             }
 
-            foreach (var version in versions.data) _queue.Enqueue(version);
+            foreach (var version in versions.data) queue.Enqueue(version);
 
             _step = Step.LoadContents;
         }
 
         private void UpdateDownloadHeader()
         {
-            progress = _downloadContent.progress * 0.3f;
-            if (!_downloadContent.isDone) return;
+            progress = _download.progress * 0.3f;
+            if (!_download.isDone) return;
 
-            if (!string.IsNullOrEmpty(_downloadContent.error)) SetResult(Result.Failed, _downloadContent.error);
+            if (!string.IsNullOrEmpty(_download.error)) SetResult(Result.Failed, _download.error);
             if (!string.IsNullOrEmpty(hash))
             {
-                var _hash = Utility.ComputeHash(_downloadContent.savePath);
+                var _hash = Utility.ComputeHash(_download.savePath);
                 if (_hash != hash)
                 {
                     SetResult(Result.Failed, $"download hash {_hash} mismatch {hash} ");
@@ -119,7 +118,7 @@ namespace xasset
                 }
             }
 
-            versions = Utility.LoadFromFile<Versions>(_downloadContent.savePath);
+            versions = Utility.LoadFromFile<Versions>(_download.savePath);
             var changes = new List<Version>();
             foreach (var item in versions.data)
             {
@@ -129,7 +128,7 @@ namespace xasset
 
             if (changes.Count > 0)
             {
-                _contents = DownloadContentRequestBatch.Create();
+                _contents = DownloadRequestBatch.Create();
                 foreach (var item in changes)
                 {
                     var downloadURL = Assets.GetDownloadURL(item.file);
@@ -144,7 +143,7 @@ namespace xasset
             }
             else
             {
-                foreach (var version in versions.data) _queue.Enqueue(version);
+                foreach (var version in versions.data) queue.Enqueue(version);
                 _step = Step.LoadContents;
             }
         }

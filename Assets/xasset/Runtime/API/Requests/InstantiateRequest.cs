@@ -55,10 +55,24 @@ namespace xasset
             }
         }
 
+        protected override void OnWaitForCompletion()
+        {
+            if (!_assetRequest.isDone)
+            {
+                _assetRequest.WaitForCompletion();
+            }
+
+            while (!isDone)
+            {
+                OnUpdated();
+            }
+        }
+
         protected override void OnDispose()
         {
             _assetRequest?.Release();
             _assetRequest = null;
+
             if (gameObject != null)
             {
                 AutoreleaseCache.Get(gameObject).Remove(this);
@@ -72,10 +86,10 @@ namespace xasset
         internal static InstantiateRequest InstantiateAsync(string path, Transform parent = null,
             bool worldPositionStays = false)
         {
-            if (!Assets.Versions.TryGetAsset(path, out var info)) return null;
+            if (!Assets.TryGetAsset(ref path, out _)) return null;
             var request = Unused.Count > 0 ? Unused.Dequeue() : new InstantiateRequest();
             request.Reset();
-            request.path = info.path;
+            request.path = path;
             request.parent = parent;
             request.worldPositionStays = worldPositionStays;
             request.LoadAsync();

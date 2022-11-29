@@ -8,7 +8,6 @@ namespace xasset
         public string file;
         public string hash;
         public ulong size;
-        public long timestamp;
         public string downloadURL;
     }
 }

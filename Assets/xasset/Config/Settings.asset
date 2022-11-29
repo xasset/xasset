@@ -12,19 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a764f4aad4f646c4b59cfad907af36c9, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
+  excludeFiles:
+  - .cs
+  - .cginc
+  - .hlsl
+  - .spriteatlas
+  - .dll
   downloadURL: http://127.0.0.1/
-  playerAssetsSplitMode: 1
+  playerAssetsSplitMode: 0
+  buildAssetPackAssets: 1
   bundleSettings:
+    encryption: 1
     checkReference: 1
     applyBundleNameWithHash: 0
     splitBundleNameWithBuild: 1
     packByFileForAllScenes: 1
     packTogetherForAllShaders: 1
-    bundleExtension: .bundle
-    excludeFiles:
-    - .meta
-    - .dll
-    - .spriteatlas
+    extension: .bundle
     shaderExtensions:
     - .shader
     - .shadervariants

@@ -9,7 +9,7 @@ namespace xasset.example
     {
         public InputField inputField;
         public LoadingBar loadingBar;
-        private DownloadContentRequest _request;
+        private DownloadRequest _request;
 
 
         private void OnDestroy()
@@ -26,27 +26,19 @@ namespace xasset.example
         {
             var url = inputField.text;
 
-            Downloader.SimulationMode = false;
-
             Logger.D($"Download {url}");
             var content = DownloadContent.Get(url, Assets.GetDownloadDataPath(Path.GetFileName(url)));
             _request = Downloader.DownloadAsync(content);
             loadingBar.SetVisible(true);
-
-            var startTime = Time.realtimeSinceStartup - 1;
             while (!_request.isDone)
             {
-                if (Time.realtimeSinceStartup - startTime >= 1)
-                {
-                    var downloadedBytes = Utility.FormatBytes(_request.downloadedBytes);
-                    var downloadSize = Utility.FormatBytes(_request.downloadSize);
-                    var bandwidth = Utility.FormatBytes(_request.bandwidth);
-                    var remainBytes = _request.downloadSize - _request.downloadedBytes;
-                    var time = remainBytes * 1f / _request.bandwidth;
-                    var msg = $"{Constants.Text.Loading}{downloadedBytes}/{downloadSize}, {bandwidth}/s - 剩余：{time:F1}s";
-                    loadingBar.SetProgress(msg, _request.progress);
-                    startTime = Time.realtimeSinceStartup;
-                }
+                var downloadedBytes = Utility.FormatBytes(_request.downloadedBytes);
+                var downloadSize = Utility.FormatBytes(_request.downloadSize);
+                var bandwidth = Utility.FormatBytes(_request.bandwidth);
+
+                var time = (_request.downloadSize - _request.downloadedBytes) * 1f / _request.bandwidth;
+                var msg = $"{Constants.Text.Loading}{downloadedBytes}/{downloadSize}, {bandwidth}/s - 剩余：{time}s";
+                loadingBar.SetProgress(msg, _request.progress);
                 yield return null;
             }
 

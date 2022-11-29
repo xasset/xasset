@@ -5,14 +5,14 @@ using UnityEngine.UI;
 namespace xasset.example
 {
     /// <summary>
-    ///     按需加载功能示例
+    ///     ������ص�ʾ����
     /// </summary>
     public class OnDemandLoad : MonoBehaviour
     {
         public ExampleScene scene;
         public Text pauseUnPause;
         public LoadingBar loadingBar;
-        private DownloadRequest _downloadAsync;
+        private DownloadRequestBase _downloadAsync;
 
         private void Start()
         {
@@ -27,7 +27,7 @@ namespace xasset.example
 
         private IEnumerator CheckForUpdates()
         {
-            var request = Assets.GetDownloadSizeAsync(Assets.Versions, scene.ToString());
+            var request = Assets.GetDownloadSizeAsync(Assets.Versions);
             yield return request;
             if (request.downloadSize > 0)
             {
@@ -51,7 +51,7 @@ namespace xasset.example
             _downloadAsync = request.DownloadAsync();
             pauseUnPause.enabled = true;
             loadingBar.SetVisible(true);
-            while (_downloadAsync.result != DownloadRequest.Result.Success)
+            while (_downloadAsync.result != DownloadRequestBase.Result.Success)
             {
                 var downloadedBytes = Utility.FormatBytes(_downloadAsync.downloadedBytes);
                 var downloadSize = Utility.FormatBytes(_downloadAsync.downloadSize);
@@ -93,7 +93,7 @@ namespace xasset.example
         {
             if (_downloadAsync == null) return;
 
-            if (_downloadAsync.status == DownloadRequest.Status.Paused)
+            if (_downloadAsync.status == DownloadRequestBase.Status.Paused)
             {
                 pauseUnPause.text = Constants.Text.Pause;
                 _downloadAsync.UnPause();

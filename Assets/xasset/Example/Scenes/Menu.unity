@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.3587269, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -245,7 +245,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Clear
+  m_Text: "\u6E05  \u7406"
 --- !u!222 &15514480
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -745,7 +745,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Puase/UnPause
+  m_Text: " \u6682  \u505C/\u7EE7  \u7EED"
 --- !u!222 &235231167
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -901,7 +901,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0005538802, y: -0.000021718386}
+  m_AnchoredPosition: {x: 0.0007168569, y: -0.000021718386}
   m_SizeDelta: {x: 0, y: 720}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &349195933
@@ -1235,10 +1235,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'Download
-
-
-    Example for download files.'
+  m_Text: "Download\n\n\u6587\u4EF6\u4E0B\u8F7D\u3001\u6682\u505C\u3001\u7EE7\u7EED\u3001\u53D6\u6D88\u3001\u8FDB\u5EA6\u901F\u5EA6\u67E5\u8BE2\u793A\u4F8B\u4EE3\u7801\u3002"
 --- !u!222 &459994995
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1465,7 +1462,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1060, y: 400}
+  m_SizeDelta: {x: 1280, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &756840824
 MonoBehaviour:
@@ -1732,7 +1729,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Clear
+  m_Text: "\u6E05  \u7406"
 --- !u!222 &765796529
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2522,7 +2519,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Clear
+  m_Text: "\u6E05  \u7406"
 --- !u!222 &1043880836
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2600,7 +2597,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Select a example scene to continue.
+  m_Text: "\u9009\u62E9\u4E00\u4E2A\u793A\u4F8B\u573A\u666F\uFF0C\u4F53\u9A8C\u5BF9\u5E94\u529F\u80FD\u793A\u4F8B"
 --- !u!222 &1044997775
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2752,11 +2749,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'LoadAsset
-
-
-    Example for  Load Asset, InstantiateAsync, Autorelease
-    etc.'
+  m_Text: "LoadAsset\n\n\u8D44\u6E90\u52A0\u8F7D\u3001\u5F02\u6B65\u5B9E\u4F8B\u5316\uFF08\u5FAA\u73AF\u4F9D\u8D56\uFF09\u3001\u5F02\u6B65\u8F6C\u540C\u6B65\u3001\u81EA\u52A8\u56DE\u6536\u673A\u5236\u7684\u793A\u4F8B\u4EE3\u7801\u3002"
 --- !u!222 &1226502633
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2834,7 +2827,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Back
+  m_Text: "\u8FD4  \u56DE"
 --- !u!222 &1507177456
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3058,7 +3051,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Click clear to remove downloaded files.
+  m_Text: "\u70B9\u51FB\u6E05\u7406\u53EF\u4EE5\u5220\u9664\u5DF2\u7ECF\u4E0B\u8F7D\u7684\u7F13\u5B58"
 --- !u!222 &1719704347
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3375,7 +3368,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Puase/UnPause
+  m_Text: " \u6682  \u505C/\u7EE7  \u7EED"
 --- !u!222 &1802813818
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3562,7 +3555,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Puase/UnPause
+  m_Text: " \u6682  \u505C/\u7EE7  \u7EED"
 --- !u!222 &1909045818
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3788,7 +3781,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1080, y: 1920}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -3942,10 +3935,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'LoadAdditiveScene
-
-
-    Example for Load/Unload Additive Scene.'
+  m_Text: "LoadAdditiveScene\n\nAdditive\u573A\u666F\u52A0\u8F7D\uFF08\u5F02\u6B65\uFF09/\u56DE\u6536\u793A\u4F8B\u4EE3\u7801\u3002"
 --- !u!222 &2124479820
 CanvasRenderer:
   m_ObjectHideFlags: 0

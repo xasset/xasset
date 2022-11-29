@@ -4,6 +4,7 @@
 /[Bb]uild/
 /[Bb]uilds/
 /[Bb]undles/
+/[Bb]undlesCache/
 /Assets/AssetStoreTools*
 
 # Visual Studio 2015 cache directory

@@ -6,15 +6,13 @@ namespace xasset.editor
     [Serializable]
     public class BundleSettings
     {
+        public bool encryption = true;
         public bool checkReference = true;
         public bool applyBundleNameWithHash;
         public bool splitBundleNameWithBuild = true;
         public bool packByFileForAllScenes = true;
         public bool packTogetherForAllShaders = true;
-        public string bundleExtension = ".bundle";
-
-        public List<string> excludeFiles = new List<string>
-            {".meta", ".dll", ".spriteatlas"};
+        public string extension = ".bundle";
 
         public List<string> shaderExtensions = new List<string>
             {".shader", ".shadervariants", ".compute"};

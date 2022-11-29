@@ -5,6 +5,18 @@ using UnityEngine;
 
 namespace xasset
 {
+    [Serializable]
+    public class Version : Downloadable
+    {
+        public int ver;
+        public Manifest manifest { get; set; }
+
+        public string GetFilename()
+        {
+            return $"{name.ToLower()}_{hash}.json";
+        }
+    }
+
     public class Versions : ScriptableObject, ISerializationCallbackReceiver
     {
         public const string Filename = "versions.json";
@@ -12,34 +24,44 @@ namespace xasset
         public List<Version> data = new List<Version>();
         private Dictionary<string, Version> _data = new Dictionary<string, Version>();
 
+        public bool IsNew(Versions v)
+        {
+            return timestamp > v.timestamp;
+        }
+
         public void OnBeforeSerialize()
         {
-            data.Clear();
-            data.AddRange(_data.Values);
-            data.Sort((x, y) => string.Compare(x.build, y.build, StringComparison.Ordinal));
         }
 
         public void OnAfterDeserialize()
         {
             _data = new Dictionary<string, Version>();
-            foreach (var item in data) _data[item.build] = item;
+            foreach (var item in data)
+            {
+                item.file = item.GetFilename();
+                _data[item.name] = item;
+            }
         }
 
         public string GetFilename()
         {
-            return $"versions_v{this}.json";
+            return $"versions_v{ToString()}.json";
         }
 
         public override string ToString()
         {
-            data.Sort((a, b) => string.Compare(a.build, b.build, StringComparison.Ordinal));
+            data.Sort((a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
             return string.Join(".", data.ConvertAll(v => v.ver));
         }
 
-
         public void Set(Version value)
         {
-            _data[value.build] = value;
+            if (!_data.ContainsKey(value.name))
+            {
+                data.Add(value);
+            }
+
+            _data[value.name] = value;
             timestamp = DateTime.Now.ToFileTime();
         }
 

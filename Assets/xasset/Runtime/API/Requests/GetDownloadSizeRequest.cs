@@ -10,11 +10,10 @@ namespace xasset
 
         public Versions versions { get; set; }
         public ulong downloadSize { get; private set; }
-        public string[] assetPaths { get; set; }
 
-        public DownloadRequest DownloadAsync()
+        public DownloadRequestBase DownloadAsync()
         {
-            var request = DownloadContentRequestBatch.Create();
+            var request = DownloadRequestBatch.Create();
             foreach (var content in _contents)
                 if (content.status != DownloadContent.Status.Downloaded)
                     request.AddContent(content);
@@ -24,37 +23,18 @@ namespace xasset
 
         protected override void OnStart()
         {
-            if (Assets.SimulationMode)
+            if (Assets.SimulationMode || Assets.OfflineMode)
             {
                 SetResult(Result.Success);
                 return;
             }
 
-            var set = new HashSet<ManifestBundle>();
-            if (assetPaths.Length == 0)
-                foreach (var version in versions.data)
-                {
-                    var bundles = version.manifest.bundles;
-                    foreach (var bundle in bundles)
-                        set.Add(bundle);
-                }
-            else
-                foreach (var path in assetPaths)
+            foreach (var version in versions.data)
+            {
+                var bundles = version.manifest.bundles;
+                _bundles.AddRange(bundles);
+            }
 
-
-                {
-                    if (!versions.TryGetAssets(path, out var assets)) continue;
-                    foreach (var asset in assets)
-                    {
-                        var bundles = asset.manifest.bundles;
-                        var bundle = bundles[asset.bundle];
-                        set.Add(bundle);
-                        foreach (var dep in bundle.deps)
-                            set.Add(bundles[dep]);
-                    }
-                }
-
-            _bundles.AddRange(set);
             _max = _bundles.Count;
         }
 
@@ -73,13 +53,13 @@ namespace xasset
 
         private void AddContent(ManifestBundle bundle)
         {
-            var url = Assets.GetDownloadURL(bundle.nameWithAppendHash);
-            var savePath = Assets.GetDownloadDataPath(bundle.nameWithAppendHash);
+            var url = Assets.GetDownloadURL(bundle.file);
+            var savePath = Assets.GetDownloadDataPath(bundle.file);
             var content = DownloadContent.Get(url, savePath, bundle.hash, bundle.size);
             content.status = DownloadContent.Status.Default;
             _contents.Add(content);
-            Logger.I($"AddBundle {bundle.nameWithAppendHash} {Assets.IsDownloaded(bundle)}");
-            if (!Assets.IsDownloaded(bundle))
+            Logger.I($"AddBundle {bundle.file} {Assets.IsDownloaded(bundle)}");
+            if (!Assets.IsPlayerAsset(bundle.hash) && !Assets.IsDownloaded(bundle))
                 downloadSize += content.downloadSize;
             else
                 content.status = DownloadContent.Status.Downloaded;

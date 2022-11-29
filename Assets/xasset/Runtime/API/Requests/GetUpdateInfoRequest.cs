@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace xasset
@@ -9,7 +10,7 @@ namespace xasset
 
         protected override void OnStart()
         {
-            if (Assets.SimulationMode)
+            if (Assets.SimulationMode || Assets.OfflineMode)
             {
                 SetResult(Result.Failed);
                 return;
@@ -30,10 +31,12 @@ namespace xasset
             {
                 info = Utility.LoadFromJson<UpdateInfo>(_request.downloadHandler.text);
 
+                // WebGL 下运行时读取 Streaming Assets 目录的值作为下载地址
+                if (Assets.IsWebGLPlatform && !Application.isEditor)
+                    info.downloadURL = Assets.PlayerDataPath;
+
                 if (!Downloader.SimulationMode)
-                    Assets.DownloadURL = Assets.IsWebGLPlatform
-                        ? Assets.PlayerDataPath
-                        : info.downloadURL;
+                    Assets.DownloadURL = info.downloadURL;
 
                 SetResult(Result.Success);
                 return;

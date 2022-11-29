@@ -9,6 +9,6 @@
         LoadAsset,
         LoadAdditiveScene,
         LoadRawAsset,
-        Download
+        Download,
     }
 }

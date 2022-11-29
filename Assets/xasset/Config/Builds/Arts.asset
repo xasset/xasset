@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parameters:
     buildNumber: 0
-    autoGrouping: 1
-    forceRebuild: 0
+    optimizeDependentAssets: 1
+    forceRebuild: 1
     options: 256
     groups:
+    - {fileID: 11400000, guid: 5ca542f1f088e6e4f8c423b26771e6fa, type: 2}
+    - {fileID: 11400000, guid: cfbf579c2f79442a4bb942da0e19f4bc, type: 2}
     - {fileID: 11400000, guid: d4c60234e4402234daa6609fa9f05e70, type: 2}
     - {fileID: 11400000, guid: b51da1dfcce8de146a1dd352542344fa, type: 2}
     - {fileID: 11400000, guid: 7c6a82dfff178744f96c710bbbf2ffd7, type: 2}
     - {fileID: 11400000, guid: eac0c270ed20542beb4a61325e0a8bfd, type: 2}
-    - {fileID: 11400000, guid: cfbf579c2f79442a4bb942da0e19f4bc, type: 2}

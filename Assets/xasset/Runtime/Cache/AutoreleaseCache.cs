@@ -41,11 +41,13 @@ namespace xasset
         private void Release()
         {
             foreach (var request in _requests)
-                if (string.IsNullOrEmpty(request.error))
-                    request.Release();
-
+                request.Release();
+            
             _requests.Clear();
-            foreach (var assets in _queueCaches) assets.Clear();
+            
+            foreach (var assets in _queueCaches) 
+                assets.Clear();
+            
             _queueCaches.Clear();
         }
 

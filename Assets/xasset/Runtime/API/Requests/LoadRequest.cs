@@ -7,17 +7,16 @@ namespace xasset
 
         protected override void OnCompleted()
         {
-            Logger.D($"Load {path} {result}.");
-            Recorder.EndSample(path);
+            Logger.D($"Load {GetType().Name} {path} {result}.");
         }
 
         public void Release()
         {
             if (_refCount == 0)
             {
-                Logger.E($"Release {path} too many times {_refCount}.");
+                Logger.E($"Release {GetType().Name} {path} too many times {_refCount}.");
                 return;
-            }
+            } 
 
             _refCount--;
             if (_refCount > 0) return;
@@ -50,9 +49,7 @@ namespace xasset
             {
                 SendRequest();
                 Recycler.CancelRecycle(this);
-                Recorder.BeginSample(path, this);
             }
-
             _refCount++;
         }
 
@@ -60,9 +57,8 @@ namespace xasset
 
         public void EndRecycle()
         {
-            Logger.D($"Unload {path}.");
+            Logger.D($"Unload {GetType().Name} {path}.");
             OnDispose();
-            Recorder.Unload(path);
         }
 
         public virtual bool CanRecycle()

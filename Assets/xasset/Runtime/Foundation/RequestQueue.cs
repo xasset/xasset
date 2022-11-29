@@ -12,7 +12,6 @@ namespace xasset
 
         public void Enqueue(Request request)
         {
-            Logger.I($"Enqueue {key}");
             queue.Enqueue(request);
         }
 

@@ -7,10 +7,11 @@ namespace xasset.editor
     {
         public void Start(BuildJob job)
         {
-            var buildAssets = ScriptableObject.CreateInstance<BuildCache>();
+            var buildAssets = ScriptableObject.CreateInstance<BuildAssets>();
             buildAssets.bundledAssets = job.bundledAssets.ToArray();
+            buildAssets.rawAssets = job.rawAssets.ToArray();
             var json = JsonUtility.ToJson(buildAssets);
-            var path = Settings.GetCachePath(job.parameters.build + ".json");
+            var path = Settings.GetCachePath(job.parameters.name + ".json");
             File.WriteAllText(path, json);
         }
     }

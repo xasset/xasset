@@ -1,0 +1,6 @@
+{
+  "name": "xasset.demo",
+  "references": [
+    "xasset"
+  ]
+}
