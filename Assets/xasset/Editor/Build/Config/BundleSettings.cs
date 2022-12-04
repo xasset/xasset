@@ -6,7 +6,6 @@ namespace xasset.editor
     [Serializable]
     public class BundleSettings
     {
-        public bool encryption = true;
         public bool checkReference = true;
         public bool applyBundleNameWithHash;
         public bool splitBundleNameWithBuild = true;
