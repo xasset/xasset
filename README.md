@@ -6,7 +6,9 @@ xasset 是流行的 Unity 资源系统。借助 xasset，不仅可以使用负�
 - GitHub：https://github.com/xasset/xasset
 - UOS CDN：https://uos.unity.cn/partner/xasset
 
-了解更多 xasset 的产品特性，可以前往 xasset 的[官网](https://xasset.cc) 查看。另外，Unity 中国官方专门为 xasset 用户提供了方便易用的 CDN 服务，如果已经在本地使用 xasset 打包好了资源了，只需 3 步，就能使用 Unity中国官方的 UOS CDN 进行资源的云端管理，需要尝新体验或了解更多，可以打开上面的 [UOS CDN](https://uos.unity.cn/partner/xasset) 的链接查看。
+了解更多 xasset 的产品特性，可以前往 xasset 的[官网](https://xasset.cc) 查看。
+
+另外，Unity 中国官方专门为 xasset 用户定制了开发期免费的 CDN 服务，如果已经在本地使用 xasset 打包好了资源了，只需 3 步，就能使用 Unity 中国官方的 UOS CDN 进行资源的云端管理，具体可以打开上面的 [UOS CDN](https://uos.unity.cn/partner/xasset) 的链接查看。
 
 ## 最近更新
 
@@ -35,6 +37,10 @@ xasset 是流行的 Unity 资源系统。借助 xasset，不仅可以使用负�
 - 带有场景管理、资源加载、文件下载的示例，提供了循环依赖加载、子资源加载、异步转同步、叠加场景管理和常规下载操作的功能演示。
 
 > 请注意，个人或 3 人以下的小团队可以使用免费的开源版。对于公司，需要获得我们的授权许可才能使用，我们的授权有专门的[用户协议](https://xasset.cc/license)，只有接受用户协议的条款才能订阅。通过你们的支持，我们不断为大家改进 xasset。
+
+## 用法
+
+2022.2 版本大体可以参考这个文档进行使用：https://xasset.cc/docs/next/examples。
 
 ## 订阅版
 
