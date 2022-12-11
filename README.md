@@ -8,7 +8,7 @@ xasset 是流行的 Unity 资源系统。借助 xasset，不仅可以使用负�
 
 了解更多 xasset 的产品特性，可以前往 xasset 的[官网](https://xasset.cc) 查看。
 
-另外，Unity 中国官方专门为 xasset 用户定制了开发期免费的 CDN 服务，如果已经在本地使用 xasset 打包好了资源了，只需 3 步，就能使用 Unity 中国官方的 UOS CDN 进行资源的云端管理，具体可以打开上面的 [UOS CDN](https://uos.unity.cn/partner/xasset) 的链接查看。
+另外，Unity 中国官方专门为 xasset 用户定制了开发期免费的 CDN 服务，如果已经在本地使用 xasset 打包好了资源了，只需 3 步，就能使用 UOS CDN 进行 Unity 资源的云端管理，具体可以打开上面的 [UOS CDN](https://uos.unity.cn/partner/xasset) 的链接查看。
 
 ## 最近更新
 
