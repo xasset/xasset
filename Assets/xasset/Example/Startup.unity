@@ -171,9 +171,9 @@ MonoBehaviour:
   startWithScene: 0
   loggable: 1
   autoUpdate: 1
-  simulationMode: 1
+  simulationMode: 0
   offlineMode: 1
-  benchmarkMode: 1
+  benchmarkMode: 0
   baseUpdateURL: http://127.0.0.1/Bundles
 --- !u!114 &1715045639
 MonoBehaviour:
