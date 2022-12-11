@@ -130,10 +130,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1715045637}
-  - component: {fileID: 1715045641}
-  - component: {fileID: 1715045640}
-  - component: {fileID: 1715045639}
-  - component: {fileID: 1715045643}
   - component: {fileID: 1715045638}
   m_Layer: 0
   m_Name: Main
@@ -169,67 +165,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startWithScene: 0
-  loggable: 1
-  autoUpdate: 1
-  simulationMode: 0
-  offlineMode: 1
-  benchmarkMode: 0
-  baseUpdateURL: http://127.0.0.1/Bundles
---- !u!114 &1715045639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1715045636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f87fa230557645c79a06e0df8aafc951, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1715045640
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1715045636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb4d3b1bc50cdc34a94472494ba65671, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxRequests: 10
-  maxUpdateTimeSlice: 0.016666668
-  autoSlicing: 1
---- !u!114 &1715045641
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1715045636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df6b468871024fa58591d405c6d7dc66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxRequests: 5
-  maxRetryTimes: 2
-  simulationMode: 1
---- !u!114 &1715045643
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1715045636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74bfab41e46440379d682c447504918e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  updateInterval: 0.3
 --- !u!1 &1975843089
 GameObject:
   m_ObjectHideFlags: 0
