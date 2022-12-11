@@ -109,7 +109,7 @@ namespace xasset.editor
                     value.path
                 });
                 var set = new HashSet<string>();
-                var exclude = Settings.GetDefaultSettings().excludeFiles;
+                var exclude = Settings.GetDefaultSettings().bundleSettings.excludeFiles;
                 foreach (var guild in guilds)
                 {
                     var child = AssetDatabase.GUIDToAssetPath(guild);

@@ -19,18 +19,11 @@ namespace xasset.editor
     [CreateAssetMenu(fileName = nameof(Settings), menuName = "xasset/" + nameof(Settings))]
     public class Settings : ScriptableObject
     {
-        public List<string> excludeFiles = new List<string>
-        {
-            ".cs",
-            ".cginc",
-            ".hlsl",
-            ".spriteatlas",
-            ".dll",
-        };
-
+        public string updateInfoURL = "http://127.0.0.1/";
         public string downloadURL = "http://127.0.0.1/";
         public PlayerAssetsSplitMode playerAssetsSplitMode = PlayerAssetsSplitMode.IncludeAllAssets;
-        public bool buildAssetPackAssets;
+        public bool simulationMode;
+        public bool offlineMode;
         public BundleSettings bundleSettings = new BundleSettings();
         private static string Filename => $"Assets/xasset/Config/{nameof(Settings)}.asset";
 
@@ -112,7 +105,7 @@ namespace xasset.editor
             var set = new HashSet<string>();
             set.UnionWith(AssetDatabase.GetDependencies(assetPath));
             set.Remove(assetPath);
-            var exclude = GetDefaultSettings().excludeFiles;
+            var exclude = GetDefaultSettings().bundleSettings.excludeFiles;
             // Unity 会存在场景依赖场景的情况。
             set.RemoveWhere(s => s.EndsWith(".unity") || exclude.Exists(s.EndsWith));
             return set.ToArray();

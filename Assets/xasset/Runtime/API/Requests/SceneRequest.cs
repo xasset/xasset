@@ -52,7 +52,7 @@ namespace xasset
         public override void RecycleAsync()
         {
             if (!withAdditive || !Additives.Contains(this)) return;
-            var scene = SceneManager.GetSceneByPath(info.path);
+            var scene = SceneManager.GetSceneByPath(path);
             if (!scene.IsValid()) return;
             _unloadAsync = SceneManager.UnloadSceneAsync(scene.name);
             Unloading.Add(this);

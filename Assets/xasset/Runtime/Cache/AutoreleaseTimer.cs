@@ -3,7 +3,7 @@
 namespace xasset
 {
     [DisallowMultipleComponent]
-    public class AutoreleaseUpdater : MonoBehaviour
+    public class AutoreleaseTimer : MonoBehaviour
     {
         [SerializeField] private float updateInterval = 0.3f;
         private float _lastUpdateTime;

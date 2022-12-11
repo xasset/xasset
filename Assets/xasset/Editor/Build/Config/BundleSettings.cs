@@ -15,5 +15,14 @@ namespace xasset.editor
 
         public List<string> shaderExtensions = new List<string>
             {".shader", ".shadervariants", ".compute"};
+
+        public List<string> excludeFiles = new List<string>
+        {
+            ".cs",
+            ".cginc",
+            ".hlsl",
+            ".spriteatlas",
+            ".dll",
+        };
     }
 }

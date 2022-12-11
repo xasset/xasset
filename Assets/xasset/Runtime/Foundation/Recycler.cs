@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
 
 namespace xasset
@@ -24,22 +23,18 @@ namespace xasset
             UnusedAssets.Enqueue(asset);
         }
 
-        public static ulong UnloadAssetTimes { get; private set; }
-        public static ulong MaxUnloadAssetsTimes { get; set; } = 5;
 
         private void Update()
         {
-            while (UnusedAssets.Count > 0)
+            if (UnusedAssets.Count > 0)
             {
-                var item = UnusedAssets.Dequeue();
-                UnloadAssetTimes++;
-                Resources.UnloadAsset(item);
-            }
+                while (UnusedAssets.Count > 0)
+                {
+                    var item = UnusedAssets.Dequeue();
+                    Resources.UnloadAsset(item);
+                }
 
-            if (UnloadAssetTimes >= MaxUnloadAssetsTimes)
-            {
                 Resources.UnloadUnusedAssets();
-                UnloadAssetTimes = 0;
             }
 
             if (Scheduler.Working) return; // 有加载的时候不回收资源，防止 Unity 引擎底层出异常。 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
 
 namespace xasset
@@ -59,8 +58,6 @@ namespace xasset
 
         private void OnGUI()
         {
-            
-            GUILayout.Label($"Unloaded Assets: {Recycler.UnloadAssetTimes}/{Recycler.MaxUnloadAssetsTimes}");
             var str = GUILayout.TextField(_searchString, GUILayout.Width(Screen.width - 8));
             if (str != _searchString)
             {

@@ -16,7 +16,7 @@ namespace xasset
                 return;
             }
 
-            _request = UnityWebRequest.Get(Assets.UpdateURL);
+            _request = UnityWebRequest.Get(Assets.UpdateInfoURL);
             _request.certificateHandler = new DownloadCertificateHandler();
             _request.SendWebRequest();
         }
@@ -31,11 +31,8 @@ namespace xasset
             {
                 info = Utility.LoadFromJson<UpdateInfo>(_request.downloadHandler.text);
 
-                // WebGL 下运行时读取 Streaming Assets 目录的值作为下载地址
-                if (Assets.IsWebGLPlatform && !Application.isEditor)
-                    info.downloadURL = Assets.PlayerDataPath;
-
-                if (!Downloader.SimulationMode)
+                // Web GL 直接读取 PlayerDataPath
+                if (!Application.isEditor && Assets.IsWebGLPlatform)
                     Assets.DownloadURL = info.downloadURL;
 
                 SetResult(Result.Success);
