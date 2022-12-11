@@ -23,10 +23,7 @@ namespace xasset
 
         public static InitializeRequest InitializeAsync(Action<Request> completed = null)
         {
-            var request = new InitializeRequest();
-            request.SendRequest();
-            request.completed = completed;
-            return request;
+            return InitializeRequest.InitializeAsync(completed);
         }
 
         public static GetUpdateInfoRequest GetUpdateInfoAsync()

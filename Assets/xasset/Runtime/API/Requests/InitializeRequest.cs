@@ -5,6 +5,25 @@ namespace xasset
 {
     public class InitializeRequest : Request
     {
+        private static InitializeRequest _request;
+
+        public static InitializeRequest InitializeAsync(Action<Request> completed = null)
+        {
+            if (_request == null)
+            {
+                _request = new InitializeRequest();
+                _request.SendRequest();
+                _request.completed = completed;
+            }
+
+            if (_request.isDone)
+            {
+                ActionRequest.CallAsync(_request.Complete);
+            }
+
+            return _request;
+        }
+
         public static Func<IInitializeHandler> CreateHandler { get; set; } = RuntimeInitializeHandler.CreateInstance;
 
         public IInitializeHandler handler { get; } = CreateHandler();
