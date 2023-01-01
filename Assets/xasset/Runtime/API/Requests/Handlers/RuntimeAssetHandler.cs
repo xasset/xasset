@@ -90,6 +90,7 @@ namespace xasset
         public void Dispose(AssetRequest request)
         {
             _dependencies.Release();
+            _loadAssetAsync = null;
         }
 
         public void WaitForCompletion(AssetRequest request)
