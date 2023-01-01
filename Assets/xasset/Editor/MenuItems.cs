@@ -7,6 +7,8 @@ namespace xasset.editor
 {
     public static class MenuItems
     {
+        private const string kSimulationMode = "xasset/Simulation Mode";
+
         [MenuItem("xasset/About xasset", false, 1)]
         public static void OpenAbout()
         {
@@ -20,12 +22,29 @@ namespace xasset.editor
         }
 
 
-        [MenuItem("xasset/Open/Settings", false, 100)]
+        [MenuItem("xasset/Open/Settings", false, 1)]
         public static void PingSettings()
         {
             Selection.activeObject = Settings.GetDefaultSettings();
             EditorGUIUtility.PingObject(Selection.activeObject);
             EditorUtility.FocusProjectWindow();
+        }
+
+        [MenuItem(kSimulationMode, false, 1)]
+        public static void SwitchSimulationMode()
+        {
+            var settings = Settings.GetDefaultSettings();
+            settings.simulationMode = !settings.simulationMode;
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
+        }
+
+        [MenuItem(kSimulationMode, true, 100)]
+        public static bool RefreshSimulationMode()
+        {
+            var settings = Settings.GetDefaultSettings();
+            Menu.SetChecked(kSimulationMode, settings.simulationMode);
+            return true;
         }
 
         [MenuItem("xasset/Open/Startup Scene", false, 100)]
@@ -119,10 +138,7 @@ namespace xasset.editor
             var versions = Utility.LoadFromFile<Versions>(path);
             var filename = versions.GetFilename();
             var records = Utility.LoadFromFile<BuildRecords>(Settings.GetCachePath(BuildRecords.Filename));
-            if (records.TryGetValue(filename, out var value))
-            {
-                Builder.GetChanges(value.changes, filename);
-            }
+            if (records.TryGetValue(filename, out var value)) Builder.GetChanges(value.changes, filename);
         }
 
         [MenuItem("Assets/To Json")]
