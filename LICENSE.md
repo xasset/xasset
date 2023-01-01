@@ -7,7 +7,7 @@
 
 ## 免费许可
 
-Copyright © 2021 [xasset 创作团队](https://github.com/xasset)
+Copyright © 2023 [xasset 创作团队](https://github.com/xasset)
 
 ### 资格
 
@@ -38,4 +38,4 @@ Copyright © 2021 [xasset 创作团队](https://github.com/xasset)
 
 如果您不属于有资格获得免费许可的实体组，则需要获得公司许可才能使用 xasset。此许可证将使您能够将 xasset 用于免费许可证中指定的允许用例，并让您获得优先支持。
 
-访问 [xasset.pro/price](https://xasset.pro/price) 了解定价和购买许可证。
+访问 [xasset.cc/price](https://xasset.cc/price) 了解定价和购买许可证。
