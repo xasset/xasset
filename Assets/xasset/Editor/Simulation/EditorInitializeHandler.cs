@@ -58,6 +58,14 @@ namespace xasset.editor
             max = assets.Length;
             foreach (var asset in assets)
                 _queue.Enqueue(asset);
+
+            // 编辑器仿真模式开启 引用技术回收资源优化内存 可能对性能有影响 
+            References.GetFunc = Settings.GetDependencies;
+            References.Enabled = true;
+
+            if (!Downloader.SimulationMode) return;
+            Assets.UpdateInfoURL = $"{Assets.Protocol}{Settings.GetCachePath(UpdateInfo.Filename)}";
+            Assets.DownloadURL = $"{Assets.Protocol}{Settings.PlatformDataPath}";
         }
 
         public static IInitializeHandler CreateInstance()

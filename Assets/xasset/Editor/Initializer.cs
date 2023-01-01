@@ -4,25 +4,17 @@ namespace xasset.editor
 {
     public static class Initializer
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        [RuntimeInitializeOnLoadMethod]
         private static void RuntimeInitializeOnLoad()
         {
+            var settings = Settings.GetDefaultSettings();
             Assets.Platform = Settings.Platform;
-            Assets.SimulationMode = Settings.GetDefaultSettings().simulationMode;
-            Assets.OfflineMode = Settings.GetDefaultSettings().offlineMode;
-
-            if (Assets.SimulationMode)
-            {
-                InitializeRequest.CreateHandler = EditorInitializeHandler.CreateInstance;
-                AssetRequest.CreateHandler = EditorAssetHandler.CreateInstance;
-                SceneRequest.CreateHandler = EditorSceneHandler.CreateInstance;
-                References.GetFunc = Settings.GetDependencies;
-                References.Enabled = true;
-            }
-
-            if (!Downloader.SimulationMode) return;
-            Assets.UpdateInfoURL = $"{Assets.Protocol}{Settings.GetCachePath(UpdateInfo.Filename)}";
-            Assets.DownloadURL = $"{Assets.Protocol}{Settings.PlatformDataPath}";
+            Assets.SimulationMode = settings.simulationMode;
+            Assets.OfflineMode = settings.offlineMode;
+            if (!Assets.SimulationMode) return;
+            InitializeRequest.CreateHandler = EditorInitializeHandler.CreateInstance;
+            AssetRequest.CreateHandler = EditorAssetHandler.CreateInstance;
+            SceneRequest.CreateHandler = EditorSceneHandler.CreateInstance;
         }
     }
 }
