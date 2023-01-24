@@ -161,7 +161,6 @@ namespace xasset
             }
 
             var json = _unityWebRequest.downloadHandler.text;
-            Logger.D($"LoadVersionsHeader {json}");
             Assets.Versions = Utility.LoadFromJson<Versions>(json);
             _unityWebRequest.Dispose();
             foreach (var version in Assets.Versions.data)

@@ -16,7 +16,7 @@ namespace xasset
     [DisallowMultipleComponent]
     public class Logger : MonoBehaviour
     {
-        [SerializeField] private LogLevel logLevel = LogLevel.Info;
+        [SerializeField] private LogLevel logLevel = LogLevel.Debug;
         private const string TAG = "[xasset]";
 
 

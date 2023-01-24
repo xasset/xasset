@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updateInfoURL: http://127.0.0.1/
   downloadURL: http://127.0.0.1/
-  playerAssetsSplitMode: 0
+  playerAssetsSplitMode: 1
   simulationMode: 0
   offlineMode: 1
   bundleSettings:

@@ -16,10 +16,10 @@ namespace xasset.editor
                 Settings.GetCachePath(Settings.Platform.ToString()),
                 Settings.GetCachePath($"{Settings.Platform}.manifest"),
                 Settings.GetCachePath(Versions.Filename),
-                Settings.GetDataPath(UpdateInfo.Filename)
+                Settings.GetCachePath(UpdateInfo.Filename)
             };
 
-            var updateInfo = Utility.LoadFromFile<UpdateInfo>(Settings.GetDataPath(UpdateInfo.Filename));
+            var updateInfo = Utility.LoadFromFile<UpdateInfo>(Settings.GetCachePath(UpdateInfo.Filename));
             usedFiles.Add(Settings.GetDataPath(updateInfo.file));
             var versions = Utility.LoadFromFile<Versions>(Settings.GetDataPath(updateInfo.file));
 
