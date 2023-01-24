@@ -2,13 +2,11 @@
 
 xasset 是专业的 Unity 资源系统。
 
-xasset 提供开箱即用的打包、分包、加密、边玩边下和自动切片等技术，可以更轻快的开发更流畅的跨平台 Unity 程序。
+xasset 提供开箱即用的打包、分包、加密、边玩边下和自动切片等技术，可以更轻快的开发更流畅的跨平台 Unity 程序。了解更多 xasset 的产品特性，可以前往 xasset 的[官网](https://xasset.cc) 查看。
 
 - 官网：https://xasset.cc
 - GitHub：https://github.com/xasset/xasset
 - UOS CDN：https://uos.unity.cn/partner/xasset
-
-了解更多 xasset 的产品特性，可以前往 xasset 的[官网](https://xasset.cc) 查看。
 
 另外，xasset 已经成为 Unity 中国官方认可的合作伙伴，xasset 用户可以在开发阶段使用 Unity 官方为 xasset 用户提供的专属的开发阶段免费的 CDN 服务，了解相关服务的使用，可以打开 [UOS CDN](https://uos.unity.cn/partner/xasset) 的链接查看。
 
