@@ -40,7 +40,7 @@ xasset 提供开箱即用的打包、分包、加密、边玩边下和自动切�
 
 ## 用法
 
-2022.2 版本大体可以参考这个文档进行使用：https://xasset.cc/docs/next/examples。
+2022.2 版本大体可以参考这个文档进行使用：https://xasset.cc/docs/examples
 
 ## 订阅版
 
