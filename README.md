@@ -27,7 +27,7 @@ xasset 提供开箱即用的打包、分包、加密、边玩边下和自动切�
 
 ## 开源版
 
-[这里](https://github.com/xasset/xasset)是xasset-2022.2的开源版，这个版本主要提供了以下功能特性：
+[这里](https://github.com/xasset/xasset)是xasset-2023的开源版，这个版本主要提供了以下功能特性：
 
 - 分布式打包系统：配置驱动，提供自动分组机制可以快速优化打包质量，支持为分组的资源设置寻址模式可以等。
 - 跨平台Unity资源和场景加载机制，业务代码可以一次编码，多处运行，支持Android、iOS、PC、OSX等平台。
@@ -40,7 +40,72 @@ xasset 提供开箱即用的打包、分包、加密、边玩边下和自动切�
 
 ## 用法
 
-2022.2 版本大体可以参考这个文档进行使用：https://xasset.cc/docs/examples
+### 一、安装
+
+可以直接把 Assets 目录下的 xasset 文件夹复制到 Unity 工程使用。
+
+### 二、打包
+
+在 Unity 编辑器中，选择 xasset>Build Bundles 可以针对已经创建好的 Build 配置中的资源进行打包。
+
+- 没有选中 Build 配置的时候，会针对所有 Build 配置相关的资源进行打包。
+- 选中 Build 配置的时候，只会针对选中（支持多选）的 Build 配置相关的资源进行打包。
+
+创建 Build 配置的过程大致可以参考：[打包资源](https://xasset.cc/docs/examples#%E6%89%93%E5%8C%85%E8%B5%84%E6%BA%90) 的说明。
+
+### 三、加载
+
+加载资源前需要先对 xasset 进行初始化，这里是初始化 xasset 的示例代码。
+
+```csharp
+var initializeAsync = Assets.InitializeAsync();
+yield return initializeAsync;
+```
+
+初始化后，可以使用 Asset.Load(Async) 来加载 Unity 中的资源。
+
+```csharp
+// 加载 prefab
+var path = "Assets/Prefabs/Cube.prefab"; 
+var request = Asset.LoadAsync(path, typeof(GameObject));
+yield return request;
+var prefab = request.asset;
+var go = Object.Instantiate(prefab);
+// 回收 prefab，在回收前，需要先把 实例化的 go 销毁。
+// Object.DestroyImmediate(go);
+request.Release();
+```
+
+另外，还可以使用 Scene.Load(Async) 来加载 Unity 中的场景。具体用法可以参考：[加载 Unity 中的场景](https://xasset.cc/docs/examples#加载-unity-中的场景) 的说明。
+
+### 四、其他
+
+#### 输出目录
+
+输出目录是打包后输出文件的目录。
+
+- Bundles 目录为运行时使用的数据目录，可以直接放到 CDN。
+- Bundles Cache 目录为编辑器数据缓存目录，主要用来给引擎增量打包使用。
+- Streaming Assets > Bundles 安装包数据目录。打包安装包的时候 xasset 会自动根据分包配置将安装包内的资源复制到此目录。
+
+> 注：Bundles 和 Bundles Cache 目录没事都不要删除。
+
+#### 仿真模式
+
+在 Unity 编辑器中，选择使用 xasset>Simulation Mode 可以开启/关闭「仿真模式」。
+
+- 开启后，可以跳过打包运行。
+- 未开启，需要先打包资源才能运行。
+
+#### 离线模式
+
+Settings 配置的 Offline Mode 选项开启后，不论是编辑器还是运行时都会禁用更新。
+
+#### 仿真下载
+
+Settings 配置的 Simulation Download 开启后，编辑器下在打包后，关闭「仿真模式」 和「离线模式」可以不用把资源部署到 CDN 体验真机资源更新加载过程。
+
+更多说明后续会补充在 [xasset.cc](https://xasset.cc/) 中。
 
 ## 订阅版
 
