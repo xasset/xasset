@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace xasset
 {
     internal struct RuntimeLocalBundleHandler : IBundleHandler
@@ -49,7 +51,9 @@ namespace xasset
                 return;
             }
 
-            if (_retryTimes < Downloader.MaxRetryTimes)
+            // 网络可达才自动 Retry
+            if (Application.internetReachability != NetworkReachability.NotReachable
+                && _retryTimes < Downloader.MaxRetryTimes)
             {
                 _downloadAsync.Retry();
                 _retryTimes++;

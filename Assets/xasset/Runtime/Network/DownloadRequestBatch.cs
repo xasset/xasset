@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace xasset
 {
@@ -43,8 +44,11 @@ namespace xasset
                 working.Add(request);
             }
 
+            _retryTimes = 0;
             BeganSample();
         }
+
+        private byte _retryTimes;
 
         private bool Update()
         {
@@ -58,7 +62,7 @@ namespace xasset
             {
                 var content = pair.Value;
                 downloadSize += content.size;
-            } 
+            }
 
             var failed = 0;
             for (var index = 0; index < working.Count; index++)
@@ -85,7 +89,18 @@ namespace xasset
             if (failed == 0)
                 SetResult(Result.Success);
             else
+            {
+                // 网络可达才自动 Retry
+                if (Application.internetReachability != NetworkReachability.NotReachable
+                    && _retryTimes < Downloader.MaxRetryTimes)
+                {
+                    Retry();
+                    _retryTimes++;
+                    return true;
+                }
+
                 SetResult(Result.Failed, string.Format(DownloadErrors.FailedToDownloadSomeFiles, failed));
+            }
 
             Complete();
             return false;

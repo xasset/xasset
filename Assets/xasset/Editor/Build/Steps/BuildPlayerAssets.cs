@@ -47,9 +47,7 @@ namespace xasset.editor
 
             var dataPath = $"{Application.streamingAssetsPath}/{Assets.Bundles}";
             var settings = Settings.GetDefaultSettings();
-            var playerAssets = ScriptableObject.CreateInstance<PlayerAssets>();
-            playerAssets.offlineMode = settings.offlineMode;
-            playerAssets.updateInfoURL = $"{settings.updateInfoURL}{Assets.Bundles}/{Settings.Platform}/{UpdateInfo.Filename}";
+            var playerAssets = settings.GetPlayerAssets();
             if (Directory.Exists(dataPath))
             {
                 FileUtil.DeleteFileOrDirectory(dataPath);

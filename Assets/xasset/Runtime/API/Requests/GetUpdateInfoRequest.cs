@@ -32,7 +32,7 @@ namespace xasset
                 info = Utility.LoadFromJson<UpdateInfo>(_request.downloadHandler.text);
 
                 // Web GL 直接读取 PlayerDataPath
-                if (!Application.isEditor && Assets.IsWebGLPlatform)
+                if (Assets.IsWebGLPlatform && !Application.isEditor)
                     Assets.DownloadURL = info.downloadURL;
 
                 SetResult(Result.Success);

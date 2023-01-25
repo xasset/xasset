@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace xasset
 {
@@ -86,14 +87,16 @@ namespace xasset
             if (_contents.result == DownloadRequestBase.Result.Failed)
             {
                 Logger.W($"Failed to download versions with error {_contents.error}.");
-                if (_retryTimes > Downloader.MaxRetryTimes)
+
+                if (Application.internetReachability != NetworkReachability.NotReachable
+                    && _retryTimes < Downloader.MaxRetryTimes)
                 {
-                    SetResult(Result.Failed, _contents.error);
+                    _contents.Retry();
+                    _retryTimes++;
                     return;
                 }
 
-                _contents.Retry();
-                _retryTimes++;
+                SetResult(Result.Failed, _contents.error);
                 return;
             }
 

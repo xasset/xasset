@@ -58,7 +58,6 @@ namespace xasset
             var content = DownloadContent.Get(url, savePath, bundle.hash, bundle.size);
             content.status = DownloadContent.Status.Default;
             _contents.Add(content);
-            Logger.I($"AddBundle {bundle.file} {Assets.IsDownloaded(bundle)}");
             if (!Assets.IsPlayerAsset(bundle.hash) && !Assets.IsDownloaded(bundle))
                 downloadSize += content.downloadSize;
             else

@@ -22,15 +22,7 @@ namespace xasset.editor
         }
 
 
-        [MenuItem("xasset/Open/Settings", false, 1)]
-        public static void PingSettings()
-        {
-            Selection.activeObject = Settings.GetDefaultSettings();
-            EditorGUIUtility.PingObject(Selection.activeObject);
-            EditorUtility.FocusProjectWindow();
-        }
-
-        [MenuItem(kSimulationMode, false, 1)]
+        [MenuItem(kSimulationMode, false, 50)]
         public static void SwitchSimulationMode()
         {
             var settings = Settings.GetDefaultSettings();
@@ -39,7 +31,7 @@ namespace xasset.editor
             AssetDatabase.SaveAssets();
         }
 
-        [MenuItem(kSimulationMode, true, 100)]
+        [MenuItem(kSimulationMode, true, 50)]
         public static bool RefreshSimulationMode()
         {
             var settings = Settings.GetDefaultSettings();
@@ -47,13 +39,21 @@ namespace xasset.editor
             return true;
         }
 
-        [MenuItem("xasset/Open/Startup Scene", false, 100)]
-        public static void OpenStartupScene()
+        [MenuItem("xasset/Open/Settings")]
+        public static void PingSettings()
         {
-            EditorSceneManager.OpenScene("Assets/xasset/Example/Startup.unity");
+            Selection.activeObject = Settings.GetDefaultSettings();
+            EditorGUIUtility.PingObject(Selection.activeObject);
+            EditorUtility.FocusProjectWindow();
         }
 
-        [MenuItem("xasset/Open/Download Data Path", false, 100)]
+        [MenuItem("xasset/Open/Startup Scene")]
+        public static void OpenStartupScene()
+        {
+            EditorSceneManager.OpenScene("Assets/xasset/Samples/Startup.unity");
+        }
+
+        [MenuItem("xasset/Open/Download Data Path")]
         public static void OpenDownloadBundles()
         {
             EditorUtility.OpenWithDefaultApp(Assets.DownloadDataPath);
@@ -112,9 +112,15 @@ namespace xasset.editor
         [MenuItem("xasset/Clear Bundles", false, 200)]
         public static void ClearBundles()
         {
-            var directory = Settings.PlatformDataPath;
-            if (Directory.Exists(directory))
-                Directory.Delete(directory, true);
+            var dirs = new[]
+            {
+                Settings.PlatformDataPath,
+                Settings.PlatformCachePath,
+            };
+
+            foreach (var dir in dirs)
+                if (Directory.Exists(dir))
+                    Directory.Delete(dir, true);
         }
 
         [MenuItem("xasset/Clear History", false, 200)]

@@ -11,7 +11,7 @@ namespace xasset.tests
         public IEnumerator ActionAsync()
         {
             Downloader.MaxRetryTimes = 3;
-            Downloader.MaxRequests = 5;
+            Downloader.MaxDownloads = 5;
             Downloader.CreateHandler = request => new DownloadHandlerUWR(request);
             Downloader.Pause(); 
 

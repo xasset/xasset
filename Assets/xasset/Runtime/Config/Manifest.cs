@@ -53,6 +53,8 @@ namespace xasset
 
     public class Manifest : ScriptableObject, ISerializationCallbackReceiver
     {
+        public string extension;
+        public bool saveBundleName;
         public string build;
         public string[] dirs = Array.Empty<string>();
         public ManifestAsset[] assets = Array.Empty<ManifestAsset>();
@@ -92,16 +94,29 @@ namespace xasset
                 }
             }
 
-
-            foreach (var bundle in bundles)
+            if (saveBundleName)
             {
-                var extension = Path.GetExtension(bundle.name);
-                var key = string.IsNullOrEmpty(extension)
-                    ? $"{bundle.name}_{bundle.hash}"
-                    : $"{bundle.name.Replace(extension, string.Empty)}_{bundle.hash}{extension}";
-                bundle.file = key;
-                bundle.manifest = this;
+                foreach (var bundle in bundles)
+                {
+                    var key = string.IsNullOrEmpty(extension)
+                        ? $"{bundle.name}_{bundle.hash}"
+                        : $"{bundle.name.Replace(extension, string.Empty)}_{bundle.hash}{extension}";
+                    bundle.file = key;
+                    bundle.manifest = this;
+                }
             }
+            else
+            {
+                foreach (var bundle in bundles)
+                {
+                    var key = string.IsNullOrEmpty(extension)
+                        ? $"{bundle.hash}"
+                        : $"{bundle.hash}{extension}";
+                    bundle.file = key;
+                    bundle.manifest = this;
+                }
+            }
+
 
             for (var index = 0; index < assets.Length; index++)
             {

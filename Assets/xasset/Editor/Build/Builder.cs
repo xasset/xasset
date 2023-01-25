@@ -32,7 +32,7 @@ namespace xasset.editor
 
             PreprocessBuildBundles?.Invoke(builds, settings);
 
-            if (settings.bundleSettings.checkReference && FindReferences()) return;
+            if (settings.bundle.checkReference && FindReferences()) return;
 
             CreateDirectories();
 
@@ -142,8 +142,6 @@ namespace xasset.editor
                 if (!string.IsNullOrEmpty(task.error)) return true;
 
                 foreach (var asset in task.bundledAssets) assets.Add(asset);
-
-                foreach (var asset in task.rawAssets) assets.Add(asset);
             }
 
             var assetWithGroups = new Dictionary<string, HashSet<string>>();
@@ -227,6 +225,6 @@ namespace xasset.editor
                 ? $"GetChanges from {name} with following files({Utility.FormatBytes(size)}):\n {sb}"
                 : "Nothing changed.");
             return size;
-        } 
+        }
     }
 }

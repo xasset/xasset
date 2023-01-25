@@ -10,56 +10,8 @@ namespace xasset.editor
     {
         public void Start(BuildJob job)
         {
-            if (job.bundledAssets.Count > 0)
-                if (!BuildBundlesWithBundledAssets(job))
-                    return;
-
-            if (job.rawAssets.Count == 0) return;
-            BuildBundlesWithRawAssets(job);
-        }
-
-        private static void BuildBundlesWithRawAssets(BuildJob job)
-        {
-            foreach (var asset in job.rawAssets)
-            {
-                if (string.IsNullOrEmpty(asset.path))
-                {
-                    Logger.E($"RawAsset not found:{asset.path}");
-                    continue;
-                }
-
-                var file = new FileInfo(asset.path);
-                var hash = Utility.ComputeHash(asset.path);
-                var name = asset.bundle.Replace(Settings.extension, string.Empty);
-                var nameWithAppendHash = $"{name}_{hash}{Settings.extension}";
-                var bundle = new BuildBundle
-                {
-                    group = asset.bundle,
-                    hash = hash,
-                    file = nameWithAppendHash,
-                    assets = new List<string> {asset.path},
-                    size = (ulong) file.Length
-                };
-
-                var path = Settings.GetDataPath(bundle.file);
-                Utility.CreateDirectoryIfNecessary(path);
-                if (!File.Exists(path)) file.CopyTo(path, true);
-
-                job.bundles.Add(bundle);
-            }
-        }
-
-        private static ulong BuildBundle(string path, string newPath)
-        {
-            var bytes = File.ReadAllBytes(path);
-            var size = bytes.Length;
-            Utility.CreateDirectoryIfNecessary(newPath);
-            using (var writer = new BinaryWriter(File.OpenWrite(newPath)))
-            {
-                writer.Write(File.ReadAllBytes(path));
-            }
-
-            return (ulong) size;
+            if (job.bundledAssets.Count <= 0) return;
+            BuildBundlesWithBundledAssets(job);
         }
 
         private static IAssetBundleManifest BuildAssetBundles(BuildJob job)
@@ -77,7 +29,7 @@ namespace xasset.editor
             return null;
         }
 
-        private static bool BuildBundlesWithBundledAssets(BuildJob job)
+        private static void BuildBundlesWithBundledAssets(BuildJob job)
         {
             var nameWithBundles = job.bundles.ToDictionary(o => o.group);
             foreach (var asset in job.bundledAssets)
@@ -103,8 +55,10 @@ namespace xasset.editor
             if (manifest == null)
             {
                 job.TreatError($"Failed to build AssetBundles with {job.parameters.name}.");
-                return false;
+                return;
             }
+
+            var settings = Settings.GetDefaultSettings().bundle;
 
             var assetBundles = manifest.GetAllAssetBundles();
             foreach (var assetBundle in assetBundles)
@@ -116,32 +70,33 @@ namespace xasset.editor
                     var info = new FileInfo(path);
                     if (info.Exists)
                     {
-                        var name = assetBundle.Replace(Settings.extension, string.Empty);
                         var hash = Utility.ComputeHash(path);
-                        var nameWithAppendHash = $"{name}_{hash}{Settings.extension}";
-                        var buildPath = Settings.GetCachePath(nameWithAppendHash);
+                        var nameWithAppendHash = $"{hash}{Settings.extension}";
+                        if (settings.saveBundleName)
+                        {
+                            var name = assetBundle.Replace(Settings.extension, string.Empty);
+                            nameWithAppendHash = $"{name}_{nameWithAppendHash}";
+                        }
+
+                        bundle.size = (ulong) info.Length;
+                        bundle.hash = hash;
                         bundle.file = nameWithAppendHash;
-                        bundle.size = BuildBundle(path, buildPath);
-                        bundle.hash = Utility.ComputeHash(buildPath);
-                        bundle.file = $"{name}_{bundle.hash}{Settings.extension}";
                         var newPath = Settings.GetDataPath(bundle.file);
+                        if (File.Exists(newPath)) continue;
                         Utility.CreateDirectoryIfNecessary(newPath);
-                        if (File.Exists(newPath)) File.Delete(newPath);
-                        File.Move(buildPath, newPath);
+                        File.Copy(path, newPath, true);
                     }
                     else
                     {
                         job.TreatError($"File not found: {info}");
-                        return false;
+                        return;
                     }
                 }
                 else
                 {
                     job.TreatError($"Bundle not found: {assetBundle}");
-                    return false;
+                    return;
                 }
-
-            return true;
         }
     }
 }

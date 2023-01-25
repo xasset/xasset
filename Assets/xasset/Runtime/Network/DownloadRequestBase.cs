@@ -30,7 +30,7 @@ namespace xasset
         public ulong downloadedBytes { get; protected internal set; }
         public ulong downloadSize { get; set; }
         public float progress { get; protected set; }
-        public ulong bandwidth { get; protected internal set; }
+        public ulong bandwidth { get; protected set; }
 
         public bool isDone => status == Status.Completed;
 

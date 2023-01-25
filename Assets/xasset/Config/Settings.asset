@@ -14,12 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updateInfoURL: http://127.0.0.1/
   downloadURL: http://127.0.0.1/
-  playerAssetsSplitMode: 1
+  playerAssetsSplitMode: 2
+  offlineMode: 0
   simulationMode: 0
-  offlineMode: 1
-  bundleSettings:
+  simulationDownload: 0
+  maxDownloads: 5
+  maxRetryTimes: 3
+  bundle:
     checkReference: 1
-    applyBundleNameWithHash: 0
+    saveBundleName: 1
     splitBundleNameWithBuild: 1
     packByFileForAllScenes: 1
     packTogetherForAllShaders: 1

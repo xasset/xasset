@@ -9,7 +9,6 @@ namespace xasset.editor
         PackByFile,
         PackByFolder,
         PackByTopSubFolder,
-        PackByRaw,
         PackByCustom
     }
 

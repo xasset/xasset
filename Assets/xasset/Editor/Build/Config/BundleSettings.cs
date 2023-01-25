@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 namespace xasset.editor
 {
@@ -7,7 +8,7 @@ namespace xasset.editor
     public class BundleSettings
     {
         public bool checkReference = true;
-        public bool applyBundleNameWithHash;
+        public bool saveBundleName = true;
         public bool splitBundleNameWithBuild = true;
         public bool packByFileForAllScenes = true;
         public bool packTogetherForAllShaders = true;

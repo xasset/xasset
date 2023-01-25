@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -19,12 +18,32 @@ namespace xasset.editor
     [CreateAssetMenu(fileName = nameof(Settings), menuName = "xasset/" + nameof(Settings))]
     public class Settings : ScriptableObject
     {
-        public string updateInfoURL = "http://127.0.0.1/";
+        [Header("Player")] public string updateInfoURL = "http://127.0.0.1/";
         public string downloadURL = "http://127.0.0.1/";
         public PlayerAssetsSplitMode playerAssetsSplitMode = PlayerAssetsSplitMode.IncludeAllAssets;
-        public bool simulationMode;
         public bool offlineMode;
-        public BundleSettings bundleSettings = new BundleSettings();
+
+        /// <summary>
+        ///     编辑器仿真模式，开启后，无需打包可以进入播放模式。
+        /// </summary>
+        [Header("Development")] public bool simulationMode = true;
+
+        /// <summary>
+        ///     编辑器下是否开启仿真下载模式，开启后，无需把资源部署到服务器，就行运行真机的更新过程。
+        /// </summary>
+        public bool simulationDownload = true;
+
+        /// <summary>
+        ///     最大并行下载数量
+        /// </summary>
+        [Header("Download")] [Range(1, 10)] public byte maxDownloads = 5;
+
+        /// <summary>
+        ///     最大错误重试次数
+        /// </summary>
+        [Range(0, 5)] public byte maxRetryTimes = 3;
+
+        public BundleSettings bundle = new BundleSettings();
         private static string Filename => $"Assets/xasset/Config/{nameof(Settings)}.asset";
 
         public static BuildGroup GetAutoGroup()
@@ -33,6 +52,17 @@ namespace xasset.editor
             group.bundleMode = BundleMode.PackByCustom;
             group.addressMode = AddressMode.LoadByDependencies;
             return group;
+        }
+
+        public PlayerAssets GetPlayerAssets()
+        {
+            var assets = CreateInstance<PlayerAssets>();
+            assets.updateInfoURL = $"{downloadURL}{Assets.Bundles}/{Platform}/{UpdateInfo.Filename}";
+            assets.downloadURL = $"{downloadURL}{Assets.Bundles}/{Platform}";
+            assets.offlineMode = offlineMode;
+            assets.maxDownloads = maxDownloads;
+            assets.maxRetryTimes = maxRetryTimes;
+            return assets;
         }
 
         public static string PlatformCachePath =>
@@ -105,7 +135,7 @@ namespace xasset.editor
             var set = new HashSet<string>();
             set.UnionWith(AssetDatabase.GetDependencies(assetPath));
             set.Remove(assetPath);
-            var exclude = GetDefaultSettings().bundleSettings.excludeFiles;
+            var exclude = GetDefaultSettings().bundle.excludeFiles;
             // Unity 会存在场景依赖场景的情况。
             set.RemoveWhere(s => s.EndsWith(".unity") || exclude.Exists(s.EndsWith));
             return set.ToArray();
@@ -139,7 +169,7 @@ namespace xasset.editor
             return builds.ToArray();
         }
 
-        public static BundleSettings BundleSettings => GetDefaultSettings().bundleSettings;
+        public static BundleSettings BundleSettings => GetDefaultSettings().bundle;
         public static string extension => BundleSettings.extension;
 
         /// <summary>
@@ -152,7 +182,7 @@ namespace xasset.editor
         private static string GetDirectoryName(string path)
         {
             var dir = Path.GetDirectoryName(path);
-            return !string.IsNullOrEmpty(dir) ? dir.Replace("\\", "/") : string.Empty;
+            return dir?.Replace("\\", "/");
         }
 
         public static string PackAsset(BuildAsset asset)
@@ -195,9 +225,6 @@ namespace xasset.editor
                     }
 
                     break;
-                case BundleMode.PackByRaw:
-                    bundle = assetPath;
-                    break;
                 case BundleMode.PackByEntry:
                     bundle = Path.GetFileNameWithoutExtension(entry);
                     break;
@@ -213,7 +240,7 @@ namespace xasset.editor
 
         public static string PackAsset(string assetPath, string bundle, string build)
         {
-            var settings = GetDefaultSettings().bundleSettings;
+            var settings = GetDefaultSettings().bundle;
 
             if (settings.packTogetherForAllShaders && settings.shaderExtensions.Exists(assetPath.EndsWith))
                 bundle = "shaders";
@@ -221,16 +248,17 @@ namespace xasset.editor
             if (settings.packByFileForAllScenes && assetPath.EndsWith(".unity"))
                 bundle = assetPath;
 
-            bundle = settings.applyBundleNameWithHash
-                ? Utility.ComputeHash(Encoding.UTF8.GetBytes(bundle))
-                : bundle.Replace(" ", "").Replace("/", "_").Replace("-", "_").Replace(".", "_").ToLower();
-
-            bundle += settings.extension;
+            bundle = $"{FixedName(bundle)}{settings.extension}";
 
             if (!string.IsNullOrEmpty(build) && settings.splitBundleNameWithBuild)
                 return $"{build.ToLower()}/{bundle}";
 
             return $"{bundle}";
+        }
+
+        private static string FixedName(string bundle)
+        {
+            return bundle.Replace(" ", "").Replace("/", "_").Replace("-", "_").Replace(".", "_").ToLower();
         }
 
         public static bool FindReferences(BuildAsset asset)

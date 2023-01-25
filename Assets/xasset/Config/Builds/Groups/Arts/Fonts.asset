@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bundleMode: 2
   addressMode: 0
-  entries:
-  - {fileID: 102900000, guid: 5b324048955e8fb4e81008dd2df58ce3, type: 3}
+  entries: []
   filter: t:font

@@ -8,7 +8,7 @@ namespace xasset
     public static class Assets
     {
         public const string Bundles = "Bundles";
-        public static readonly System.Version APIVersion = new System.Version(2022, 2, 3);
+        public static readonly System.Version APIVersion = new System.Version(2023, 0, 0);
         public static string UpdateInfoURL { get; set; }
         public static string DownloadURL { get; set; }
         public static Versions Versions { get; set; } = ScriptableObject.CreateInstance<Versions>();

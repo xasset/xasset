@@ -7,6 +7,8 @@ namespace xasset
     {
         private static InitializeRequest _request;
 
+        private float _startTime;
+
         public static InitializeRequest InitializeAsync(Action<Request> completed = null)
         {
             if (_request == null)
@@ -36,6 +38,7 @@ namespace xasset
         protected override void OnStart()
         {
             handler.OnStart(this);
+            _startTime = Time.realtimeSinceStartup;
         }
 
         protected override void OnCompleted()
@@ -43,7 +46,7 @@ namespace xasset
             if (!Application.isEditor && Assets.IsWebGLPlatform)
                 Assets.DownloadURL = Assets.PlayerDataPath;
 
-            Logger.D($"Initialize with: {result}.");
+            Logger.D($"Initialize {result} with {Time.realtimeSinceStartup - _startTime} seconds.");
             Logger.D($"API Version:{Assets.APIVersion}");
             Logger.D($"Simulation Mode: {Assets.SimulationMode}");
             Logger.D($"Offline Mode: {Assets.OfflineMode}");

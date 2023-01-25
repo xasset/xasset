@@ -142,11 +142,18 @@ namespace xasset
             }
 
             Assets.PlayerAssets = Utility.LoadFromJson<PlayerAssets>(_unityWebRequest.downloadHandler.text);
-            // 非仿真下载模式，读取更新地址。
+
             // TODO: 这里在正式环境，可以在初始化之后，自己重写 UpdateInfoURL 的地址。
             if (!Downloader.SimulationMode)
+            {
                 Assets.UpdateInfoURL = Assets.PlayerAssets.updateInfoURL;
+                Assets.DownloadURL = Assets.PlayerAssets.downloadURL;
+            }
+
             Assets.OfflineMode = Assets.PlayerAssets.offlineMode;
+            Downloader.MaxRetryTimes = Assets.PlayerAssets.maxRetryTimes;
+            Downloader.MaxDownloads = Assets.PlayerAssets.maxDownloads;
+
             _unityWebRequest.Dispose();
             LoadVersionsHeader(Assets.GetPlayerDataURl(Versions.Filename));
         }

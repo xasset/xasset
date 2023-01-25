@@ -85,7 +85,10 @@ namespace xasset.editor
                 asset.deps = deps.ToArray();
             }
 
+            var settings = Settings.GetDefaultSettings();
             manifest.Clear();
+            manifest.saveBundleName = settings.bundle.saveBundleName;
+            manifest.extension = settings.bundle.extension;
             manifest.bundles = job.bundles.ConvertAll(Converter).ToArray();
             manifest.assets = assets.ToArray();
             manifest.dirs = dirs.ToArray();

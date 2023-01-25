@@ -14,7 +14,6 @@ namespace xasset.editor
         public readonly List<BuildAsset> bundledAssets = new List<BuildAsset>();
         public readonly List<BuildBundle> bundles = new List<BuildBundle>();
         public readonly List<string> changes = new List<string>();
-        public readonly List<BuildAsset> rawAssets = new List<BuildAsset>();
         public string error { get; set; }
 
         public BuildJob(BuildParameters buildParameters)
@@ -26,10 +25,7 @@ namespace xasset.editor
 
         public void AddAsset(BuildAsset asset)
         {
-            if (asset.group.bundleMode == BundleMode.PackByRaw)
-                rawAssets.Add(asset);
-            else
-                bundledAssets.Add(asset);
+            bundledAssets.Add(asset);
         }
 
         public static BuildJob StartNew(BuildParameters parameters, params IBuildJobStep[] steps)

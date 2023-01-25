@@ -16,7 +16,6 @@ namespace xasset.editor
 
             var buildAssets = ScriptableObject.CreateInstance<BuildAssets>();
             JsonUtility.FromJsonOverwrite(File.ReadAllText(path), buildAssets);
-            job.rawAssets.AddRange(buildAssets.rawAssets);
             job.bundledAssets.AddRange(buildAssets.bundledAssets);
         }
     }
