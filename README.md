@@ -167,6 +167,7 @@ Settings 配置的 Simulation Download 开启后，编辑器下在打包后，�
 
 - [Connor Aaron Roberts](https://github.com/c0nd3v):反馈有效问题或建议 +10
 - [郑昊](https://github.com/plussign): 反馈有效问题或建议 +5
+- [MR.汪](https://github.com/youyouhx):反馈有效问题或建议 +5
 - [刘家君](https://github.com/suixin567)：反馈有效问题或建议 +2
 - [李非莬](https://github.com/wynnforthework)：反馈有效问题或建议 +2
 - [一念永恆](https://github.com/putifeng)：反馈有效问题或建议 +2
