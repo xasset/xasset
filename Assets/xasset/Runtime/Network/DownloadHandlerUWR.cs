@@ -24,13 +24,12 @@ namespace xasset
             _header = null;
             _content = null;
             _lastRequestDownloadedBytes = 0;
-            _step = Step.GetHeader;
+            _step = Step.GetContent;
             _request = request;
         }
 
         public void OnStart()
         {
-            _step = Step.GetHeader;
             StartDownload();
         }
 
@@ -53,7 +52,6 @@ namespace xasset
             if (_request.isDone) return false;
             if (_request.status == DownloadRequestBase.Status.Paused) return true;
             if (_request.status != DownloadRequestBase.Status.Progressing) return false;
-            if (_step == Step.GetHeader) return UpdateHeaderRequest();
             return _step == Step.GetContent && UpdateContentRequest();
         }
 
@@ -75,45 +73,10 @@ namespace xasset
             }
             else
             {
-                GetHeadRequest();
+                GetContentRequest();
             }
 
             _request.status = DownloadRequestBase.Status.Progressing;
-        }
-
-        private void GetHeadRequest()
-        {
-            _header = UnityWebRequest.Head(_request.url);
-            _header.SendWebRequest();
-            _step = Step.GetHeader;
-        }
-
-        private bool UpdateHeaderRequest()
-        {
-            if (!_header.isDone) return true;
-            if (!string.IsNullOrEmpty(_header.error))
-            {
-                _request.SetResult(DownloadRequestBase.Result.Failed, _header.error);
-                return false;
-            }
-
-            const string key = "Content-Length";
-            var value = _header.GetResponseHeader(key);
-            if (ulong.TryParse(value, out var size))
-            {
-                _request.OnGetDownloadSize(size);
-                if (size == _request.downloadedBytes)
-                {
-                    _request.SetResult(DownloadRequestBase.Result.Success, DownloadErrors.NothingToDownload);
-                    return false;
-                }
-
-                GetContentRequest();
-                return true;
-            }
-
-            _request.SetResult(DownloadRequestBase.Result.Success, DownloadErrors.NothingToDownload);
-            return false;
         }
 
         private bool UpdateContentRequest()
@@ -173,7 +136,6 @@ namespace xasset
 
         private enum Step
         {
-            GetHeader,
             GetContent,
             Ended
         }
