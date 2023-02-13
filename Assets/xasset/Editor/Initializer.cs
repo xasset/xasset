@@ -47,6 +47,7 @@ namespace xasset.editor
         private static void OnPlayModeStateChanged(PlayModeStateChange obj)
         {
             if (obj != PlayModeStateChange.ExitingPlayMode) return;
+            Assets.PlayerDataPath = $"{Application.streamingAssetsPath}/{Assets.Bundles}";
             var path = Settings.GetDataPath(UpdateInfo.Filename);
             if (File.Exists(path))
                 File.Delete(path);

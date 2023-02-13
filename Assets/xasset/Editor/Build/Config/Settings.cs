@@ -57,7 +57,7 @@ namespace xasset.editor
         public PlayerAssets GetPlayerAssets()
         {
             var assets = CreateInstance<PlayerAssets>();
-            assets.updateInfoURL = $"{downloadURL}/{Platform}/{UpdateInfo.Filename}";
+            assets.updateInfoURL = $"{updateInfoURL}/{Platform}/{UpdateInfo.Filename}";
             assets.downloadURL = $"{downloadURL}/{Platform}";
             assets.offlineMode = offlineMode;
             assets.maxDownloads = maxDownloads;
