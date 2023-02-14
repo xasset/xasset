@@ -1,2 +1,13 @@
-./uas auth login --uos_app_id fb97a269-a490-48dc-8419-0eb10afc7a91 --uos_app_secret c6bf9615e2ae4eca837cd6e90b7e8b30
-./uas entries sync --bucket b49677ce-e82e-45dd-83bf-94778945e4cd  ./Bundles
+#For Mac
+./uas auth login --uos_app_id [App ID] --uos_app_secret [App Secret]
+# Sync Bundles to uos Bucket
+./uas entries sync ./Bundles Bundles --bucket [Bucket ID]
+# Sync UpdateInfo to uos Bucket
+./uas entries copy ./BundlesCache/OSX/updateinfo.json Bundles/OSX/updateinfo.json --bucket [Bucket ID]
+
+# # For Windows
+# uas auth login --uos_app_id [App ID] --uos_app_secret [App Secret]
+# # Sync Bundles to uos Bucket
+# uas entries sync "E:\unity project\Bundles" Bundles --bucket [Bucket ID]
+# # Sync UpdateInfo to uos Bucket
+# uas entries copy "E:\unity project\BundlesCache\Windows\updateinfo.json" Bundles/Windows/updateinfo.json --bucket [Bucket ID]
