@@ -7,6 +7,7 @@ namespace xasset
     {
         public IDownloadHandler handler { get; set; }
         public Action<DownloadRequest> completed { get; set; }
+        public Action<DownloadRequest> updated { get; set; } = null;
         public DownloadContent content { get; set; }
         public string savePath => content.savePath;
         public string url => content.url;
@@ -84,7 +85,7 @@ namespace xasset
                 return;
             }
 
-            if (file.Length != (long) content.size)
+            if (content.size != 0 && file.Length != (long)content.size)
             {
                 SetResult(Result.Failed, string.Format(DownloadErrors.DownloadSizeMismatch, file.Length, content.size));
                 return;
@@ -118,6 +119,7 @@ namespace xasset
         public void Update()
         {
             handler.Update();
+            updated?.Invoke(this);
         }
 
         public void Complete()

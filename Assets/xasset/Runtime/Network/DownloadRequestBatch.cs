@@ -14,6 +14,7 @@ namespace xasset
 
         private ulong _successDownloadedBytes;
         public Action<DownloadRequestBatch> completed { get; set; }
+        public Action<DownloadRequestBatch> updated { get; set; } = null;
 
         public static DownloadRequestBatch Create()
         {
@@ -83,7 +84,7 @@ namespace xasset
 
             downloadedBytes = size + _successDownloadedBytes;
             progress = downloadedBytes * 1f / downloadSize;
-
+            updated?.Invoke(this);
             if (working.Count > failed) return true;
 
             if (failed == 0)

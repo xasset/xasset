@@ -14,14 +14,12 @@ namespace xasset
     public struct DownloadHandlerUWR : IDownloadHandler
     {
         private UnityWebRequest _content;
-        private UnityWebRequest _header;
         private ulong _lastRequestDownloadedBytes;
         private Step _step;
         private readonly DownloadRequest _request;
 
         public DownloadHandlerUWR(DownloadRequest request)
         {
-            _header = null;
             _content = null;
             _lastRequestDownloadedBytes = 0;
             _step = Step.GetContent;
@@ -38,7 +36,6 @@ namespace xasset
             if (paused)
             {
                 _content?.Abort();
-                _header?.Abort();
                 Dispose();
             }
             else
@@ -68,7 +65,7 @@ namespace xasset
                 _request.downloadedBytes = 0;
                 var path = _request.url.Replace(Assets.Protocol, string.Empty);
                 var file = new FileInfo(path);
-                if (file.Exists) _request.OnGetDownloadSize((ulong) file.Length);
+                if (file.Exists) _request.OnGetDownloadSize((ulong)file.Length);
                 GetContentRequest();
             }
             else
@@ -123,12 +120,6 @@ namespace xasset
 
         private void Dispose()
         {
-            if (_header != null)
-            {
-                _header.Dispose();
-                _header = null;
-            }
-
             if (_content == null) return;
             _content.Dispose();
             _content = null;
