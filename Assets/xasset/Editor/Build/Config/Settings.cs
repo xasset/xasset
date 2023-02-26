@@ -20,6 +20,7 @@ namespace xasset.editor
     {
         [Header("Player")] public string updateInfoURL = "http://127.0.0.1/";
         public string downloadURL = "http://127.0.0.1/";
+        public string playerDownloadURL = "http://127.0.0.1/";
         public PlayerAssetsSplitMode playerAssetsSplitMode = PlayerAssetsSplitMode.IncludeAllAssets;
         public bool offlineMode;
 
@@ -57,6 +58,7 @@ namespace xasset.editor
         public PlayerAssets GetPlayerAssets()
         {
             var assets = CreateInstance<PlayerAssets>();
+            assets.version = PlayerSettings.bundleVersion;
             assets.updateInfoURL = $"{updateInfoURL}{Assets.Bundles}/{Platform}/{UpdateInfo.Filename}";
             assets.downloadURL = $"{downloadURL}{Assets.Bundles}/{Platform}";
             assets.offlineMode = offlineMode;

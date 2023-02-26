@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updateInfoURL: http://127.0.0.1/
   downloadURL: http://127.0.0.1/
+  playerDownloadURL: http://127.0.0.1/
   playerAssetsSplitMode: 2
   offlineMode: 0
   simulationMode: 0
-  simulationDownload: 0
+  simulationDownload: 1
   maxDownloads: 5
   maxRetryTimes: 3
   bundle:

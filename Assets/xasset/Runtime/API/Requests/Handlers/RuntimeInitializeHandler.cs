@@ -126,7 +126,7 @@ namespace xasset
             _step = Step.LoadVersionsContent;
         }
 
-        private static void TreatError(InitializeRequest request, UnityWebRequest unityWebRequest)
+        private static void TreatError(Request request, UnityWebRequest unityWebRequest)
         {
             request.SetResult(Request.Result.Failed, unityWebRequest.error);
             Logger.E($"Failed to load {unityWebRequest.url} with error {unityWebRequest.error}");

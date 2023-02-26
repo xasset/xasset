@@ -6,6 +6,7 @@ namespace xasset
     public class PlayerAssets : ScriptableObject
     {
         public static readonly string Filename = $"{nameof(PlayerAssets).ToLower()}.json";
+        public string version;
         public string updateInfoURL;
         public string downloadURL;
         public bool offlineMode;

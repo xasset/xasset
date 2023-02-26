@@ -29,9 +29,17 @@ namespace xasset.samples
         private void UpdateVersion()
         {
             if (version == null) return;
-            version.text = string.Format(Constants.Text.Version, Assets.Versions);
+            version.text = $"{Constants.Text.Version}{Assets.Versions}";
         }
-
+        
+        void Quit()
+        { 
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        }
+        
         private IEnumerator Updating()
         {
             // 预加载
@@ -41,6 +49,18 @@ namespace xasset.samples
             yield return getUpdateInfoAsync;
             if (getUpdateInfoAsync.result == Request.Result.Success)
             {
+                var updateVersion = System.Version.Parse(getUpdateInfoAsync.info.version);
+                var playerVersion = System.Version.Parse(Assets.PlayerAssets.version);
+                if (updateVersion.Minor != playerVersion.Minor) // 需要强更下载安装包。
+                {
+                    var request = MessageBox.Show(Constants.Text.Tips, string.Format(Constants.Text.TipsNewContent, updateVersion));
+                    yield return request;
+                    if (request.result == Request.Result.Success)
+                        Application.OpenURL(getUpdateInfoAsync.info.playerDownloadURL);  
+                    Quit(); 
+                    yield break;
+                } 
+                
                 var getVersionsAsync = Assets.GetVersionsAsync(getUpdateInfoAsync.info);
                 while (!getVersionsAsync.isDone)
                 {
@@ -52,17 +72,22 @@ namespace xasset.samples
                 versions = getVersionsAsync.versions;
                 if (versions != null)
                 {
-                    var getDownloadSizeAsync = Assets.GetDownloadSizeAsync(versions);
-                    yield return getDownloadSizeAsync;
-                    if (getDownloadSizeAsync.downloadSize > 0)
+                    var request = Assets.GetDownloadSizeAsync(versions);
+                    LoadingScreen.Instance.SetVisible(true);
+                    while (!request.isDone)
                     {
-                        var downloadSize = Utility.FormatBytes(getDownloadSizeAsync.downloadSize);
+                        LoadingScreen.Instance.SetProgress($"{Constants.Text.Checking}({request.progress*100}%)", request.progress);
+                        yield return null;
+                    }
+                    if (request.downloadSize > 0)
+                    {
+                        var downloadSize = Utility.FormatBytes(request.downloadSize);
                         var message = string.Format(Constants.Text.TipsNewContent, downloadSize);
                         var update = MessageBox.Show(Constants.Text.Tips, message);
                         yield return update;
                         if (update.result == Request.Result.Success)
                         {
-                            _downloadAsync = getDownloadSizeAsync.DownloadAsync();
+                            _downloadAsync = request.DownloadAsync();
                             yield return Downloading();
                             if (_downloadAsync.result == DownloadRequestBase.Result.Success)
                             {

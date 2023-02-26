@@ -106,7 +106,9 @@ namespace xasset.editor
             updateInfo.hash = hash;
             updateInfo.size = (ulong) size;
             updateInfo.file = versions.GetFilename();
+            updateInfo.version = PlayerSettings.bundleVersion;
             updateInfo.downloadURL = downloadURL;
+            updateInfo.playerDownloadURL = settings.playerDownloadURL;
             File.WriteAllText(updateInfoPath, JsonUtility.ToJson(updateInfo));
         }
 
