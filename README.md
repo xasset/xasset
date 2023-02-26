@@ -2,32 +2,36 @@
 
 xasset 是专业的 Unity 资源系统。
 
-xasset 提供开箱即用的打包、分包、加密、边玩边下和自动切片等技术，可以更轻快的开发更流畅的跨平台 Unity 程序。了解更多 xasset 的产品特性，可以前往 xasset 的[官网](https://xasset.cc) 查看。
+xasset 提供开箱即用的打包、分包、加密、边玩边下和自动切片等技术，可以更轻快的开发更流畅的跨平台 Unity 程序。
 
 - 官网：https://xasset.cc
 - GitHub：https://github.com/xasset/xasset
 - UOS CDN：https://uos.unity.cn/partner/xasset
 
-另外，xasset 已经成为 Unity 中国官方认可的合作伙伴，xasset 用户可以在开发阶段使用 Unity 官方为 xasset 用户提供的专属的开发阶段免费的 CDN 服务，了解相关服务的使用，可以打开 [UOS CDN](https://uos.unity.cn/partner/xasset) 的链接查看。
+了解更多 xasset 的产品特性，可以前往 xasset 的[官网](https://xasset.cc) 查看。另外，Unity 中国官方为 xasset 用户提供的专属的开发阶段免费的 CDN 服务，了解相关服务的使用，可以打开 [UOS CDN](https://uos.unity.cn/partner/xasset) 的链接查看。
+
+> 提示：使用 UOS CDN 的时候，可以把 Bundles 和 updateinfo.json 放到不同的存储桶。Bundles 下的数据无需使用 Badge 来处理内容分发，updateinfo.json 可以用 Badge 来处理开发测试或线上正式环境的内容分发。
+>
 
 ## 最近更新
 
-### 2022.2.3
+### 2023.02.26
 
-#### 开源版-2022/12/4
+#### 开源版（2023）
 
-- 编辑器菜单增加 Get Unity Online Services：可以快速跳转到 Unity 官方的在线服务网页。同时，资源打包后构建的更新信息生成到 BundlesCache 目录，方便配合 UOS CDN 的工具进行资源的云端管理。
-- 支持离线模式：可以一键关闭运行时的资源更新操作。
-- 支持简易分包机制：可以快速构建不带资源或者包含完整资源的安装包，运行时可以在本地直接加载服务器的资源。
-- 支持资源层的引用计数统计和资源回收机制：可以在 Asset Bundle 没卸载的情况下使用 Resources 卸载没有引用的资源。当Asset Bundle 中有大量生命周期不同的资源打包到一起的时候，可以开启优化内存开销，Asset Bundle 中是把生命周期相同的资源打包到一起的时候，可以关闭优化CPU开销。
-- 资源打包分组支持寻找模式配置，可以指定目标分组的资源按文件名加载或者按不带扩展名的文件名加载。
-- 仿真模式初始化效率优化：初始化时，只采集寻址模式为按文件名或者按不带扩展名的文件名的资源，如果没有配置此类选项，启动Unity编辑器会变得非常快。
+- 增加强更示例，获取更新大小增加读条过程
+
+#### 专业版（2023）
+
+- 增加强更示例，获取更新大小增加读条过程
+- 适配 UOS CDN
+- RawAsset 适配二次打包数据读取逻辑
 
 注：更多修改细节，可以阅读源码深入了解，任何疑问或建议，欢迎提交 Issues 反馈。
 
 ## 开源版
 
-[这里](https://github.com/xasset/xasset)是xasset-2023的开源版，这个版本主要提供了以下功能特性：
+[这里](https://github.com/xasset/xasset)是 xasset-2023 的开源版，这个版本主要提供了以下功能特性：
 
 - 分布式打包系统：配置驱动，提供自动分组机制可以快速优化打包质量，支持为分组的资源设置寻址模式可以等。
 - 跨平台Unity资源和场景加载机制，业务代码可以一次编码，多处运行，支持Android、iOS、PC、OSX等平台。
