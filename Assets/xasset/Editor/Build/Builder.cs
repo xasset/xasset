@@ -24,12 +24,28 @@ namespace xasset.editor
         {
             BuildBundlesInternal(true, builds);
         }
+        
+        private static void ClearBuildAssetCache()
+        {
+            // 资源依赖发生修改的时候需要重新生成依赖关系。
+            var deleted = new[]
+            {
+               BuildAssetCache.Filename,
+               BuildEntryCache.Filename
+            };
+            foreach (var file in deleted)
+            {
+                if (!File.Exists(file)) continue;
+                File.Delete(file);
+                File.Delete(file + ".meta");
+            }
+        }
 
         private static void BuildBundlesInternal(bool withLastBuild, params Build[] builds)
         {
+            ClearBuildAssetCache();
             var settings = Settings.GetDefaultSettings();
             if (builds.Length == 0) builds = Settings.FindAssets<Build>();
-
             PreprocessBuildBundles?.Invoke(builds, settings);
 
             if (settings.bundle.checkReference && FindReferences()) return;
