@@ -6,9 +6,10 @@ namespace xasset
     public class Dependencies
     {
         private static readonly Dictionary<string, Dependencies> Loaded = new Dictionary<string, Dependencies>();
+        private static readonly Queue<Dependencies> Unused = new Queue<Dependencies>();
         private readonly List<BundleRequest> _bundles = new List<BundleRequest>();
         private readonly List<BundleRequest> _loading = new List<BundleRequest>();
-        public ManifestAsset asset { get; private set; }
+        private ManifestAsset asset { get; set; }
         private BundleRequest _bundleRequest;
         private int _refCount;
         public bool isDone => _loading.Count == 0;
@@ -68,16 +69,21 @@ namespace xasset
             _refCount--;
             if (_refCount != 0) return;
 
+            Loaded.Remove(asset.path);
+            Unused.Enqueue(this);
+
             foreach (var request in _bundles) request.Release();
 
             _bundles.Clear();
+            _bundleRequest = null;
         }
 
         public static Dependencies LoadAsync(ManifestAsset asset)
         {
             if (!Loaded.TryGetValue(asset.path, out var value))
             {
-                value = new Dependencies {asset = asset};
+                value =  Unused.Count > 0 ? Unused.Dequeue() : new Dependencies ();
+                value.asset = asset;
                 Loaded[asset.path] = value;
             }
 
