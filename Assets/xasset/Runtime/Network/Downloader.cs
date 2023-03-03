@@ -44,9 +44,7 @@ namespace xasset
 
             request.content = content;
             request.SendRequest();
-            request.handler = Assets.IsWebGLPlatform
-                ? new DownloadHandlerUWR(request)
-                : CreateHandler(request);
+            request.handler = Assets.IsWebGLPlatform ? new DownloadHandlerUWR(request) : CreateHandler(request);
 
             return request;
         }
