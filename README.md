@@ -171,6 +171,7 @@ Settings 配置的 Simulation Download 开启后，编辑器下在打包后，�
 ## 声望
 
 - [Connor Aaron Roberts](https://github.com/c0nd3v):反馈有效问题或建议 +10
+- [roki007](https://github.com/roki007):反馈有效问题或建议 +5
 - [EasierLu](https://github.com/EasierLu):反馈有效问题或建议 +5
 - [Contra](): 反馈有效问题或建议 +5
 - [郑昊](https://github.com/plussign): 反馈有效问题或建议 +5
