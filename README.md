@@ -162,6 +162,7 @@ Settings 配置的 Simulation Download 开启后，编辑器下在打包后，�
 成为 xasset 的赞助商可以在这里添加自己的链接，可以带 LOGO 或名字：
 
 - Miss_Lynn(人民币50000元)
+- mingjava(人民币5000元)
 - [马三小伙儿](https://github.com/XINCGer)（人民币4800元）
 - 花花 （人民币3848元）
 - [Jojohello](https://www.zhihu.com/people/jojohello)（人民币3000元）
