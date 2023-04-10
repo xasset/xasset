@@ -98,7 +98,6 @@ namespace xasset.editor
         {
             var versions = Settings.GetDefaultVersions();
             var path = Settings.GetDataPath(versions.GetFilename());
-            versions.Save(Settings.GetCachePath(Versions.Filename));
             versions.Save(path);
             changes.Add(path);
             PostprocessBuildBundles?.Invoke(changes.ToArray());
