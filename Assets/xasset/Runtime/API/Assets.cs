@@ -8,7 +8,7 @@ namespace xasset
     public static class Assets
     {
         public const string Bundles = "Bundles";
-        public static readonly System.Version APIVersion = new System.Version(2023, 0, 0);
+        public static readonly System.Version APIVersion = new System.Version(2023, 0, 1);
         public static string UpdateInfoURL { get; set; }
         public static string DownloadURL { get; set; }
         public static Versions Versions { get; set; } = ScriptableObject.CreateInstance<Versions>();
@@ -24,6 +24,20 @@ namespace xasset
         public static InitializeRequest InitializeAsync(Action<Request> completed = null)
         {
             return InitializeRequest.InitializeAsync(completed);
+        }
+
+        [RuntimeInitializeOnLoadMethod]
+        private static void Initialize()
+        {
+            Manifest.OnReadAsset = OnReadAsset;            
+        }
+
+        private static void OnReadAsset(ManifestAsset asset)
+        {
+            if (asset.addressMode == AddressMode.LoadByName)
+                SetAddress(asset.path, asset.name);
+            else if (asset.addressMode == AddressMode.LoadByNameWithoutExtension) 
+                SetAddress(asset.path, Path.GetFileNameWithoutExtension(asset.name));
         }
 
         public static GetUpdateInfoRequest GetUpdateInfoAsync()

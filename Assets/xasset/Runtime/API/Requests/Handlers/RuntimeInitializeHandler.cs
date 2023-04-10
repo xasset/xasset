@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -75,25 +74,8 @@ namespace xasset
                 var version = _queue.Dequeue();
                 var path = Assets.GetDownloadDataPath(version.file);
                 var manifest = Utility.LoadFromFile<Manifest>(path);
-                manifest.build = version.name;
                 manifest.name = version.file;
-                version.manifest = manifest;
-                foreach (var asset in manifest.assets)
-                {
-                    switch (asset.addressMode)
-                    {
-                        case AddressMode.LoadByDependencies:
-                        case AddressMode.LoadByPath:
-                            break;
-                        case AddressMode.LoadByName:
-                            Assets.SetAddress(asset.path, Path.GetFileName(asset.path));
-                            break;
-                        case AddressMode.LoadByNameWithoutExtension:
-                            Assets.SetAddress(asset.path, Path.GetFileNameWithoutExtension(asset.path));
-                            break;
-                    }
-                }
-
+                version.manifest = manifest; 
                 if (Scheduler.Busy) return;
             }
 
