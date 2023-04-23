@@ -16,7 +16,7 @@ xasset 提供开箱即用的分包、加密和边玩边下等技术解决方案�
 
 ## 最近更新
 
-- 2023.04.24:[xasset 2023.1预览版](https://xasset.cc/blog/what's-news-in-xasset-2023.1-prev)
+- 2023.04.24:[xasset 2023.1预览版的改变](https://xasset.cc/blog/what's-news-in-xasset-2023.1-prev)
 - 2023.03.27:[近10倍IO性能优化的过程和原理](https://mp.weixin.qq.com/s/X0Tc6-UKVqfEXrzSEY17Zw)
 
 ## 开源版
