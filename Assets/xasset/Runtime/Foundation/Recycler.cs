@@ -17,6 +17,15 @@ namespace xasset
         private static readonly List<IRecyclable> Recyclables = new List<IRecyclable>();
         private static readonly List<IRecyclable> Progressing = new List<IRecyclable>();
         private static readonly Queue<Object> UnusedAssets = new Queue<Object>();
+        public static float AutoRecycleTimestep { get; set; } = 0.3f; // 300ms 一次  
+        private float _lastUpdateTime;
+
+        private void UpdateAutoRecycle()
+        {
+            if (!(Time.realtimeSinceStartup - _lastUpdateTime > AutoRecycleTimestep)) return;
+            AutoreleaseCache.UpdateAllCaches();
+            _lastUpdateTime = Time.realtimeSinceStartup;
+        }
 
         public static void UnloadAsset(Object asset)
         {
@@ -26,6 +35,8 @@ namespace xasset
 
         private void Update()
         {
+            UpdateAutoRecycle();
+
             if (UnusedAssets.Count > 0)
             {
                 while (UnusedAssets.Count > 0)

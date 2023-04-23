@@ -136,7 +136,7 @@ namespace xasset.editor
         public static void BuildUpdateInfo(Versions versions, string hash, long size)
         {
             var settings = Settings.GetDefaultSettings();
-            var downloadURL = $"{settings.downloadURL}{Assets.Bundles}/{Settings.Platform}/";
+            var downloadURL = $"{settings.bundleDownloadURL}{Assets.Bundles}/{Settings.Platform}/";
             var updateInfoPath = Settings.GetCachePath(UpdateInfo.Filename);
             var updateInfo = Utility.LoadFromFile<UpdateInfo>(updateInfoPath);
             updateInfo.hash = hash;

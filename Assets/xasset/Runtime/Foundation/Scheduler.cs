@@ -11,27 +11,13 @@ namespace xasset
         private static readonly Dictionary<string, RequestQueue> _Queues = new Dictionary<string, RequestQueue>();
         private static readonly List<RequestQueue> Queues = new List<RequestQueue>();
         private static readonly Queue<RequestQueue> Append = new Queue<RequestQueue>();
-        private static float _realtimeSinceStartup;
-
-        [SerializeField] [Tooltip("每个队列最大单帧更新数量。")]
-        private byte maxRequests = 10;
-
-        [SerializeField] [Tooltip("自动切片时间，值越大处理的请求数量越多，值越小处理请求的数量越小，可以根据目标帧率分配。")]
-        private float maxUpdateTimeSlice = 1 / 60f;
-
-        [SerializeField] [Tooltip("是否开启自动切片")] private bool autoSlicing = true;
+        private static float _realtimeSinceStartup; 
         public static bool AutoSlicing { get; set; } = true;
         public static bool Working => Queues.Exists(o => o.working);
-        public static bool Busy => AutoSlicing && Time.realtimeSinceStartup - _realtimeSinceStartup > MaxUpdateTimeSlice;
-        public static float MaxUpdateTimeSlice { get; set; }
+        public static bool Busy => AutoSlicing && Time.realtimeSinceStartup - _realtimeSinceStartup > AutoSliceTimestep;
+        public static float AutoSliceTimestep { get; set; }
         public static byte MaxRequests { get; set; } = 10;
-
-        private void Start()
-        {
-            AutoSlicing = autoSlicing;
-            MaxUpdateTimeSlice = maxUpdateTimeSlice;
-            MaxRequests = maxRequests;
-        }
+ 
 
         private void Update()
         {

@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace xasset
 {
-    public sealed class BundleRequest : LoadRequest
+    public sealed class BundleRequest : LoadRequest, IReloadable
     {
-        internal IBundleHandler handler;
-        internal AssetBundle assetBundle { get; set; }
-        public ManifestBundle info { get; set; }
+        private IBundleHandler handler;
+        internal AssetBundle assetBundle { get; private set; }
+        public ManifestBundle info { get; private set; }
 
-        public static Func<BundleRequest, IBundleHandler> CreateHandler { get; set; } = null;
+        public static Func<BundleRequest, IBundleHandler> CreateHandler { get; set; }
 
         protected override void OnStart()
         {
@@ -25,7 +25,7 @@ namespace xasset
         protected override void OnWaitForCompletion()
         {
             handler.WaitForCompletion(this);
-        }
+        } 
 
         public void LoadAssetBundle(string filename)
         {
@@ -46,12 +46,10 @@ namespace xasset
         {
             Remove(this);
             handler.Dispose(this);
-            if (assetBundle != null)
-            {
-                assetBundle.Unload(true);
-                RemoveAssetBundle(info.name);
-                assetBundle = null;
-            }
+            if (assetBundle == null) return;
+            assetBundle.Unload(true);
+            RemoveAssetBundle(info.name);
+            assetBundle = null;
         }
 
         #region Hotreload
@@ -86,36 +84,33 @@ namespace xasset
         {
             var bundle = request.info;
             var handler = CreateHandler?.Invoke(request);
-            if (handler != null) return handler;
-
+            if (handler != null) return handler; 
+            if (Assets.IsWebGLPlatform && !Application.isEditor)
+                return new RuntimeDownloadBundleHandler();
             if (Assets.IsPlayerAsset(bundle.hash))
-                if (Assets.IsWebGLPlatform)
-                    return new RuntimeDownloadBundleHandler();
-                else
-                    return new RuntimeLocalBundleHandler {path = Assets.GetPlayerDataPath(bundle.file)};
-
+                return new RuntimeLocalBundleHandler
+                {
+                    path = Assets.GetPlayerDataPath(bundle.file)
+                };
             if (Assets.IsDownloaded(bundle))
-                return new RuntimeLocalBundleHandler {path = Assets.GetDownloadDataPath(bundle.file)};
+                return new RuntimeLocalBundleHandler { path = Assets.GetDownloadDataPath(bundle.file) };
 
             return new RuntimeDownloadBundleHandler();
         }
 
         private static void Remove(BundleRequest request)
         {
-            Loaded.Remove(request.info.file);
+            Loaded.Remove(request.info.name);
             Unused.Enqueue(request);
         }
 
         internal static BundleRequest Load(ManifestBundle bundle)
         {
-            if (!Loaded.TryGetValue(bundle.file, out var request))
+            if (!Loaded.TryGetValue(bundle.name, out var request))
             {
                 request = Unused.Count > 0 ? Unused.Dequeue() : new BundleRequest();
-                request.Reset();
-                request.info = bundle;
-                request.path = bundle.file;
-                request.handler = GetHandler(request);
-                Loaded[bundle.file] = request;
+                request.Reload(bundle);
+                Loaded[bundle.name] = request;
             }
 
             request.LoadAsync();
@@ -123,5 +118,30 @@ namespace xasset
         }
 
         #endregion
+
+        public void Reload(ManifestBundle bundle)
+        {
+            Reset();
+            info = bundle;
+            path = bundle.file;
+            handler = GetHandler(this);
+        }
+
+        public void ReloadAsync()
+        {
+            status = Status.Processing;
+            handler = GetHandler(this);
+            handler.OnStart(this);
+        }
+
+        public void OnReloaded()
+        {
+        }
+
+        public bool IsReloaded()
+        {
+            OnUpdated();
+            return isDone;
+        }
     }
 }

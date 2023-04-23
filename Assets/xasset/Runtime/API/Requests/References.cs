@@ -19,7 +19,9 @@ namespace xasset
 
         private static string[] RuntimeGet(string path)
         {
-            return Assets.TryGetAsset(ref path, out var asset) ? Array.ConvertAll(asset.deps, input => asset.manifest.assets[input].path) : Array.Empty<string>();
+            return Assets.TryGetAsset(ref path, out var asset)
+                ? Array.ConvertAll(asset.deps, input => asset.manifest.assets[input].path)
+                : Array.Empty<string>();
         }
 
         private static string[] Get(string path)

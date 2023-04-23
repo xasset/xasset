@@ -13,6 +13,11 @@ namespace xasset
         public List<string> data = new List<string>();
         public byte maxRetryTimes;
         public byte maxDownloads;
+        public bool autoSlicing;
+        public float autoSliceTimestep;
+        public float autoRecycleTimestep;
+        public byte maxRequests;
+        public LogLevel logLevel = LogLevel.Debug;
 
         public bool Contains(string key)
         {

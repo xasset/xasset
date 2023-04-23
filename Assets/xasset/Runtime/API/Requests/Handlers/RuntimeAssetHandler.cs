@@ -9,6 +9,7 @@ namespace xasset
         void Update(AssetRequest request);
         void Dispose(AssetRequest request);
         void WaitForCompletion(AssetRequest request);
+        void OnReload(AssetRequest request);
     }
 
     public struct RuntimeAssetHandler : IAssetHandler
@@ -57,7 +58,7 @@ namespace xasset
                 return;
 
             var type = request.type;
-            var path = request.path; 
+            var path = request.path;
             if (request.isAll)
             {
                 request.assets = assetBundle.LoadAssetWithSubAssets(path, type);
@@ -94,7 +95,7 @@ namespace xasset
         }
 
         private void SetResult(AssetRequest request)
-        { 
+        {
             if (request.isAll)
             {
                 request.assets = _loadAssetAsync.allAssets;
@@ -130,8 +131,13 @@ namespace xasset
             //  特殊处理，防止异步转同步卡顿。
             if (_loadAssetAsync == null)
                 LoadAsset(request);
-            else 
+            else
                 SetResult(request);
+        }
+
+        public void OnReload(AssetRequest request)
+        {
+            LoadAssetAsync(request);
         }
 
         public static IAssetHandler CreateInstance()
