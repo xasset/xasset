@@ -15,6 +15,21 @@ namespace xasset.samples
 
         private readonly Request _request = new Request();
 
+        private static AssetRequest request;
+
+        public static Request LoadAsync()
+        {
+            if (request == null)
+                request = Asset.LoadAsync(Filename, typeof(GameObject));
+            return request;
+        }
+
+        private void OnDestroy()
+        {
+            request?.Release();
+            request = null;
+        }
+
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);

@@ -23,6 +23,7 @@ namespace xasset
             item.contents.Clear();
             item.working.Clear();
             item._successDownloadedBytes = 0;
+            item._retryTimes = 0;
             item.bandwidth = 0;
             item.Reset();
             return item;
@@ -45,7 +46,6 @@ namespace xasset
                 working.Add(request);
             }
 
-            _retryTimes = 0;
             BeganSample();
         }
 

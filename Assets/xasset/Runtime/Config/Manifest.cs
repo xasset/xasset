@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 namespace xasset
@@ -53,9 +52,9 @@ namespace xasset
 
     public class Manifest : ScriptableObject, ISerializationCallbackReceiver
     {
+        public static Action<ManifestAsset> OnReadAsset;
         public string extension;
         public bool saveBundleName;
-        public string build;
         public string[] dirs = Array.Empty<string>();
         public ManifestAsset[] assets = Array.Empty<ManifestAsset>();
         public ManifestBundle[] bundles = Array.Empty<ManifestBundle>();
@@ -63,6 +62,7 @@ namespace xasset
         private readonly Dictionary<string, List<int>> directoryWithAssets = new Dictionary<string, List<int>>();
         private readonly Dictionary<string, ManifestAsset> addressWithAssets = new Dictionary<string, ManifestAsset>();
         private readonly Dictionary<string, ManifestBundle[]> nameWithDependencies = new Dictionary<string, ManifestBundle[]>();
+        private readonly Dictionary<string, ManifestBundle> nameWithBundles = new Dictionary<string, ManifestBundle>();
 
         public void Clear()
         {
@@ -73,6 +73,8 @@ namespace xasset
 
             addressWithAssets.Clear();
             directoryWithAssets.Clear();
+            nameWithDependencies.Clear();
+            nameWithBundles.Clear();
         }
 
         public void OnBeforeSerialize()
@@ -103,6 +105,7 @@ namespace xasset
                         : $"{bundle.name.Replace(extension, string.Empty)}_{bundle.hash}{extension}";
                     bundle.file = key;
                     bundle.manifest = this;
+                    nameWithBundles[bundle.name] = bundle;
                 }
             }
             else
@@ -114,6 +117,7 @@ namespace xasset
                         : $"{bundle.hash}{extension}";
                     bundle.file = key;
                     bundle.manifest = this;
+                    nameWithBundles[bundle.name] = bundle;
                 }
             }
 
@@ -153,35 +157,13 @@ namespace xasset
 
         private void AddAsset(ManifestAsset asset)
         {
-            switch (asset.addressMode)
+            if (asset.addressMode == AddressMode.LoadByDependencies)
             {
-                case AddressMode.LoadByName:
-                    addressWithAssets[asset.path] = asset;
-                    SetAddress(asset, Path.GetFileName(asset.path));
-                    break;
-                case AddressMode.LoadByDependencies:
-                    break;
-                case AddressMode.LoadByNameWithoutExtension:
-                    addressWithAssets[asset.path] = asset;
-                    SetAddress(asset, Path.GetFileNameWithoutExtension(asset.path));
-                    break;
-                case AddressMode.LoadByPath:
-                    addressWithAssets[asset.path] = asset;
-                    break;
+                return;
             }
-        }
 
-        private void SetAddress(ManifestAsset asset, string address)
-        {
-            if (addressWithAssets.TryGetValue(address, out var value))
-            {
-                if (value.path != asset.path)
-                {
-                    Logger.W($"{address} already exist {value.path}");
-                }
-            }
-            else
-                addressWithAssets[address] = asset;
+            addressWithAssets[asset.path] = asset;
+            OnReadAsset?.Invoke(asset); 
         }
 
         public bool IsDirectory(string path)
@@ -198,8 +180,13 @@ namespace xasset
         {
             return addressWithAssets.TryGetValue(path, out asset);
         }
-
+        
         public ManifestBundle GetBundle(string assetPath)
+        {
+            return nameWithBundles.TryGetValue(assetPath, out var bundle) ? bundle : null;
+        }
+
+        public ManifestBundle GetBundleWithAsset(string assetPath)
         {
             return TryGetAsset(assetPath, out var value) ? bundles[value.bundle] : null;
         }

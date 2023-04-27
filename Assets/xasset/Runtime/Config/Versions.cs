@@ -119,5 +119,17 @@ namespace xasset
             asset = null;
             return false;
         }
+        
+        public ManifestBundle GetBundle(string bundle)
+        {
+            foreach (var version in data)
+            {
+                var result = version.manifest.GetBundle(bundle);
+                if (result != null)
+                    return result;
+            }
+
+            return null;
+        }
     }
 }

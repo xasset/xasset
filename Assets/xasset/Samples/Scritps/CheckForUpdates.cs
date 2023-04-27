@@ -14,10 +14,81 @@ namespace xasset.samples
         private DownloadRequestBase _downloadAsync;
         private Versions versions;
 
-        private void Start()
+        void Quit()
         {
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        }
+
+        private IEnumerator Start()
+        {
+            var initializeAsync = Assets.InitializeAsync();
+            yield return initializeAsync;
             UpdateVersion();
-            StartCoroutine(Updating());
+            // 预加载
+            yield return MessageBox.LoadAsync();
+            yield return LoadingScreen.LoadAsync(); 
+            // 获取更新信息
+            var getUpdateInfoAsync = Assets.GetUpdateInfoAsync();
+            yield return getUpdateInfoAsync;
+            if (getUpdateInfoAsync.result == Request.Result.Success)
+            {
+                var updateVersion = System.Version.Parse(getUpdateInfoAsync.info.version);
+                var playerVersion = System.Version.Parse(Assets.PlayerAssets.version);
+                if (updateVersion.Major != playerVersion.Major ||
+                    updateVersion.Minor > playerVersion.Minor) // 需要强更下载安装包。
+                {
+                    var request = MessageBox.Show(Constants.Text.Tips,
+                        string.Format(Constants.Text.TipsNewContent, updateVersion));
+                    yield return request;
+                    if (request.result == Request.Result.Success)
+                        Application.OpenURL(getUpdateInfoAsync.info.playerDownloadURL);
+                    Quit();
+                    yield break;
+                }
+
+                var getVersionsAsync = Assets.GetVersionsAsync(getUpdateInfoAsync.info);
+                while (!getVersionsAsync.isDone)
+                {
+                    var msg = $"{Constants.Text.UpdateVersions} {getVersionsAsync.progress * 100:f2}%";
+                    LoadingScreen.Instance.SetProgress(msg, getVersionsAsync.progress);
+                    yield return null;
+                }
+
+                versions = getVersionsAsync.versions;
+                var getDownloadSizeAsync = Assets.GetDownloadSizeAsync(versions);
+                yield return getDownloadSizeAsync;
+                if (getDownloadSizeAsync.downloadSize > 0)
+                {
+                    var downloadSize = Utility.FormatBytes(getDownloadSizeAsync.downloadSize);
+                    var message = string.Format(Constants.Text.TipsNewContent, downloadSize);
+                    var update = MessageBox.Show(Constants.Text.Tips, message);
+                    yield return update;
+                    if (update.result == Request.Result.Success)
+                    {
+                        _downloadAsync = getDownloadSizeAsync.DownloadAsync();
+                        yield return Downloading();
+                        if (_downloadAsync.result == DownloadRequestBase.Result.Success)
+                        {
+                            // 清理历史文件
+                            yield return Clearing();
+                            var reload = Assets.ReloadAsync(versions);
+                            while (!reload.isDone)
+                            {
+                                var msg = $"{Constants.Text.Loading}({reload.pos}/{reload.max}) {reload.progress * 100:f2}%";
+                                LoadingScreen.Instance.SetProgress(msg, reload.progress);
+                                yield return null;
+                            }
+                            UpdateVersion();
+                        }
+                    }
+                }
+            }
+
+            LoadingScreen.Instance.SetVisible(false);
+            completed?.Invoke();
         }
 
         public void ClearAsync()
@@ -30,79 +101,6 @@ namespace xasset.samples
         {
             if (version == null) return;
             version.text = $"{Constants.Text.Version}{Assets.Versions}";
-        }
-        
-        void Quit()
-        { 
-            Application.Quit();
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#endif
-        }
-        
-        private IEnumerator Updating()
-        {
-            // 预加载
-            yield return Asset.LoadAsync(MessageBox.Filename, typeof(GameObject));
-            yield return Asset.InstantiateAsync(LoadingScreen.Filename);
-            var getUpdateInfoAsync = Assets.GetUpdateInfoAsync();
-            yield return getUpdateInfoAsync;
-            if (getUpdateInfoAsync.result == Request.Result.Success)
-            {
-                var updateVersion = System.Version.Parse(getUpdateInfoAsync.info.version);
-                var playerVersion = System.Version.Parse(Assets.PlayerAssets.version);
-                if (updateVersion.Minor != playerVersion.Minor) // 需要强更下载安装包。
-                {
-                    var request = MessageBox.Show(Constants.Text.Tips, string.Format(Constants.Text.TipsNewContent, updateVersion));
-                    yield return request;
-                    if (request.result == Request.Result.Success)
-                        Application.OpenURL(getUpdateInfoAsync.info.playerDownloadURL);  
-                    Quit(); 
-                    yield break;
-                } 
-                
-                var getVersionsAsync = Assets.GetVersionsAsync(getUpdateInfoAsync.info);
-                while (!getVersionsAsync.isDone)
-                {
-                    var msg = $"{Constants.Text.UpdateVersions} {getVersionsAsync.progress * 100:f2}%";
-                    LoadingScreen.Instance.SetProgress(msg, getVersionsAsync.progress);
-                    yield return null;
-                }
-
-                versions = getVersionsAsync.versions;
-                if (versions != null)
-                {
-                    var request = Assets.GetDownloadSizeAsync(versions);
-                    LoadingScreen.Instance.SetVisible(true);
-                    while (!request.isDone)
-                    {
-                        LoadingScreen.Instance.SetProgress($"{Constants.Text.Checking}({request.progress*100}%)", request.progress);
-                        yield return null;
-                    }
-                    if (request.downloadSize > 0)
-                    {
-                        var downloadSize = Utility.FormatBytes(request.downloadSize);
-                        var message = string.Format(Constants.Text.TipsNewContent, downloadSize);
-                        var update = MessageBox.Show(Constants.Text.Tips, message);
-                        yield return update;
-                        if (update.result == Request.Result.Success)
-                        {
-                            _downloadAsync = request.DownloadAsync();
-                            yield return Downloading();
-                            if (_downloadAsync.result == DownloadRequestBase.Result.Success)
-                            {
-                                yield return Clearing();
-                                Assets.Versions = versions;
-                                versions.Save(Assets.GetDownloadDataPath(Versions.Filename));
-                                UpdateVersion();
-                            }
-                        }
-                    }
-                }
-            }
-
-            LoadingScreen.Instance.SetVisible(false);
-            completed?.Invoke();
         }
 
         private IEnumerator Downloading()
@@ -132,6 +130,8 @@ namespace xasset.samples
                 foreach (var bundle in item.manifest.bundles)
                     bundles.Add(bundle.file);
             }
+
+            //TODO：如果下载目录有自定义的数据可以添加到 bundles 里面防止被删除
 
             var files = new List<string>();
             foreach (var item in Assets.Versions.data)

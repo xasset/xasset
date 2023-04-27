@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
@@ -13,19 +12,11 @@ namespace xasset
         Error
     }
 
-    [DisallowMultipleComponent]
-    public class Logger : MonoBehaviour
+    public class Logger
     {
-        [SerializeField] private LogLevel logLevel = LogLevel.Debug;
         private const string TAG = "[xasset]";
 
-
         public static LogLevel LogLevel = LogLevel.Info;
-
-        private void Start()
-        {
-            LogLevel = logLevel;
-        }
 
         [Conditional("DEBUG")]
         public static void D(object msg, Object context = null)
@@ -50,12 +41,6 @@ namespace xasset
         {
             if (LogLevel <= LogLevel.Warning)
                 Debug.LogWarning($"{TAG} {msg}", context);
-        }
-
-        [Conditional("UNITY_EDITOR")]
-        private void Update()
-        {
-            LogLevel = logLevel;
-        }
+        } 
     }
 }

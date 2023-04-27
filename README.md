@@ -1,6 +1,6 @@
 # 关于
 
-xasset 是更高效的 Unity 资源系统。
+xasset 是跨平台 Unity 资源系统。
 
 xasset 提供开箱即用的分包、加密和边玩边下等技术解决方案，可以实现更快的开发效率和更流畅的用户体验。
 
@@ -16,19 +16,8 @@ xasset 提供开箱即用的分包、加密和边玩边下等技术解决方案�
 
 ## 最近更新
 
-### 2023.02.26
-
-#### 开源版（2023）
-
-- 增加强更示例，获取更新大小增加读条过程
-
-#### 专业版（2023）
-
-- 增加强更示例，获取更新大小增加读条过程
-- 适配 UOS CDN
-- RawAsset 适配二次打包数据读取逻辑
-
-注：更多修改细节，可以阅读源码深入了解，任何疑问或建议，欢迎提交 Issues 反馈。
+- 2023.04.24:[xasset 2023.1预览版的改变](https://mp.weixin.qq.com/s/H2HDtwnp1mG_F4v1TahVJg)
+- 2023.03.27:[近10倍IO性能优化的过程和原理](https://mp.weixin.qq.com/s/X0Tc6-UKVqfEXrzSEY17Zw)
 
 ## 开源版
 
@@ -162,6 +151,7 @@ Settings 配置的 Simulation Download 开启后，编辑器下在打包后，�
 成为 xasset 的赞助商可以在这里添加自己的链接，可以带 LOGO 或名字：
 
 - Miss_Lynn(人民币50000元)
+- mingjava(人民币5000元)
 - [马三小伙儿](https://github.com/XINCGer)（人民币4800元）
 - 花花 （人民币3848元）
 - [Jojohello](https://www.zhihu.com/people/jojohello)（人民币3000元）
@@ -171,6 +161,8 @@ Settings 配置的 Simulation Download 开启后，编辑器下在打包后，�
 ## 声望
 
 - [Connor Aaron Roberts](https://github.com/c0nd3v):反馈有效问题或建议 +10
+- [xxgamecom](xxgamecom):反馈有效问题或建议 +10
+- [roki007](https://github.com/roki007):反馈有效问题或建议 +5
 - [EasierLu](https://github.com/EasierLu):反馈有效问题或建议 +5
 - [Contra](): 反馈有效问题或建议 +5
 - [郑昊](https://github.com/plussign): 反馈有效问题或建议 +5

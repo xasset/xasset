@@ -25,7 +25,7 @@ namespace xasset.editor
             BuildBundlesInternal(true, builds);
         }
         
-        private static void ClearBuildAssetCache()
+        private static void ClearBuildCache()
         {
             // 资源依赖发生修改的时候需要重新生成依赖关系。
             var deleted = new[]
@@ -39,11 +39,32 @@ namespace xasset.editor
                 File.Delete(file);
                 File.Delete(file + ".meta");
             }
+            
+            // 重建 versions，删除不在版本内的文件。
+            var versions = Settings.GetDefaultVersions();
+            var builds = Settings.FindAssets<Build>();
+            var removed = 0;
+            for (var index = 0; index < versions.data.Count; index++)
+            {
+                var version = versions.data[index];
+                if (!Array.Exists(builds, build => version.name.Equals(build.name)))
+                {
+                    versions.data.RemoveAt(index);
+                    index--;
+                    removed++;
+                }
+            }
+
+            if (removed > 0)
+            {
+                versions.Save(Settings.GetCachePath(Versions.Filename));
+                versions.Save(Settings.GetDataPath(versions.GetFilename()));
+            }
         }
 
         private static void BuildBundlesInternal(bool withLastBuild, params Build[] builds)
         {
-            ClearBuildAssetCache();
+            ClearBuildCache();
             var settings = Settings.GetDefaultSettings();
             if (builds.Length == 0) builds = Settings.FindAssets<Build>();
             PreprocessBuildBundles?.Invoke(builds, settings);
@@ -98,7 +119,6 @@ namespace xasset.editor
         {
             var versions = Settings.GetDefaultVersions();
             var path = Settings.GetDataPath(versions.GetFilename());
-            versions.Save(Settings.GetCachePath(Versions.Filename));
             versions.Save(path);
             changes.Add(path);
             PostprocessBuildBundles?.Invoke(changes.ToArray());
@@ -116,7 +136,7 @@ namespace xasset.editor
         public static void BuildUpdateInfo(Versions versions, string hash, long size)
         {
             var settings = Settings.GetDefaultSettings();
-            var downloadURL = $"{settings.downloadURL}{Assets.Bundles}/{Settings.Platform}/";
+            var downloadURL = $"{settings.bundleDownloadURL}{Assets.Bundles}/{Settings.Platform}/";
             var updateInfoPath = Settings.GetCachePath(UpdateInfo.Filename);
             var updateInfo = Utility.LoadFromFile<UpdateInfo>(updateInfoPath);
             updateInfo.hash = hash;

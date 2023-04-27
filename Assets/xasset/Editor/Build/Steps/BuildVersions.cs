@@ -92,7 +92,6 @@ namespace xasset.editor
             manifest.bundles = job.bundles.ConvertAll(Converter).ToArray();
             manifest.assets = assets.ToArray();
             manifest.dirs = dirs.ToArray();
-            manifest.build = job.parameters.name;
             return true;
         }
 

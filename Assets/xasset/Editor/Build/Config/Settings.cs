@@ -18,33 +18,100 @@ namespace xasset.editor
     [CreateAssetMenu(fileName = nameof(Settings), menuName = "xasset/" + nameof(Settings))]
     public class Settings : ScriptableObject
     {
-        [Header("Player")] public string updateInfoURL = "http://127.0.0.1/";
-        public string downloadURL = "http://127.0.0.1/";
-        public string playerDownloadURL = "http://127.0.0.1/";
+        /// <summary>
+        ///     更新信息地址
+        /// </summary>
+        [Header("Player")] [Tooltip("更新信息地址")] public string updateInfoURL = "http://127.0.0.1/";
+
+        /// <summary>
+        ///     资源下载地址
+        /// </summary>
+        [Tooltip("资源下载地址")] public string bundleDownloadURL = "http://127.0.0.1/Bundles";
+
+        /// <summary>
+        ///     安装包下载地址
+        /// </summary>
+        [Tooltip("安装包下载地址")] public string playerDownloadURL = "http://127.0.0.1/Build/xasset.apk";
+
+        /// <summary>
+        ///     安装包资源分包模式
+        /// </summary>
+        [Tooltip("安装包资源分包模式")]
         public PlayerAssetsSplitMode playerAssetsSplitMode = PlayerAssetsSplitMode.IncludeAllAssets;
-        public bool offlineMode;
+
+        /// <summary>
+        ///     是否将安装包内的资源二次打包，Android 设备上开启这个选项可以优化 IO 效率。
+        /// </summary>
+        [Tooltip("是否将安装包内的资源二次打包，Android 设备上开启这个选项可以优化 IO 效率")]
+        public bool packPlayerAssets = true;
+
+        /// <summary>
+        ///     离线模式，运行时有效，开启后不会触发更新。
+        /// </summary>
+        [Tooltip("离线模式，运行时有效，开启后不会触发更新。")] public bool offlineMode;
+
+        /// <summary>
+        ///     日志级别
+        /// </summary>
+        [Tooltip("日志级别")] public LogLevel logLevel = LogLevel.Debug;
+
+        /// <summary>
+        ///     打包 bundle 的设置
+        /// </summary>
+        [Tooltip("打包 bundle 的设置")] public BundleSettings bundle = new BundleSettings();
 
         /// <summary>
         ///     编辑器仿真模式，开启后，无需打包可以进入播放模式。
         /// </summary>
-        [Header("Development")] public bool simulationMode = true;
+        [Header("Development")] [Tooltip("编辑器仿真模式，开启后，无需打包可以进入播放模式")]
+        public bool simulationMode = true;
 
         /// <summary>
         ///     编辑器下是否开启仿真下载模式，开启后，无需把资源部署到服务器，就行运行真机的更新过程。
         /// </summary>
+        [Tooltip("编辑器下是否开启仿真下载模式，开启后，无需把资源部署到服务器，就行运行真机的更新过程")]
         public bool simulationDownload = true;
+
+        /// <summary>
+        ///     编辑器仿真模式下，是否采集所有资源，需要更长的初始化耗时，但是可以及时对未采集的内容进行预警。
+        /// </summary>
+        [Tooltip("编辑器仿真模式下，是否采集所有资源，需要更长的初始化耗时，但是可以及时对未采集的内容进行预警。")]
+        public bool collectAllAssets;
 
         /// <summary>
         ///     最大并行下载数量
         /// </summary>
-        [Header("Download")] [Range(1, 10)] public byte maxDownloads = 5;
+        [Header("Download")] [Range(1, 10)] [Tooltip("最大并行下载数量")]
+        public byte maxDownloads = 5;
 
         /// <summary>
         ///     最大错误重试次数
         /// </summary>
-        [Range(0, 5)] public byte maxRetryTimes = 3;
+        [Range(0, 5)] [Tooltip("最大错误重试次数")] public byte maxRetryTimes = 3;
 
-        public BundleSettings bundle = new BundleSettings();
+        /// <summary>
+        ///     每个队列最大单帧更新数量。
+        /// </summary>
+        [Header("Scheduler")] [Range(1, 30)] [Tooltip("每个队列最大单帧更新数量")]
+        public byte maxRequests = 10;
+
+        /// <summary>
+        ///     自动切片时间，值越大处理的请求数量越多，值越小处理请求的数量越小，可以根据目标帧率分配。
+        /// </summary>
+        [Tooltip("自动切片时间，值越大处理的请求数量越多，值越小处理请求的数量越小，可以根据目标帧率分配")]
+        public float autoSliceTimestep = 1 / 16f;
+
+        /// <summary>
+        ///     是否开启自动切片
+        /// </summary>
+        [Tooltip("是否开启自动切片")] public bool autoSlicing = true;
+
+        /// <summary>
+        ///     自动回收的时间步长
+        /// </summary>
+        [Header("Recycler")] [Tooltip("自动回收的时间步长")]
+        public float autoRecycleTimestep = 0.7f;
+
         private static string Filename => $"Assets/xasset/Config/{nameof(Settings)}.asset";
 
         public static BuildGroup GetAutoGroup()
@@ -60,10 +127,15 @@ namespace xasset.editor
             var assets = CreateInstance<PlayerAssets>();
             assets.version = PlayerSettings.bundleVersion;
             assets.updateInfoURL = $"{updateInfoURL}{Assets.Bundles}/{Platform}/{UpdateInfo.Filename}";
-            assets.downloadURL = $"{downloadURL}{Assets.Bundles}/{Platform}";
+            assets.downloadURL = $"{bundleDownloadURL}{Assets.Bundles}/{Platform}";
             assets.offlineMode = offlineMode;
             assets.maxDownloads = maxDownloads;
             assets.maxRetryTimes = maxRetryTimes;
+            assets.logLevel = logLevel;
+            assets.maxRequests = maxRequests;
+            assets.autoSliceTimestep = autoSliceTimestep;
+            assets.autoSlicing = autoSlicing;
+            assets.autoRecycleTimestep = autoRecycleTimestep;
             return assets;
         }
 

@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 
 namespace xasset.editor
-{ 
+{
     public struct EditorAssetHandler : IAssetHandler
     {
         public void OnStart(AssetRequest request)
@@ -19,6 +18,10 @@ namespace xasset.editor
         }
 
         public void WaitForCompletion(AssetRequest request)
+        {
+        }
+
+        public void OnReload(AssetRequest request)
         {
         }
 

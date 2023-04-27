@@ -69,7 +69,6 @@ namespace xasset
                 {
                     var path = Assets.GetDownloadDataPath(version.file);
                     var manifest = Utility.LoadFromFile<Manifest>(path);
-                    manifest.build = version.name;
                     manifest.name = version.file;
                     version.manifest = manifest;
                 }

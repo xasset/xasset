@@ -9,6 +9,7 @@ namespace xasset
         void Update(AssetRequest request);
         void Dispose(AssetRequest request);
         void WaitForCompletion(AssetRequest request);
+        void OnReload(AssetRequest request);
     }
 
     public struct RuntimeAssetHandler : IAssetHandler
@@ -31,6 +32,7 @@ namespace xasset
 
         public void Update(AssetRequest request)
         {
+            if (request.isDone) return;
             switch (_step)
             {
                 case Step.LoadDependencies:
@@ -41,13 +43,42 @@ namespace xasset
                     break;
 
                 case Step.LoadAsset:
-                    request.progress = 0.5f + _loadAssetAsync.progress * 0.5f;
+                    request.progress = 0.5f * _loadAssetAsync.progress * 0.5f;
                     if (!_loadAssetAsync.isDone) return;
                     SetResult(request);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void LoadAsset(AssetRequest request)
+        {
+            if (!_dependencies.CheckResult(request, out var assetBundle))
+                return;
+
+            var type = request.type;
+            var path = request.path;
+            if (request.isAll)
+            {
+                request.assets = assetBundle.LoadAssetWithSubAssets(path, type);
+                if (request.assets == null)
+                {
+                    request.SetResult(Request.Result.Failed, "assets == null");
+                    return;
+                }
+            }
+            else
+            {
+                request.asset = assetBundle.LoadAsset(path, type);
+                if (request.asset == null)
+                {
+                    request.SetResult(Request.Result.Failed, "asset == null");
+                    return;
+                }
+            }
+
+            request.SetResult(Request.Result.Success);
         }
 
         private void LoadAssetAsync(AssetRequest request)
@@ -97,9 +128,16 @@ namespace xasset
         {
             _dependencies.WaitForCompletion();
             if (request.result == Request.Result.Failed) return;
-            if (_loadAssetAsync == null) LoadAssetAsync(request);
-            if (request.result == Request.Result.Failed) return;
-            SetResult(request);
+            //  特殊处理，防止异步转同步卡顿。
+            if (_loadAssetAsync == null)
+                LoadAsset(request);
+            else
+                SetResult(request);
+        }
+
+        public void OnReload(AssetRequest request)
+        {
+            LoadAssetAsync(request);
         }
 
         public static IAssetHandler CreateInstance()

@@ -5,16 +5,17 @@ using Object = UnityEngine.Object;
 
 namespace xasset
 {
-    public class AssetRequest : LoadRequest
+    public class AssetRequest : LoadRequest, IReloadable
     {
         private static readonly Queue<AssetRequest> Unused = new Queue<AssetRequest>();
-        private static readonly Dictionary<string, AssetRequest> Loaded = new Dictionary<string, AssetRequest>();
-        public IAssetHandler handler { get; } = CreateHandler();
+        internal static readonly Dictionary<string, AssetRequest> Loaded = new Dictionary<string, AssetRequest>();
+
+        private IAssetHandler handler { get; } = CreateHandler();
 
         public Object asset { get; set; }
         public Object[] assets { get; set; }
         public bool isAll { get; private set; }
-        public ManifestAsset info { get; private set; }
+        public ManifestAsset info { get; internal set; }
         public Type type { get; private set; }
 
         public static Func<IAssetHandler> CreateHandler { get; set; } = RuntimeAssetHandler.CreateInstance;
@@ -22,7 +23,6 @@ namespace xasset
         protected override void OnStart()
         {
             handler.OnStart(this);
-            References.Retain(path);
         }
 
         protected override void OnWaitForCompletion()
@@ -35,33 +35,22 @@ namespace xasset
             handler.Update(this);
         }
 
-
         protected override void OnDispose()
         {
             Remove(this);
             handler.Dispose(this);
-
             if (References.Release(path) <= 0)
             {
                 if (isAll)
                 {
                     if (assets != null)
-                    {
                         foreach (var o in assets)
-                        {
                             if (!(o is GameObject))
-                            {
                                 Recycler.UnloadAsset(o);
-                            }
-                        }
-                    }
                 }
                 else
                 {
-                    if (asset != null && !(asset is GameObject))
-                    {
-                        Recycler.UnloadAsset(asset);
-                    }
+                    if (asset != null && !(asset is GameObject)) Recycler.UnloadAsset(asset);
                 }
             }
 
@@ -111,8 +100,31 @@ namespace xasset
                 Loaded[key] = request;
             }
 
+            if (request.refCount == 1)
+                References.Retain(path);
+
             request.LoadAsync();
             return request;
+        } 
+        
+        public void ReloadAsync()
+        {
+            status = Status.Processing;
+            handler.OnReload(this);
+        }
+        
+        public Action reloaded { get; set; }
+
+        public void OnReloaded()
+        {
+            reloaded?.Invoke();
+            reloaded = null;
+        }
+
+        public bool IsReloaded()
+        {
+            OnUpdated();
+            return isDone;
         }
     }
 }
