@@ -11,3 +11,5 @@ while(true)
   }
   i ++ ;
 }
+
+test01
