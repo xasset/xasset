@@ -1,3 +1,13 @@
 测试伪代码
 
 print("hello world * !!")
+
+i = 0;
+while(true)
+{
+  if(i  >= 100 )
+  {
+    break;
+  }
+  i ++ ;
+}
