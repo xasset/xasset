@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a764f4aad4f646c4b59cfad907af36c9, type: 3}
+  m_Name: Settings
+  m_EditorClassIdentifier: 
+  player:
+    assetsSplitMode: 0
+    simulationMode: 1
+    updatable: 1
+    updateInfoURL: http://127.0.0.1/Bundles
+    downloadURL: http://127.0.0.1/Bundles
+    playerURL: http://127.0.0.1/Build/xasset.apk
+    logLevel: 0
+    maxDownloads: 5
+    maxRetryTimes: 3
+    maxRequests: 10
+    autoslicing: 1
+    autoslicingTimestep: 0.01
+    autoreleaseTimestep: 0.7
+  bundle:
+    checkReference: 1
+    options: 12544
+    packByFileForAllScenes: 1
+    packTogetherForAllShaders: 1
+    forceUseBuiltinPipeline: 1
+    extension: .bundle
+    shaders:
+    - .shader
+    - .shadervariants
+    - .compute
+    excludeFiles:
+    - .cs
+    - .cginc
+    - .hlsl
+    - .spriteatlas
+    - .dll
