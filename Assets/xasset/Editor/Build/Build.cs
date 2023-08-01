@@ -77,6 +77,10 @@ namespace xasset.editor
         public BuildEntry[] assets = Array.Empty<BuildEntry>();
         [TextArea] public string desc;
         public string build { get; set; }
+        /// <summary>
+        ///     节点所在的组
+        /// </summary>
+        [NonSerialized] public Build owner;
     }
 
     [Serializable]

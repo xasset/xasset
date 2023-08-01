@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -178,6 +179,39 @@ namespace xasset.editor
             EditorUtility.OpenWithDefaultApp(Settings.PlatformCachePath);
         } 
 
+        [MenuItem("xasset/Generate Group Assets Menu Items", false, 350)]
+        public static void GenAssetsMenuItems()
+        {
+            var builds = Settings.FindAssets<Build>();
+            var sb = new StringBuilder();
+            sb.AppendLine("using UnityEngine;");
+            sb.AppendLine("using UnityEditor;");
+            sb.AppendLine("namespace xasset.editor");
+            sb.AppendLine("{");
+            sb.AppendLine("\tpublic static class GroupAssetsMenuItems");
+            sb.AppendLine("\t{");
+            foreach (var build in builds)
+            {
+                for (var index = 0; index < build.groups.Length; index++)
+                {
+                    var group = build.groups[index];
+                    sb.AppendLine($"\t\t[MenuItem(\"Assets/Group To/{build.name}/{group.name}\")]");
+                    sb.AppendLine($"\t\tprivate static void GroupTo{build.name.Trim()}{group.name.Trim()}()");
+                    sb.AppendLine("\t\t{");
+                    sb.AppendLine($"\t\t\t{nameof(Settings)}.{nameof(Settings.MakeSelectionAssetsGroupTo)}(\"{build.name}\", \"{group.name}\");");
+                    sb.AppendLine($"\t\t\tDebug.Log(\"Group to {group.name} with build {build.name}.\");");
+                    sb.AppendLine("\t\t}");
+                    if (index < build.groups.Length - 1)
+                        sb.AppendLine();
+                }
+            } 
+            sb.AppendLine("\t}");
+            sb.AppendLine("}");
+            var menuPath = "Assets/xasset/Editor/GroupAssetsMenuItems.cs";
+            File.WriteAllText(menuPath, sb.ToString());
+            AssetDatabase.ImportAsset(menuPath);
+        }
+        
         [MenuItem("Assets/To Json")]
         public static void ToJson()
         {

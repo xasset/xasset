@@ -452,5 +452,60 @@ namespace xasset.editor
                     return;
                 }
         }
+
+        public static void MakeSelectionAssetsGroupTo(string buildName, string groupName)
+        {
+            MakeSelectionAssetsGroupTo(Array.ConvertAll(Selection.assetGUIDs, AssetDatabase.GUIDToAssetPath), buildName, groupName);
+        }
+        
+        public static void MakeSelectionAssetsGroupTo(IEnumerable<string> selectionAssets, string buildName, string groupName)
+        {
+            var builds = FindAssets<Build>();
+            var assets = new Dictionary<string, BuildEntry>(); 
+            BuildGroup selected = null;
+            Build selectedBuild = null;
+            foreach (var build in builds)
+            {
+                if (build.name == buildName)
+                    selectedBuild = build;
+                foreach (var group in build.groups)
+                {
+                    group.owner = build;
+                    foreach (var entry in group.assets)
+                    {
+                        assets[entry.asset] = entry;
+                        entry.owner = group;
+                    }
+    
+                    if (groupName == group.name && buildName == build.name) selected = group;
+                }
+            } 
+            
+            if (selected == null)
+            {
+                if (selectedBuild == null)
+                    selectedBuild = GetOrCreateAsset<Build>($"Assets/xasset/Config/{buildName}.asset");
+                selected = new BuildGroup { name = groupName, owner = selectedBuild };
+                ArrayUtility.Add(ref selectedBuild.groups, selected);
+            }
+            
+            foreach (var path in selectionAssets)
+            {
+                if (!assets.TryGetValue(path, out var entry))
+                { 
+                    ArrayUtility.Add(ref selected.assets, new BuildEntry { asset = path, owner = selected});
+                }
+                else
+                {
+                    ArrayUtility.Add(ref selected.assets, entry);
+                    ArrayUtility.Remove(ref entry.owner.assets, entry);
+                    EditorUtility.SetDirty(entry.owner.owner);
+                }
+            }        
+            EditorUtility.SetDirty(selected.owner);
+            Selection.activeObject = selected.owner;
+            EditorGUIUtility.PingObject(Selection.activeObject);
+            EditorUtility.FocusProjectWindow();
+        }
     }
 }
