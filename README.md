@@ -18,6 +18,52 @@ xasset 提供开箱即用的 Unity 资产打包、分包、加密和边玩边下
 - 2023.04.24：[xasset 2023.1预览版发布，除了资产热重载外还有哪些改变？](https://mp.weixin.qq.com/s/H2HDtwnp1mG_F4v1TahVJg)
 - 2023.03.27：[近10倍IO性能优化的过程和原理](https://mp.weixin.qq.com/s/X0Tc6-UKVqfEXrzSEY17Zw)
 
+## 用法
+
+### 打包资源
+
+1、使用 `Assets>xasset>Create>Build` 创建打包配置。
+
+2、根据游戏的生命周期节点在 Build 配置中添加 Build Group。
+
+3、使用 `xasset>Generate Group Assets Menu Items` 为创建的 Build 配置中的 Groups 生成 Assets 菜单。
+
+4、使用 3 生成的菜单 `Assets>Group To`，在 Unity 的 Project 中选中资产文件或文件夹添加到对应的 Group 中。
+
+5、使用 `xasset>Build Bundles` 对 Build 配置中包含的资产进行打包。
+
+### 运行示例
+
+#### 一、不打包运行
+
+1、勾选 `xasset>Simulation Mode`。
+
+2、反选 `xasset>Updatable。`
+
+3、打开 Startup 场景让 Unity 进入播放模式。
+
+#### 二、打包运行不更新
+
+1、使用 `xasset>Build Bundles` 打包示例的资产
+
+2、让 `xasset>Updateble` 和 `xasset>Simulation Mode` 菜单都处于反选状态
+
+3、打开 Startup 场景让 Unity 进入播放模式。
+
+#### 三、打包运行并开启更新使用仿真下载
+
+1、使用 `xasset>Build Bundles` 打包示例的资产。
+
+2、让 `xasset>Updateble` 和 `xasset>Simulation Mode` 菜单都处于勾选状态。
+
+3、使用  `xasset>Build Player Assets` 构建安装包资产。选中一个 versions.json。 
+
+4、打开 Startup 场景让 Unity 进入播放模式。
+
+#### 四、打包运行并开启更新使用CDN下载
+
+略，请自行琢磨。
+
 ## 版本
 
 阅读 [技术规格](https://xasset.cc/price#技术规格) 可以了解不同版本之间的差异。
