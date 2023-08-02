@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 
 namespace xasset.editor
@@ -6,6 +7,7 @@ namespace xasset.editor
     {
         public void Start(BuildTask task)
         {
+            var children = new List<BuildEntry>();
             foreach (var group in task.groups)
             {
                 if (group == null)
@@ -14,14 +16,14 @@ namespace xasset.editor
                     continue;
                 }
 
-                if (group.enabled == false) continue;
-                
+                if (!group.enabled) continue;
                 group.build = task.parameters.name;
                 foreach (var entry in group.assets)
-                { 
+                {
                     entry.owner = group;
                     if (Directory.Exists(entry.asset))
                     {
+                        // 允许目录下的单个文件拎出去打包
                         foreach (var child in Settings.GetChildren(entry))
                         {
                             var asset = new BuildEntry
@@ -32,8 +34,7 @@ namespace xasset.editor
                                 addressMode = entry.addressMode,
                                 parent = entry.asset
                             };
-                            if (task.AddAsset(asset))
-                                asset.bundle = Settings.PackAsset(asset);
+                            children.Add(asset);
                         }
                     }
                     else
@@ -57,6 +58,10 @@ namespace xasset.editor
                     }
                 }
             }
+
+            foreach (var asset in children)
+                if (task.AddAsset(asset))
+                    asset.bundle = Settings.PackAsset(asset);
         }
     }
 }
