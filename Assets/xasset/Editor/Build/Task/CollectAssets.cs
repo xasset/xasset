@@ -26,14 +26,11 @@ namespace xasset.editor
                         // 允许目录下的单个文件拎出去打包
                         foreach (var child in Settings.GetChildren(entry))
                         {
-                            var asset = new BuildEntry
-                            {
-                                asset = child,
-                                owner = entry.owner,
-                                bundleMode = entry.bundleMode,
-                                addressMode = entry.addressMode,
-                                parent = entry.asset
-                            };
+                            var asset =  Settings.GetPackedAsset(child);
+                            asset.owner = entry.owner;
+                            asset.bundleMode = entry.bundleMode;
+                            asset.addressMode = entry.addressMode;
+                            asset.parent = entry.asset; 
                             children.Add(asset);
                         }
                     }
@@ -43,15 +40,11 @@ namespace xasset.editor
                         {
                             Logger.W($"Asset is missing in build {task.parameters.name} with group {group.name}.");
                             continue;
-                        }
-
-                        var asset = new BuildEntry
-                        {
-                            asset = entry.asset,
-                            owner = entry.owner,
-                            bundleMode = entry.bundleMode,
-                            addressMode = entry.addressMode
-                        };
+                        } 
+                        var asset =  Settings.GetPackedAsset(entry.asset);
+                        asset.owner = entry.owner;
+                        asset.bundleMode = entry.bundleMode;
+                        asset.addressMode = entry.addressMode;
                         asset.parent = Settings.GetDirectoryName(asset.asset);
                         if (task.AddAsset(asset))
                             asset.bundle = Settings.PackAsset(asset);

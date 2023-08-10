@@ -5,7 +5,9 @@ namespace xasset
 {
     public sealed class DownloadRequest : DownloadRequestBase
     {
+        public static bool Resumable { get; set; } = true;
         public IDownloadHandler handler { get; set; }
+        // ReSharper disable once MemberCanBePrivate.Global
         public Action<DownloadRequest> completed { get; set; }
         public DownloadContent content { get; set; }
         public string savePath => content.savePath;

@@ -36,33 +36,39 @@ xasset 提供开箱即用的 Unity 资产打包、分包、加密和边玩边下
 
 #### 一、不打包运行
 
-1、勾选 `xasset>Simulation Mode`。
+1、勾选 `xasset>Play Mode>Fast Play Without Build`。
 
-2、反选 `xasset>Updatable。`
-
-3、打开 Startup 场景让 Unity 进入播放模式。
+2、打开 Startup 场景让 Unity 进入播放模式。
 
 #### 二、打包运行不更新
 
-1、使用 `xasset>Build Bundles` 打包示例的资产
+1、使用 `xasset>Build Bundles` 打包示例的资产(如果已经打包过可以跳过)
 
-2、让 `xasset>Updateble` 和 `xasset>Simulation Mode` 菜单都处于反选状态
+2、勾选 `xasset>Play Mode>Play Without Update`。
 
 3、打开 Startup 场景让 Unity 进入播放模式。
 
 #### 三、打包运行并开启更新使用仿真下载
 
-1、使用 `xasset>Build Bundles` 打包示例的资产。
+1、使用 `xasset>Build Bundles` 打包示例的资产。(如果已经打包过可以跳过)
 
-2、让 `xasset>Updateble` 和 `xasset>Simulation Mode` 菜单都处于勾选状态。
+2、勾选 `xasset>Play Mode>Play With Update By Simulation`。
 
-3、使用  `xasset>Build Player Assets` 构建安装包资产。选中一个 versions.json。 
+3、使用  `xasset>Build Player Assets` 构建安装包资产。选中一个 versions.json。 (如果已经打包过可以跳过)
 
 4、打开 Startup 场景让 Unity 进入播放模式。
 
-#### 四、打包运行并开启更新使用CDN下载
+#### 四、打包运行并开启更新使用真机模式（从CDN下载打包后的资产）
 
-略，请自行琢磨。
+1、使用 `xasset>Build Bundles` 打包示例的资产。(如果已经打包过可以跳过)
+
+2、勾选 `xasset>Play Mode>Play With Update By Realtime`。
+
+3、在 Settings 中配置好 CDN 的地址，并把打包后的资产部署到 CDN。
+
+4、使用  `xasset>Build Player Assets` 构建安装包资产。选中一个 versions.json。 (如果已经打包过可以跳过)
+
+5、打开 Startup 场景让 Unity 进入播放模式。
 
 ## 版本
 

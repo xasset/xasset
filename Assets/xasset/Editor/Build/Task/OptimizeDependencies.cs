@@ -46,7 +46,7 @@ namespace xasset.editor
                 // Unity 会存在场景依赖场景的情况。 
                 if (entries.ContainsKey(dependency))
                     continue;
-                var asset = new BuildEntry { asset = dependency };
+                var asset = Settings.GetPackedAsset(dependency);
                 entries.Add(dependency, asset);
                 assets.Add(asset);
                 CollectDependencies(asset);

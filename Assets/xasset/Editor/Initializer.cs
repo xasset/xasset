@@ -13,14 +13,13 @@ namespace xasset.editor
         {
             var settings = Settings.GetDefaultSettings();
             Assets.Platform = Settings.Platform;
-            Assets.SimulationMode = settings.player.simulationMode;
+            Assets.SimulationMode = settings.playMode == PlayMode.FastPlayWithoutBuild;
             Assets.MaxRetryTimes = settings.player.maxRetryTimes;
             Assets.MaxDownloads = settings.player.maxDownloads;
-
-            if (Assets.SimulationMode && !settings.player.updatable)
+            Assets.Updatable = settings.playMode == PlayMode.PlayByUpdateWithRealtime || settings.playMode == PlayMode.PlayByUpdateWithSimulation;
+            if (Assets.SimulationMode)
             {
-                Assets.Updatable = false;
-                InitializeRequest.Initializer = InitializeAsync;
+                InitializeRequest.Initializer = InitializeAsyncWithoutBuild;
                 AssetRequest.CreateHandler = EditorAssetHandler.CreateInstance;
                 SceneRequest.CreateHandler = EditorSceneHandler.CreateInstance;
                 // 编辑器仿真模式开启 通过引用计数回收资源优化内存 可能对性能有影响 
@@ -29,7 +28,6 @@ namespace xasset.editor
             }
             else
             {
-                Assets.Updatable = settings.player.updatable;
                 if (Assets.Updatable)
                 {
                     var file = Assets.GetPlayerDataPath(PlayerAssets.Filename);
@@ -42,46 +40,53 @@ namespace xasset.editor
                             EditorApplication.isPlaying = false;
                         }
                     } 
-                    
-                    if (Assets.SimulationMode)
+                    if (settings.playMode == PlayMode.PlayByUpdateWithSimulation)
                     {
-                        Assets.UpdateInfoURL = $"{Assets.Protocol}{Settings.GetCachePath(UpdateInfo.Filename)}";
-                        Assets.DownloadURL = $"{Assets.Protocol}{Settings.PlatformDataPath}";
+                        InitializeRequest.Initializer = InitializeAsyncWithSimulationUpdate;
                     }
-
-                    InitializeRequest.Initializer = request => request.RuntimeInitializeAsync();
+                    else
+                    {
+                        InitializeRequest.Initializer = request => request.RuntimeInitializeAsync();
+                    } 
                 }
                 else
                 {
-                    InitializeRequest.Initializer = InitializeAsyncWithOfflineMode;
-                }
-
+                    InitializeRequest.Initializer = InitializeAsyncWithoutUpdate;
+                } 
                 AssetRequest.CreateHandler = RuntimeAssetHandler.CreateInstance;
                 SceneRequest.CreateHandler = RuntimeSceneHandler.CreateInstance;
             }
         }
 
-        private static IEnumerator InitializeAsyncWithOfflineMode(InitializeRequest request)
+        private static IEnumerator InitializeAsyncWithSimulationUpdate(InitializeRequest request)
         {
-            Assets.DownloadDataPath = Settings.PlatformDataPath;
-            Assets.PlayerAssets = Settings.GetDefaultSettings().GetPlayerAssets();
-            yield return null;
+            yield return request.RuntimeInitializeAsync();
+            DownloadRequest.Resumable = false;
+            Assets.UpdateInfoURL = $"{Assets.Protocol}{Settings.GetCachePath(UpdateInfo.Filename)}";
+            Assets.DownloadURL = $"{Assets.Protocol}{Settings.PlatformDataPath}"; 
+        }
+
+        private static IEnumerator InitializeAsyncWithoutUpdate(InitializeRequest request)
+        {
             var file = Settings.GetCachePath(Versions.BundleFilename);
             if (!File.Exists(file))
             {
-                const string message = "The versions.json not found! please run build bundles before enter in playmode.";
+                var message = $"File {file} not found! please run build bundles before enter in playmode.";
                 request.SetResult(Request.Result.Failed, message);
                 EditorUtility.DisplayDialog("Error", message, "Ok");
                 EditorApplication.isPlaying = false;
             }
-            Assets.Versions = Utility.LoadFromFile<Versions>(file);
+            Assets.DownloadDataPath = Settings.PlatformDataPath;
+            Assets.PlayerAssets = Settings.GetDefaultSettings().GetPlayerAssets();
+            yield return null;
+            Assets.Versions = Utility.LoadFromFile<Versions>(Settings.GetCachePath(Versions.BundleFilename));
             yield return null;
             foreach (var version in Assets.Versions.data)
                 version.Load(Settings.GetDataPath(version.file));
             request.SetResult(Request.Result.Success);
         }
 
-        private static IEnumerator InitializeAsync(InitializeRequest request)
+        private static IEnumerator InitializeAsyncWithoutBuild(InitializeRequest request)
         {
             Assets.Versions = ScriptableObject.CreateInstance<Versions>();
             Assets.PlayerAssets = ScriptableObject.CreateInstance<PlayerAssets>();
@@ -89,10 +94,10 @@ namespace xasset.editor
             var builds = Settings.FindAssets<Build>();
             foreach (var build in builds)
             {
-                if (! build.enabled) continue;
+                if (!build.enabled) continue;
                 foreach (var group in build.groups)
                 {
-                    if (! group.enabled) continue;
+                    if (!group.enabled) continue;
                     foreach (var entry in group.assets)
                     {
                         if (entry.addressMode != AddressMode.LoadByName &&
@@ -110,7 +115,8 @@ namespace xasset.editor
                         foreach (var child in children)
                             Assets.SetAddress(child, addressFunc(child));
                     }
-                }  
+                }
+
                 yield return null;
             }
 

@@ -16,12 +16,6 @@ namespace xasset.editor
         [Tooltip("安装包资源分包模式")] public PlayerAssetsSplitMode assetsSplitMode = PlayerAssetsSplitMode.IncludeAllAssets;
 
         /// <summary>
-        ///     编辑器仿真模式，未开启更新时，开启后，无需打包可以进入播放模式，开启更新时，开启后，无需把资源部署到服务器，就行运行真机的更新过程。
-        /// </summary>
-        [Tooltip("编辑器仿真模式，未开启更新时，开启后，无需打包可以进入播放模式，开启更新时，开启后，无需把资源部署到服务器，就行运行真机的更新过程。")]
-        public bool simulationMode = true;
-
-        /// <summary>
         ///     是否开启更新，运行时有效。
         /// </summary>
         [Tooltip("是否开启更新，运行时有效。")] public bool updatable;
@@ -134,12 +128,24 @@ namespace xasset.editor
             ".dll"
         };
     }
+    
+    public enum PlayMode
+    {
+        FastPlayWithoutBuild,                // Only for Editor
+        PlayByUpdateWithSimulation,          // Only for Editor
+        PlayByUpdateWithRealtime,            // Update by file server
+        PlayWithoutUpdate,                   // Offline Mode
+    }
 
     [CreateAssetMenu(fileName = nameof(Settings), menuName = "xasset/" + nameof(Settings))]
     public class Settings : ScriptableObject
     {
         private static Settings _defaultSettings;
-
+        /// <summary>
+        ///     代码运行模式，
+        /// </summary>
+        [Tooltip("代码运行模式")]
+        public PlayMode playMode = PlayMode.FastPlayWithoutBuild;
         /// <summary>
         ///     播放器设置
         /// </summary>
@@ -199,7 +205,24 @@ namespace xasset.editor
                 : GetOrCreateAsset<Settings>(Filename);
             return _defaultSettings;
         }
+        
+        private static BuildCache _packedAssets;
 
+        public static BuildCache GetPackedAssets()
+        {
+            if (_packedAssets != null)
+                return _packedAssets;
+
+            var path = AssetDatabase.GetAssetPath(GetDefaultSettings());
+            var dir = Path.GetDirectoryName(path);
+            _packedAssets = GetOrCreateAsset<BuildCache>($"{dir}/PackedAssets.asset");
+            return _packedAssets;
+        }
+
+        public static BuildEntry GetPackedAsset(string asset)
+        {
+            return GetPackedAssets().GetAsset(asset);
+        }
         public static Versions GetDefaultVersions()
         {
             var versions = Utility.LoadFromFile<Versions>(GetCachePath(Versions.Filename));

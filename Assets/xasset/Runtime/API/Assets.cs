@@ -190,12 +190,6 @@ namespace xasset
         public static void LoadPlayerAssets(PlayerAssets settings)
         {
             // 仿真模式下载地址会特殊处理
-            if (!SimulationMode)
-            {
-                UpdateInfoURL = settings.updateInfoURL;
-                DownloadURL = settings.downloadURL;
-            }
-
             if (!Application.isEditor) Updatable = settings.updatable;
             MaxRetryTimes = settings.maxRetryTimes;
             MaxDownloads = settings.maxDownloads;

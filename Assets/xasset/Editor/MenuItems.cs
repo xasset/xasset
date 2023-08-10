@@ -5,31 +5,87 @@ using UnityEngine;
 
 namespace xasset.editor
 {
+    public static class PlayModeMenuItems
+    {
+        private const string kFastPlayWithoutBuild = "xasset/Play Mode/Fast Play Without Build";
+        private const string kPlayByUpdateWithSimulation = "xasset/Play Mode/Play By Update With Simulation";
+        private const string kPlayWithoutUpdate = "xasset/Play Mode/Play Without Update";
+        private const string kPlayByUpdateWithRealtime = "xasset/Play Mode/Play By Update With Realtime";
+
+        private static void SetPlayMode(PlayMode mode)
+        {
+            var settings = Settings.GetDefaultSettings();
+            settings.playMode = mode;
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
+        }
+
+        [MenuItem(kFastPlayWithoutBuild, false, 80)]
+        public static void SwitchToPlayByFastWithoutBuild()
+        {
+            SetPlayMode(PlayMode.FastPlayWithoutBuild);
+        }
+
+        [MenuItem(kPlayByUpdateWithSimulation, false, 80)]
+        public static void SwitchPlayByBuildAndUpdateWithoutFileServer()
+        { 
+            SetPlayMode(PlayMode.PlayByUpdateWithSimulation);
+        } 
+
+        [MenuItem(kPlayByUpdateWithRealtime, false, 80)]
+        public static void SwitchPlayByBuildAndUpdateByFileServer()
+        { 
+            SetPlayMode(PlayMode.PlayByUpdateWithRealtime);
+        }
+        
+        [MenuItem(kPlayWithoutUpdate, false, 80)]
+        public static void SwitchPlayByBuildWithoutUpdate()
+        { 
+            SetPlayMode(PlayMode.PlayWithoutUpdate);
+        }
+
+        [MenuItem(kFastPlayWithoutBuild, true, 80)]
+        public static bool RefreshPlayByFastWithoutBuild()
+        {
+            var settings = Settings.GetDefaultSettings();
+            Menu.SetChecked(kFastPlayWithoutBuild, settings.playMode == PlayMode.FastPlayWithoutBuild);
+            return true;
+        }
+
+        [MenuItem(kPlayByUpdateWithSimulation, true, 80)]
+        public static bool RefreshPlayByBuildAndUpdateWithoutFileServer()
+        {
+            var settings = Settings.GetDefaultSettings();
+            Menu.SetChecked(kPlayByUpdateWithSimulation, settings.playMode == PlayMode.PlayByUpdateWithSimulation);
+            return true;
+        } 
+
+        [MenuItem(kPlayByUpdateWithRealtime, true, 80)]
+        public static bool RefreshPlayByUpdateWithRealtime()
+        {
+            var settings = Settings.GetDefaultSettings();
+            Menu.SetChecked(kPlayByUpdateWithRealtime, settings.playMode == PlayMode.PlayByUpdateWithRealtime);
+            return true;
+        }
+        
+        [MenuItem(kPlayWithoutUpdate, true, 80)]
+        public static bool RefreshPlayByBuildWithoutUpdate()
+        {
+            var settings = Settings.GetDefaultSettings();
+            Menu.SetChecked(kPlayWithoutUpdate, settings.playMode == PlayMode.PlayWithoutUpdate);
+            return true;
+        }
+    }
+
     public static class MenuItems
     {
-        private const string kSimulationMode = "xasset/Simulation Mode";
-        private const string kUpdatable = "xasset/Updatable";
-
-
         [MenuItem("xasset/About xasset", false, 1)]
         public static void OpenAbout()
         {
             Application.OpenURL("https://xasset.cc");
         }
 
-        [MenuItem("xasset/Get Unity Online Services", false, 1)]
-        public static void GetUnityOnlineServices()
-        {
-            Application.OpenURL("https://uos.unity.cn");
-        }
-
-        [MenuItem("xasset/Check for Updates", false, 1)]
-        public static void CheckForUpdates()
-        {
-            Application.OpenURL("https://xasset.cc/docs/change-log");
-        }
-        
-        [MenuItem("xasset/Edit Settings", false, 80)]
+        [MenuItem("xasset/Edit Settings", false, 1)]
         public static void PingSettings()
         {
             Selection.activeObject = Settings.GetDefaultSettings();
@@ -37,40 +93,7 @@ namespace xasset.editor
             EditorUtility.FocusProjectWindow();
         }
 
-        [MenuItem(kSimulationMode, false, 80)]
-        public static void SwitchSimulationMode()
-        {
-            var settings = Settings.GetDefaultSettings();
-            settings.player.simulationMode = !settings.player.simulationMode;
-            EditorUtility.SetDirty(settings);
-            AssetDatabase.SaveAssets();
-        }
 
-        [MenuItem(kSimulationMode, true, 80)]
-        public static bool RefreshSimulationMode()
-        {
-            var settings = Settings.GetDefaultSettings();
-            Menu.SetChecked(kSimulationMode, settings.player.simulationMode);
-            return true;
-        }
-
-        [MenuItem(kUpdatable, false, 80)]
-        public static void SwitchUpdateEnabled()
-        {
-            var settings = Settings.GetDefaultSettings();
-            settings.player.updatable = !settings.player.updatable;
-            EditorUtility.SetDirty(settings);
-            AssetDatabase.SaveAssets();
-        }
-
-        [MenuItem(kUpdatable, true, 80)]
-        public static bool RefreshUpdateEnabled()
-        {
-            var settings = Settings.GetDefaultSettings();
-            Menu.SetChecked(kUpdatable, settings.player.updatable);
-            return true;
-        } 
-        
         [MenuItem("xasset/Build Bundles", false, 100)]
         public static void BuildBundles()
         {
@@ -78,18 +101,18 @@ namespace xasset.editor
         }
 
         [MenuItem("xasset/Build Bundles with Cache", false, 100)]
-        public static void BuildBundlesWithLastBuild()
+        public static void BuildBundlesWithCache()
         {
             Builder.BuildBundlesWithCache(Selection.GetFiltered<Build>(SelectionMode.DeepAssets));
-        } 
-        
-        [MenuItem("xasset/Build Player", false, 120)]
-        public static void BuildPlayerDefault()
+        }
+
+        [MenuItem("xasset/Build Player", false, 100)]
+        public static void BuildPlayer()
         {
             Builder.BuildPlayer();
         }
 
-        [MenuItem("xasset/Build Player Assets", false, 120)]
+        [MenuItem("xasset/Build Player Assets", false, 100)]
         public static void BuildPlayerAssetsWithSelection()
         {
             var path = EditorUtility.OpenFilePanelWithFilters("Select", Settings.PlatformDataPath,
@@ -99,7 +122,7 @@ namespace xasset.editor
             Builder.BuildPlayerAssets(versions);
         }
 
-        [MenuItem("xasset/Build Update Info", false, 120)]
+        [MenuItem("xasset/Build Update Info", false, 100)]
         public static void BuildUpdateInfo()
         {
             var path = EditorUtility.OpenFilePanelWithFilters("Select", Settings.PlatformDataPath,
@@ -111,14 +134,8 @@ namespace xasset.editor
             var hash = Utility.ComputeHash(path);
             Builder.BuildUpdateInfo(versions, hash, file.Length);
         }
-        
-        [MenuItem("xasset/Check References", false, 140)]
-        public static void CheckReferences()
-        {
-            Builder.FindReferences();
-        }
-        
-        [MenuItem("xasset/Print Changes with Selection", false, 160)]
+
+        [MenuItem("xasset/Print Changes with Selection", false, 150)]
         public static void PrintChangesFromSelection()
         {
             var path = EditorUtility.OpenFilePanelWithFilters("Select", Settings.PlatformDataPath,
@@ -128,8 +145,8 @@ namespace xasset.editor
             var filename = versions.GetFilename();
             var records = Utility.LoadFromFile<BuildChanges>(Settings.GetCachePath(BuildChanges.Filename));
             if (records.TryGetValue(filename, out var value)) Builder.GetChanges(value.files, filename);
-        } 
-
+        }
+        
         [MenuItem("xasset/Clear Download", false, 300)]
         public static void ClearDownload()
         {
@@ -177,8 +194,10 @@ namespace xasset.editor
         public static void OpenBundlesCache()
         {
             EditorUtility.OpenWithDefaultApp(Settings.PlatformCachePath);
-        } 
-
+        }
+        
+        
+        
         [MenuItem("xasset/Generate Group Assets Menu Items", false, 350)]
         public static void GenAssetsMenuItems()
         {
@@ -211,7 +230,21 @@ namespace xasset.editor
             File.WriteAllText(menuPath, sb.ToString());
             AssetDatabase.ImportAsset(menuPath);
         }
-        
+
+        [MenuItem("xasset/Get Unity Online Services", false, 400)]
+        public static void GetUnityOnlineServices()
+        {
+            Application.OpenURL("https://uos.unity.cn");
+        }
+
+        [MenuItem("xasset/Check for Updates", false, 400)]
+        public static void CheckForUpdates()
+        {
+            Application.OpenURL("https://xasset.cc/docs/change-log");
+        }
+
+      
+
         [MenuItem("Assets/To Json")]
         public static void ToJson()
         {
