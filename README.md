@@ -1,17 +1,22 @@
-# xasset：让 Unity 资源管理更轻松
+# 专业 Unity 资产系统
 
-xasset 提供开箱即用的 Unity 资产打包、分包、加密和边玩边下等技术解决方案，可以让用户更快的开发更流畅的产品。进一步了解 xasset 的产品特性，可以前往 xasset 的产品官网 [xasset.cc](https://xasset.cc) 查看。
+xasset 提供了全面可靠的 Unity 资产打包、分包、加密、热更和加载等技术解决方案。借助 xasset，可以让一些 Unity
+项目的打包慢、包体大和运行卡顿等问题解决地更轻松。
 
 - 产品官网：https://xasset.cc
 - GitHub：https://github.com/xasset/xasset
 
+了解更多 xasset 的产品特性，请前往 [xasset.cc](https://xasset.cc) 查看。
+
 ## 推荐服务：使用 UOS CDN 进行资源云端管理
 
-由 xasset 团队和 Unity 团队联手打造的快速资源分发流程和工具，开发阶段可以免费使用。[>>> 前往体验](https://uos.unity.cn/partner/xasset)
+由 xasset 团队和 Unity
+团队联手打造的快速资源分发流程和工具，开发阶段可以免费使用。[>>> 前往体验](https://uos.unity.cn/partner/xasset)
 
 <img src="https://uos.unity.cn/images/homepage/xasset-hp.png" alt="xasset-uos" style="zoom:50%;" />
 
-> 提示：使用 UOS CDN 的时候，可以把 Bundles 和 updateinfo.json 放到不同的存储桶。Bundles 下的数据无需使用 Badge 来处理内容分发，updateinfo.json 可以用 Badge 来处理开发测试或线上正式环境的内容分发。
+> 提示：使用 UOS CDN 的时候，可以把 Bundles 和 updateinfo.json 放到不同的存储桶。Bundles 下的数据无需使用 Badge
+> 来处理内容分发，updateinfo.json 可以用 Badge 来处理开发测试或线上正式环境的内容分发。
 
 ## 官方新闻
 
@@ -130,9 +135,9 @@ xasset 的主要创作者是：
 
 成为贡献者可以获得一定的声望，声望可以折现，声望和人民币的兑换比例是 1：20，也就是 1 点声望可以兑换 20 元人民币。
 
-
 ## 推荐框架
 
 - [ET](https://github.com/egametang/ET) Unity3D Client And C# Server Framework
 - [TinaX Framework](https://tinax.corala.space/) 开箱即用的Unity独立游戏开发工具
-- [LuaProfiler-For-Unity](https://github.com/ElPsyCongree/LuaProfiler-For-Unity) Lua Profiler For Unity支持 XLua、SLua、ToLua
+- [LuaProfiler-For-Unity](https://github.com/ElPsyCongree/LuaProfiler-For-Unity) Lua Profiler For Unity支持
+  XLua、SLua、ToLua
