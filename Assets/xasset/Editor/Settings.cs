@@ -374,19 +374,8 @@ namespace xasset.editor
         }
 
         public static string[] GetDependencies(string path)
-        {
-            var exclude = GetDefaultSettings().bundle.excludeFiles;
-            var dependencies = AssetDatabase.GetDependencies(path, false);
-            for (var index = 0; index < dependencies.Length; index++)
-            {
-                var dependency = dependencies[index];
-                if (dependency != path && !dependency.EndsWith(".unity") &&
-                    !exclude.Exists(dependency.EndsWith)) continue;
-                ArrayUtility.RemoveAt(ref dependencies, index);
-                index--;
-            }
-
-            return dependencies;
+        { 
+            return AssetDatabase.GetDependencies(path, true);
         }
 
         public static void RemoveBundles(params string[] assetPaths)

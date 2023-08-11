@@ -42,12 +42,17 @@ namespace xasset
 
         private static void RetainInternal(string path)
         {
+            _Retain(path);
+            var children = GetDependencies(path);
+            foreach (var child in children)
+                _Retain(child);
+        }
+
+        private static void _Retain(string path)
+        {
             if (!assetWithReferences.TryGetValue(path, out var value)) value = 0;
             value += 1;
             assetWithReferences[path] = value;
-            var children = GetDependencies(path);
-            foreach (var child in children)
-                RetainInternal(child);
         }
 
         public static int Release(string path)
@@ -59,12 +64,17 @@ namespace xasset
 
         private static int ReleaseInternal(string path)
         {
+            var children = GetDependencies(path);
+            foreach (var child in children)
+                _Release(child);
+            return _Release(path);
+        }
+
+        private static int _Release(string path)
+        {
             if (!assetWithReferences.TryGetValue(path, out var value)) return 0;
             value -= 1;
             assetWithReferences[path] = value;
-            var children = GetDependencies(path);
-            foreach (var child in children)
-                ReleaseInternal(child);
             return value;
         }
     }

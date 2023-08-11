@@ -9,7 +9,6 @@ namespace xasset
         private static readonly Queue<Dependencies> Unused = new Queue<Dependencies>();
         private readonly List<BundleRequest> _bundles = new List<BundleRequest>();
         private readonly List<BundleRequest> _loading = new List<BundleRequest>();
-        private readonly Dictionary<string, BundleRequest> loaded = new Dictionary<string, BundleRequest>();
         private BundleRequest _bundleRequest;
         private int _refCount;
         public ManifestAsset asset { get; set; }
@@ -33,17 +32,10 @@ namespace xasset
         }
 
         private BundleRequest Load(ManifestBundle bundle)
-        {
-            if (loaded.TryGetValue(bundle.name, out var value))
-                return value;
+        { 
             var request = BundleRequest.Load(bundle);
             _bundles.Add(request);
             _loading.Add(request);
-            loaded[bundle.name] = request;
-            if (bundle.deps.Length <= 0) return request;
-            var bundles = asset.manifest.bundles;
-            foreach (var dep in bundle.deps)
-                Load(bundles[dep]);
             return request;
         }
 
@@ -56,7 +48,11 @@ namespace xasset
         private void LoadAll()
         {
             var bundles = asset.manifest.bundles;
+            var bundle = bundles[asset.bundle];
             _bundleRequest = Load(bundles[asset.bundle]);
+            if (bundle.deps == null || bundle.deps.Length <= 0) return;
+            foreach (var dep in bundle.deps)
+                Load(bundles[dep]);
         }
 
         public bool CheckResult(LoadRequest request, out AssetBundle assetBundle)
@@ -103,7 +99,6 @@ namespace xasset
             foreach (var request in _bundles) request.Release();
 
             _bundles.Clear();
-            loaded.Clear();
         }
 
         public static Dependencies LoadAsync(ManifestAsset asset)

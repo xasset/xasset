@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace xasset.editor
@@ -34,22 +35,25 @@ namespace xasset.editor
 
         private void CollectDependencies(BuildEntry entry)
         {
+            var exclude = Settings.GetDefaultSettings().bundle.excludeFiles;  
             foreach (var dependency in Settings.GetDependencies(entry.asset))
             {
+                if (string.Equals(dependency, entry.asset, StringComparison.OrdinalIgnoreCase) || 
+                    dependency.EndsWith(".unity") || 
+                    exclude.Exists(dependency.EndsWith) ||
+                    entries.ContainsKey(dependency))
+                    continue; 
+
                 if (!references.TryGetValue(dependency, out var value))
                 {
                     value = new List<BuildEntry>();
                     references[dependency] = value;
                 }
 
-                value.Add(entry);
-                // Unity 会存在场景依赖场景的情况。 
-                if (entries.ContainsKey(dependency))
-                    continue;
+                value.Add(entry); 
                 var asset = Settings.GetPackedAsset(dependency);
                 entries.Add(dependency, asset);
-                assets.Add(asset);
-                CollectDependencies(asset);
+                assets.Add(asset); 
             }
         }
     }
