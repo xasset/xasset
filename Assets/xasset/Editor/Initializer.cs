@@ -16,7 +16,8 @@ namespace xasset.editor
             Assets.SimulationMode = settings.playMode == PlayMode.FastPlayWithoutBuild;
             Assets.MaxRetryTimes = settings.player.maxRetryTimes;
             Assets.MaxDownloads = settings.player.maxDownloads;
-            Assets.Updatable = settings.playMode == PlayMode.PlayByUpdateWithRealtime || settings.playMode == PlayMode.PlayByUpdateWithSimulation;
+            Assets.Updatable = settings.playMode == PlayMode.PlayByUpdateWithRealtime ||
+                               settings.playMode == PlayMode.PlayByUpdateWithSimulation;
             if (Assets.SimulationMode)
             {
                 InitializeRequest.Initializer = InitializeAsyncWithoutBuild;
@@ -30,16 +31,28 @@ namespace xasset.editor
             {
                 if (Assets.Updatable)
                 {
-                    var file = Assets.GetPlayerDataPath(PlayerAssets.Filename);
-                    if (!File.Exists(file))
+                    if (!File.Exists(Settings.GetCachePath(Versions.Filename)))
                     {
-                        if (EditorUtility.DisplayDialog("Tips",
-                                "Please build player assets before enter playmode.", "Build", "Cancel"))
+                        if (EditorUtility.DisplayDialog("Bundles not found.",
+                                "Please selection xasset>Build Bundles before enter playmode.", "Build", "Cancel"))
                         {
-                            MenuItems.BuildPlayerAssetsWithSelection();
                             EditorApplication.isPlaying = false;
+                            MenuItems.BuildBundles();
+                            return;
                         }
-                    } 
+                    }
+
+                    if (!File.Exists(Assets.GetPlayerDataPath(PlayerAssets.Filename)))
+                    {
+                        if (EditorUtility.DisplayDialog("Player Assets not found.",
+                                "Please select xasset>Build Player Assets before enter playmode.", "Build", "Cancel"))
+                        {
+                            EditorApplication.isPlaying = false;
+                            MenuItems.BuildPlayerAssetsWithSelection();
+                            return;
+                        }
+                    }
+
                     if (settings.playMode == PlayMode.PlayByUpdateWithSimulation)
                     {
                         InitializeRequest.Initializer = InitializeAsyncWithSimulationUpdate;
@@ -47,12 +60,13 @@ namespace xasset.editor
                     else
                     {
                         InitializeRequest.Initializer = request => request.RuntimeInitializeAsync();
-                    } 
+                    }
                 }
                 else
                 {
                     InitializeRequest.Initializer = InitializeAsyncWithoutUpdate;
-                } 
+                }
+
                 AssetRequest.CreateHandler = RuntimeAssetHandler.CreateInstance;
                 SceneRequest.CreateHandler = RuntimeSceneHandler.CreateInstance;
             }
@@ -63,7 +77,7 @@ namespace xasset.editor
             yield return request.RuntimeInitializeAsync();
             DownloadRequest.Resumable = false;
             Assets.UpdateInfoURL = $"{Assets.Protocol}{Settings.GetCachePath(UpdateInfo.Filename)}";
-            Assets.DownloadURL = $"{Assets.Protocol}{Settings.PlatformDataPath}"; 
+            Assets.DownloadURL = $"{Assets.Protocol}{Settings.PlatformDataPath}";
         }
 
         private static IEnumerator InitializeAsyncWithoutUpdate(InitializeRequest request)
@@ -71,11 +85,12 @@ namespace xasset.editor
             var file = Settings.GetCachePath(Versions.BundleFilename);
             if (!File.Exists(file))
             {
-                var message = $"File {file} not found! please run build bundles before enter in playmode.";
+                var message = $"{file} not found! you can create it by build bundles before enter in playmode.";
                 request.SetResult(Request.Result.Failed, message);
-                EditorUtility.DisplayDialog("Error", message, "Ok");
+                EditorUtility.DisplayDialog("Notes", message, "Ok");
                 EditorApplication.isPlaying = false;
             }
+
             Assets.DownloadDataPath = Settings.PlatformDataPath;
             Assets.PlayerAssets = Settings.GetDefaultSettings().GetPlayerAssets();
             yield return null;
@@ -127,9 +142,8 @@ namespace xasset.editor
         {
             var result = File.Exists(path);
             if (result) return true;
-            var message = $"File not found:{path}";
-            EditorUtility.DisplayDialog("Error", message, "Ok");
-            Logger.E(message);
+            EditorUtility.DisplayDialog("File not found", path, "Ok");
+            Logger.E(path);
             return false;
         }
     }
