@@ -13,12 +13,12 @@ namespace xasset.editor
         {
             var settings = Settings.GetDefaultSettings();
             Assets.Platform = Settings.Platform;
-            Assets.SimulationMode = settings.playMode == PlayMode.FastPlayWithoutBuild;
+            Assets.RealtimeMode = settings.playMode != PlayMode.FastPlayWithoutBuild;
             Assets.MaxRetryTimes = settings.player.maxRetryTimes;
             Assets.MaxDownloads = settings.player.maxDownloads;
             Assets.Updatable = settings.playMode == PlayMode.PlayByUpdateWithRealtime ||
                                settings.playMode == PlayMode.PlayByUpdateWithSimulation;
-            if (Assets.SimulationMode)
+            if (!Assets.RealtimeMode)
             {
                 InitializeRequest.Initializer = InitializeAsyncWithoutBuild;
                 AssetRequest.CreateHandler = EditorAssetHandler.CreateInstance;

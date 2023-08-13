@@ -17,7 +17,7 @@ namespace xasset
         public static string DownloadURL { get; set; }
         public static Versions Versions { get; set; } = ScriptableObject.CreateInstance<Versions>();
         public static PlayerAssets PlayerAssets { get; set; } = ScriptableObject.CreateInstance<PlayerAssets>();
-        public static bool SimulationMode { get; set; }
+        public static bool RealtimeMode { get; set; } = true;
         public static bool Updatable { get; set; }
         public static Platform Platform { get; set; } = Utility.GetPlatform();
         public static bool IsWebGLPlatform => Platform == Platform.WebGL;
@@ -175,9 +175,10 @@ namespace xasset
         internal static bool TryGetAsset(ref string path, out ManifestAsset asset)
         {
             GetActualPath(ref path);
-            if (!SimulationMode || Updatable) return Versions.TryGetAsset(path, out asset);
+            if (RealtimeMode) 
+                return Versions.TryGetAsset(path, out asset); 
             asset = null;
-            return File.Exists(path);
+            return Contains(path);
         }
 
         public static ReloadRequest ReloadAsync(Versions versions)
