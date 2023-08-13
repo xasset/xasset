@@ -29,21 +29,18 @@ namespace xasset.editor
             }
             else
             {
-                if (Assets.Updatable)
-                {
-                    if (!File.Exists(Settings.GetCachePath(Versions.Filename)))
+                if (!File.Exists(Settings.GetCachePath(Versions.Filename)))
+                    if (EditorUtility.DisplayDialog("Bundles not found.",
+                            "Please selection xasset>Build Bundles before enter playmode.", "Build", "Cancel"))
                     {
-                        if (EditorUtility.DisplayDialog("Bundles not found.",
-                                "Please selection xasset>Build Bundles before enter playmode.", "Build", "Cancel"))
-                        {
-                            EditorApplication.isPlaying = false;
-                            MenuItems.BuildBundles();
-                            return;
-                        }
+                        EditorApplication.isPlaying = false;
+                        MenuItems.BuildBundles();
+                        return;
                     }
 
+                if (Assets.Updatable)
+                {
                     if (!File.Exists(Assets.GetPlayerDataPath(PlayerAssets.Filename)))
-                    {
                         if (EditorUtility.DisplayDialog("Player Assets not found.",
                                 "Please select xasset>Build Player Assets before enter playmode.", "Build", "Cancel"))
                         {
@@ -51,16 +48,11 @@ namespace xasset.editor
                             MenuItems.BuildPlayerAssetsWithSelection();
                             return;
                         }
-                    }
 
                     if (settings.playMode == PlayMode.PlayByUpdateWithSimulation)
-                    {
                         InitializeRequest.Initializer = InitializeAsyncWithSimulationUpdate;
-                    }
                     else
-                    {
                         InitializeRequest.Initializer = request => request.RuntimeInitializeAsync();
-                    }
                 }
                 else
                 {
@@ -82,15 +74,6 @@ namespace xasset.editor
 
         private static IEnumerator InitializeAsyncWithoutUpdate(InitializeRequest request)
         {
-            var file = Settings.GetCachePath(Versions.BundleFilename);
-            if (!File.Exists(file))
-            {
-                var message = $"{file} not found! you can create it by build bundles before enter in playmode.";
-                request.SetResult(Request.Result.Failed, message);
-                EditorUtility.DisplayDialog("Notes", message, "Ok");
-                EditorApplication.isPlaying = false;
-            }
-
             Assets.DownloadDataPath = Settings.PlatformDataPath;
             Assets.PlayerAssets = Settings.GetDefaultSettings().GetPlayerAssets();
             yield return null;
