@@ -31,7 +31,7 @@ namespace xasset.editor
             {
                 if (!File.Exists(Settings.GetCachePath(Versions.Filename)))
                     if (EditorUtility.DisplayDialog("Bundles not found.",
-                            "Please selection xasset>Build Bundles before enter playmode.", "Build", "Cancel"))
+                            "Please click xasset>Build Bundles before enter playmode.", "Build", "Cancel"))
                     {
                         EditorApplication.isPlaying = false;
                         MenuItems.BuildBundles();
@@ -42,7 +42,7 @@ namespace xasset.editor
                 {
                     if (!File.Exists(Assets.GetPlayerDataPath(PlayerAssets.Filename)))
                         if (EditorUtility.DisplayDialog("Player Assets not found.",
-                                "Please select xasset>Build Player Assets before enter playmode.", "Build", "Cancel"))
+                                "Please click xasset>Build Player Assets before enter playmode.", "Build", "Cancel"))
                         {
                             EditorApplication.isPlaying = false;
                             MenuItems.BuildPlayerAssetsWithSelection();
