@@ -23,6 +23,7 @@ namespace xasset.editor
                 InitializeRequest.Initializer = InitializeAsyncWithoutBuild;
                 AssetRequest.CreateHandler = EditorAssetHandler.CreateInstance;
                 SceneRequest.CreateHandler = EditorSceneHandler.CreateInstance;
+                FileRequest.CreateHandler = EditorFileHandler.CreateInstance;
                 // 编辑器仿真模式开启 通过引用计数回收资源优化内存 可能对性能有影响 
                 ReferencesCounter.GetDependenciesFunc = Settings.GetDependencies;
                 ReferencesCounter.Enabled = true;
@@ -61,6 +62,7 @@ namespace xasset.editor
 
                 AssetRequest.CreateHandler = RuntimeAssetHandler.CreateInstance;
                 SceneRequest.CreateHandler = RuntimeSceneHandler.CreateInstance;
+                FileRequest.CreateHandler = RuntimeFileHandler.CreateInstance;
             }
         }
 
@@ -118,9 +120,22 @@ namespace xasset.editor
                 yield return null;
             }
 
+            CollectNoAssetFiles();
             request.SetResult(Request.Result.Success);
         }
 
+        //收集Assets外的文件
+        private static void CollectNoAssetFiles()
+        {
+            string[] files = Directory.GetFiles($"{Files.dirPath}", "*.*", SearchOption.AllDirectories);
+            for (int i = 0; i < files.Length; i++)
+            {
+                string fullPath = files[i].Replace("\\", "/");
+                string shortPath = fullPath.Replace(Files.dirPath, "").ToLower();
+                Files.SetAddress(fullPath, shortPath);
+            }
+        }
+        
         private static bool ContainsAsset(string path)
         {
             var result = File.Exists(path);
