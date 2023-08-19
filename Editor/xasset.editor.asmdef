@@ -1,0 +1,16 @@
+{
+  "name": "xasset.editor",
+  "references": [
+    "xasset"
+  ],
+  "optionalUnityReferences": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [
+    "UNITY_EDITOR"
+  ]
+}

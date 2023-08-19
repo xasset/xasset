@@ -1,0 +1,19 @@
+{
+  "name": "com.regina.xasset",
+  "version": "1.0.0",
+  "displayName": "regina xasset",
+  "description": "This is an regina xasset package",
+  "unity": "2023.1",
+  "author": {
+    "name": "regina",
+    "email": "xiangcaoyuyan@gmail.com",
+    "url": "https://www.google.com"
+  },
+  "samples": [
+    {
+      "displayName": "reginaXassetSamples",
+      "description": "in assets",
+      "path": "Samples~"
+    }
+  ]
+}
