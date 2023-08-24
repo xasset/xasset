@@ -158,6 +158,8 @@ xasset 的主要创作者是：
 
 为 xasset 提供好的建议或反馈，可以成为 xasset 的贡献者：
 
+- 袁晟铭：+10 点声望
+
 - [EasierLu](https://github.com/EasierLu) +10 点声望
 - [Connor Aaron Roberts](https://github.com/c0nd3v) +10 点声望
 - [xxgamecom](xxgamecom) +10 点声望
