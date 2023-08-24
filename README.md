@@ -1,6 +1,6 @@
 # 专业 Unity 资产系统
 
-xasset 提供全面可靠的资产打包、分包、加密、边玩边下和加载等技术。让 Unity 项目开发更轻松！
+xasset 提供开箱即用的资产打包、分包、加密、热更和加载等技术方案。让 Unity 项目开发更轻松！
 
 - 社区版：https://github.com/xasset/xasset
 
