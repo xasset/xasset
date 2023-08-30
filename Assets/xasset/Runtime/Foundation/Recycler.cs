@@ -43,9 +43,7 @@ namespace xasset
             }
 
             UpdateAutorelease();
-
-            if (Scheduler.Working) return; // 有加载的时候不回收资源，防止 Unity 引擎底层出异常。 
-
+            
             for (var index = 0; index < Recyclables.Count; index++)
             {
                 var request = Recyclables[index];
@@ -59,6 +57,8 @@ namespace xasset
                 request.RecycleAsync();
                 Progressing.Add(request);
             }
+            
+            if (Scheduler.Working) return; // 有加载的时候不回收资源，防止 Unity 引擎底层出异常。 
 
             for (var index = 0; index < Progressing.Count; index++)
             {
