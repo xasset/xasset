@@ -21,9 +21,7 @@ xasset 提供开箱即用的资产打包、分包、加密、热更和加载等�
 
 ## 最新动态
 
-- 2023.08.14：[从运行模式的新变化看我们的荣誉和责任](https://mp.weixin.qq.com/s?__biz=MzU2Nzk0Njk4MQ==&mid=2247483849&idx=1&sn=86f07f213209de25ba5020830d0e1464&chksm=fc943a43cbe3b355369ef71c0ee482d2b95292ba5a6d7b0c091cb3ee694b630083d37854be3a&scene=0&xtrack=1&key=74c04ea2637745e8a08b219f630c6e07374d3c24c85808a9e3dd9e1b406c548f5f943febd8178535e50d2f53e8acc3fb2ef5db2a6fd79acd23174df1a585158dbceea365f5d4543c6cad16c19b920a18c5559b85a32a02b88fec7da0983c50b531164c165fde3c3b245ccc6124b9b678904d13c6908217b05159d535ee7a08bb&ascene=15&uin=NjE2NDc4NTAx&devicetype=iMac+MacBookPro14%2C1+OSX+OSX+13.4.1+build(22F82)&version=13080210&nettype=WIFI&lang=en&session_us=gh_b22cefc10b2d&countrycode=CN&fontScale=100&exportkey=n_ChQIAhIQvCdnVZp5aV7pC8%2BIgT8KHxKLAgIE97dBBAEAAAAAACl8JO%2Bf%2FOoAAAAOpnltbLcz9gKNyK89dVj0SHHBBxudWKfHSsoy2MYTWlfd8A7PslWGSDDO98y24W1i6ek61qcQ2xm3e919trTSf8H4QbICKBLwrQ1cfCecDWeuVwx7THgBzn6jfpfeWdPRiXJ1boHTxDT91iSBaErQ9r6hyotXCUDjGNFukY1Iyapis8L8yXChjtcK2L7LW0B1uas%2BgAzMlqN5UMwsHkKplhls5t%2BCTQN6SHhErj84tnn6L4xCj2dDtVH4YPV%2B1tUhGL5lbp2%2BtkzpzO%2FiYWf0DB7oEvvf75wB2vTk90%2BK8AjooJcbrpfek1MXtKTzpEO0KRq0vQ%3D%3D&acctmode=0&pass_ticket=KmIEtK%2By%2BwMpM1pOlrA2mthn3cTX87%2BWIJJKS2ACjjXroS60ot%2FZHWm6VQII7GSS&wx_header=0)
-- 2023.04.24：[xasset 2023.1预览版发布，除了资产热重载外还有哪些改变？](https://mp.weixin.qq.com/s/H2HDtwnp1mG_F4v1TahVJg)
-- 2023.03.27：[近10倍IO性能优化的过程和原理](https://mp.weixin.qq.com/s/X0Tc6-UKVqfEXrzSEY17Zw)
+- 2023.09.04：[3周年纪念版的超能力预告](https://mp.weixin.qq.com/s/2aG6VtDua4e8t3PttOmTpg)
 
 ## 推荐服务：使用 UOS CDN 进行资源云端管理
 
