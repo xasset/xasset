@@ -23,25 +23,22 @@ xasset 提供开箱即用的资产打包、分包、加密、热更和加载等�
 
 - 2023.09.04：[3周年纪念版的超能力预告](https://mp.weixin.qq.com/s/2aG6VtDua4e8t3PttOmTpg)
 
-## 推荐服务：使用 UOS CDN 进行资源云端管理
+## 合作方服务推荐：使用 UOS CDN 进行资源云端管理
 
-由 xasset 团队和 Unity
-团队联手打造的快速资源分发流程和工具，开发阶段可以免费使用。[>>> 前往体验](https://uos.unity.cn/partner/xasset)
-
-<img src="https://uos.unity.cn/images/homepage/xasset-hp.png" alt="xasset-uos" style="zoom:50%;" />
+由 xasset 团队和 Unity 团队联手打造的快速资源分发流程和工具。[>>> 前往体验](https://uos.unity.cn/partner/xasset)
 
 > 提示：使用 UOS CDN 的时候，可以把 Bundles 和 updateinfo.json 放到不同的存储桶。Bundles 下的数据无需使用 Badge
 > 来处理内容分发，updateinfo.json 可以用 Badge 来处理开发测试或线上正式环境的内容分发。
 
-## xasset 的设计理念
+## 设计理念
 
 xasset 的设计理念可以概括为以下几点。
 
-- 简单至上。保持纯粹，不做俄罗斯套娃，让普通人都能一目了然。
-- 物尽其用。尽可能挖掘每个对象存在的最大价值，用更少地投入获得更多地产出。
-- 精益求精。不止于过去，追求极致并通过不断打磨和提炼来完成自我进化。
+- 简单至上。保持纯粹（不做缝合怪），不做俄罗斯套娃，让普通人都能一目了然。
+- 物尽其用。奉行 Less code, more power 的价值观，尽可能挖掘每个对象存在的最大价值。
+- 精益求精。不止于过去，追求极致并通过不断打磨和提炼来完成自我进化来满足更多刚需。
 
-我们相信，了解产品的设计理念，有助于更好地理解和掌握产品的使用，期待可以获得更多的共鸣。
+我们相信，了解产品的设计理念，有助于更好地理解和掌握产品的使用，希望可以获得更多的共鸣。
 
 ## 用法
 
