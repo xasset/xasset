@@ -18,7 +18,7 @@ namespace xasset
         public static Versions Versions { get; set; } = ScriptableObject.CreateInstance<Versions>();
         public static PlayerAssets PlayerAssets { get; set; } = ScriptableObject.CreateInstance<PlayerAssets>();
         public static bool RealtimeMode { get; set; } = true;
-        public static bool Updatable { get; set; }
+        public static bool Updatable { get; set; } = true;
         public static Platform Platform { get; set; } = Utility.GetPlatform();
         public static bool IsWebGLPlatform => Platform == Platform.WebGL;
         public static string Protocol { get; } = Utility.GetProtocol();
@@ -190,8 +190,8 @@ namespace xasset
 
         public static void LoadPlayerAssets(PlayerAssets settings)
         {
-            // 仿真模式下载地址会特殊处理
-            if (!Application.isEditor) Updatable = settings.updatable;
+            UpdateInfoURL = settings.updateInfoURL;
+            DownloadURL = settings.downloadURL; 
             MaxRetryTimes = settings.maxRetryTimes;
             MaxDownloads = settings.maxDownloads;
             Scheduler.MaxRequests = settings.maxRequests;

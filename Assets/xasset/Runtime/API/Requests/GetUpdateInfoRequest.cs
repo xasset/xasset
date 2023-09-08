@@ -31,9 +31,8 @@ namespace xasset
             {
                 info = Utility.LoadFromJson<UpdateInfo>(_request.downloadHandler.text);
                 // Web GL 直接读取 Player Data Path
-                if (!Application.isEditor && Assets.IsWebGLPlatform)
-                    Assets.DownloadURL = info.downloadURL;
-
+                if (Application.isEditor || !Assets.IsWebGLPlatform)
+                    Assets.DownloadURL = info.downloadURL; // 更新下载地址
                 // 版本文件未发生更新
                 if (info.timestamp <= Assets.Versions.timestamp)
                 {

@@ -74,13 +74,17 @@ namespace xasset.editor
 
         private static IEnumerator InitializeAsyncWithoutUpdate(InitializeRequest request)
         {
-            Assets.DownloadDataPath = Settings.PlatformDataPath;
+            Assets.PlayerDataPath = Settings.PlatformDataPath;
             Assets.PlayerAssets = Settings.GetDefaultSettings().GetPlayerAssets();
             yield return null;
             Assets.Versions = Utility.LoadFromFile<Versions>(Settings.GetCachePath(Versions.BundleFilename));
             yield return null;
             foreach (var version in Assets.Versions.data)
+            {
                 version.Load(Settings.GetDataPath(version.file));
+                foreach (var bundle in version.manifest.bundles)
+                    Assets.PlayerAssets.data.Add(bundle.hash);
+            }
             request.SetResult(Request.Result.Success);
         }
 
