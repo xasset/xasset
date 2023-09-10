@@ -2,26 +2,13 @@
 
 xasset 提供开箱即用的资产打包、分包、加密、热更和加载等技术方案。让 Unity 项目开发更轻松！
 
-- 社区版：https://github.com/xasset/xasset
-
-个人或 1-3 个人的小团队，可以免费使用社区版。
-
-对于公司，需要[购买授权](https://xasset.cc/price)才能使用 xasset，并且购买授权后，可以获得功能更强大的专业版。
-
-专业版和社区版本的主要区别是：
-
-- 实用的打包工具和资产加载记录工具。
-- 分组资产二次加密打包（可以优化网络IO次数）。
-- 安装包资产二次加密打包（Android平台IO性能提升10%，特定场景谷歌商店包IO性能提升300%+）。
-- 安装包资产分包和谷歌商店分包工具适配（可以灵活交付产品的安装大小，并轻松上架谷歌商店）。
-- 专属对接群，10年以上手游开发经验的资深工程师照顾项目1年。
-- 可选的顾问版升级服务，可以让资深工程师照顾项目开发全周期，为产品的性能稳定性提供更全面的保驾护航服务。
-
 了解更多 xasset 的产品特性，请前往 [xasset.cc](https://xasset.cc) 查看。
+
+> 请注意：个人或 1-3 个人的小团队，可以免费使用[社区版](https://github.com/xasset/xasset)。对于公司，需要[购买授权](https://xasset.cc/price)才能使用 xasset，并且购买授权后，可以获得功能更强大的专业版。
 
 ## 最新动态
 
-- 2023.09.04：[3周年纪念版的超能力预告](https://mp.weixin.qq.com/s/2aG6VtDua4e8t3PttOmTpg)
+- 2023.09.10 [3周年纪念版正式发布](https://xasset.cc/docs/release-notes)
 
 ## 合作方服务推荐：使用 UOS CDN 进行资源云端管理
 
@@ -121,7 +108,7 @@ xasset 提供了以下几种运行示例的方式：
 
 - 2022.1：https://xasset.cc/docs/2022.1/about
 - 2022.2：https://xasset.cc/docs/getting-started
-- 2023.1：待完成
+- 2023.1：https://xasset.cc/docs
 
 ## 许可
 
