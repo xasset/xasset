@@ -77,7 +77,6 @@ namespace xasset
             {
                 GetContentRequest();
             }
-
             _request.status = DownloadRequestBase.Status.Progressing;
         }
 
@@ -112,7 +111,8 @@ namespace xasset
             {
                 _content.downloadHandler = new DownloadHandlerFile(_request.savePath);
             }
-
+            
+            if (_request.content.size > 0) _request.downloadSize = _request.content.size; 
             _content.certificateHandler = new DownloadCertificateHandler();
             _content.disposeDownloadHandlerOnDispose = true;
             _content.disposeCertificateHandlerOnDispose = true;
