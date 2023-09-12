@@ -31,7 +31,7 @@ namespace xasset.samples
                 // 强更检查
                 var updateVersion = System.Version.Parse(getUpdateInfoAsync.info.version);
                 var playerVersion = System.Version.Parse(Assets.PlayerAssets.version);
-                if (updateVersion.Major != playerVersion.Major || updateVersion.Minor > playerVersion.Minor)
+                if (updateVersion.Major > playerVersion.Major || (updateVersion.Major == playerVersion.Major && updateVersion.Minor > playerVersion.Minor))
                 {
                     // 需要强更下载安装包。
                     var request = MessageBox.Show(Constants.Text.Tips,
