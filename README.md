@@ -8,6 +8,7 @@ xasset 提供开箱即用的资产打包、分包、加密、热更和加载等�
 
 ## 最新动态
 
+- 2023.09.19 [问答：Resources回收卡顿很严重为什么？有解么？](https://mp.weixin.qq.com/s/3YyQ3gjBCVE-vtxNCwnhQg)
 - 2023.09.10 [3周年纪念版正式发布](https://xasset.cc/docs/release-notes)
 
 ## 合作方服务推荐：使用 UOS CDN 进行资源云端管理
