@@ -16,8 +16,7 @@ namespace xasset
         {
             var request = DownloadRequestBatch.Create();
             foreach (var content in _contents)
-                if (content.status != DownloadContent.Status.Downloaded)
-                    request.AddContent(content);
+                request.AddContent(content);
             request.SendRequest();
             return request;
         }
@@ -82,15 +81,12 @@ namespace xasset
 
         private void AddContent(Downloadable file)
         {
+            if (Assets.IsDownloaded(file)) return;
             var url = Assets.GetDownloadURL(file.file);
             var savePath = Assets.GetDownloadDataPath(file.file);
             var content = DownloadContent.Get(url, savePath, file.hash, file.size);
             _contents.Add(content);
-            Logger.I($"AddContent {file.file} {Assets.IsDownloaded(file)}");
-            if (!Assets.IsDownloaded(file))
-                downloadSize += content.downloadSize;
-            else
-                content.status = DownloadContent.Status.Downloaded;
+            downloadSize += content.downloadSize;
         } 
     }
 }
