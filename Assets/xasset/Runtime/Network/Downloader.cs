@@ -9,7 +9,7 @@ namespace xasset
     {
         internal static readonly Queue<DownloadRequest> Queue = new Queue<DownloadRequest>();
         private static readonly List<DownloadRequest> Progressing = new List<DownloadRequest>();
-        private static readonly Queue<DownloadRequest> Unused = new Queue<DownloadRequest>();
+        private static readonly Dictionary<string,DownloadRequest> Cache = new Dictionary<string, DownloadRequest>();
 
         public static Func<DownloadRequest, IDownloadHandler> CreateHandler { get; set; } =
             request => new DownloadHandlerUWR(request);
@@ -31,23 +31,18 @@ namespace xasset
 
         public static DownloadRequest DownloadAsync(DownloadContent content)
         {
-            DownloadRequest request;
-            if (Unused.Count > 0)
+            if (! Cache.TryGetValue(content.url, out var request))
             {
-                request = Unused.Dequeue();
-                request.Reset();
+                request = new DownloadRequest
+                {
+                    content = content
+                };
+                request.SendRequest();
+                request.handler = Assets.IsWebGLPlatform
+                    ? new DownloadHandlerUWR(request)
+                    : CreateHandler(request);
+                Cache[content.url] = request;
             }
-            else
-            {
-                request = new DownloadRequest();
-            }
-
-            request.content = content;
-            request.SendRequest();
-            request.handler = Assets.IsWebGLPlatform
-                ? new DownloadHandlerUWR(request)
-                : CreateHandler(request);
-
             return request;
         }
 
@@ -96,20 +91,8 @@ namespace xasset
 
         private static void Complete(DownloadRequest request)
         {
+            Cache.Remove(request.content.url);
             request.Complete();
-            switch (request.result)
-            {
-                case DownloadRequestBase.Result.Success:
-                    Unused.Enqueue(request);
-                    break;
-                case DownloadRequestBase.Result.Cancelled:
-                    Unused.Enqueue(request);
-                    break;
-                case DownloadRequestBase.Result.Failed:
-                    break;
-                default:
-                    throw new Exception($"Invalid download status {request.status}");
-            }
         }
 
         private static void CancelAll()
@@ -118,7 +101,8 @@ namespace xasset
 
             Progressing.Clear();
             Queue.Clear();
-
+            Cache.Clear();
+            
             DownloadRequestBatch.CancelAll();
         }
     }
