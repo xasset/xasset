@@ -69,23 +69,22 @@ namespace xasset
 
         protected override void OnUpdated()
         {
+            pos = max - queue.Count;
+            progress = pos * 1f / max;
+            
             for (var index = 0; index < queue.Count; index++)
             {
                 var request = queue[index];
                 if (!request.IsReloaded())
-                    continue;
+                    return;
                 request.OnReloaded();
                 queue.RemoveAt(index);
                 index--;
                 if (Scheduler.Busy)
                     return;
-            }
+            } 
 
-            pos = max - queue.Count;
-            progress = pos * 1f / max;
-
-            if (queue.Count > 0) return;
-
+            if (queue.Count > 0) return; 
             SetResult(Result.Success);
         }
     }

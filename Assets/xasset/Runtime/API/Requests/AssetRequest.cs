@@ -25,10 +25,11 @@ namespace xasset
         // ReSharper disable once MemberCanBePrivate.Global
         public Action reloaded { get; set; }
 
+        private bool reloadNow;
+        
         public void ReloadAsync()
         {
-            status = Status.Processing;
-            handler.OnReload(this);
+            reloadNow = true; 
         }
 
         public void OnReloaded()
@@ -39,6 +40,12 @@ namespace xasset
 
         public bool IsReloaded()
         {
+            if (reloadNow)
+            {
+                status = Status.Processing;
+                handler.OnReload(this);
+                reloadNow = false;
+            }
             OnUpdated();
             return isDone;
         }
