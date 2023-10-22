@@ -194,7 +194,7 @@ namespace xasset.samples
                     files.Add(item.file);
                 foreach (var bundle in item.manifest.bundles)
                     if (!bundles.Contains(bundle.file))
-                        files.Add(item.file);
+                        files.Add(bundle.file);
             }
 
             return files;
