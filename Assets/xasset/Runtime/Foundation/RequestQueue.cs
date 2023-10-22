@@ -13,6 +13,8 @@ namespace xasset
 
         public void Enqueue(Request request)
         {
+            if (processing.Contains(request) || queue.Contains(request))
+                return;
             queue.Enqueue(request);
         }
 
