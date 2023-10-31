@@ -264,6 +264,12 @@ namespace xasset.editor
                     Directory.CreateDirectory(directory);
         }
 
+        [MenuItem("xasset/Check References")]
+        public static void CheckReferences()
+        {
+            FindReferences();
+        }
+
         public static bool FindReferences()
         {
             var builds = Settings.FindAssets<Build>();
@@ -273,7 +279,7 @@ namespace xasset.editor
                 return false;
             }
 
-            var assets = new List<BuildEntry>();
+            var assetWithGroups = new Dictionary<string, HashSet<string>>();
             foreach (var build in builds)
             {
                 var item = build.parameters;
@@ -283,20 +289,16 @@ namespace xasset.editor
                     : BuildTask.StartNew(build, new CollectAssets());
                 if (!string.IsNullOrEmpty(task.error)) return true;
 
-                foreach (var asset in task.assets) assets.Add(asset);
-            }
-
-            var assetWithGroups = new Dictionary<string, HashSet<string>>();
-            foreach (var entry in assets)
-            {
-                if (!assetWithGroups.TryGetValue(entry.asset, out var refs))
+                foreach (var entry in task.assets)
                 {
-                    refs = new HashSet<string>();
-                    assetWithGroups.Add(entry.asset, refs);
+                    if (!assetWithGroups.TryGetValue(entry.asset, out var refs))
+                    {
+                        refs = new HashSet<string>();
+                        assetWithGroups.Add(entry.asset, refs);
+                    } 
+                    refs.Add($"{entry.owner.build}-{entry.owner.name}");
                 }
-
-                refs.Add($"{entry.owner.build}-{entry.owner.name}");
-            }
+            } 
 
             var sb = new StringBuilder();
             foreach (var pair in assetWithGroups.Where(pair => pair.Value.Count > 1))
