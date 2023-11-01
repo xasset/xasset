@@ -240,7 +240,7 @@ namespace xasset.editor
         [MenuItem("xasset/Check for Updates", false, 400)]
         public static void CheckForUpdates()
         {
-            Application.OpenURL("https://xasset.cc/docs/change-log");
+            Application.OpenURL("https://xasset.cc/docs/release-notes");
         }
 
       
