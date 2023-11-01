@@ -56,8 +56,11 @@ namespace xasset
                     {
                         _completeRequest = ActionRequest.Create();
                         _completeRequest.reuse = false;
-                        _completeRequest.action = Complete;
+                        
                     }
+
+                    _completeRequest.Reset();
+                    _completeRequest.action = Complete;
                     _completeRequest.SendRequest();
                 }
             }
