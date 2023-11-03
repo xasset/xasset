@@ -43,7 +43,7 @@ namespace xasset
                     break;
 
                 case Step.LoadAsset:
-                    request.progress = 0.5f * _loadAssetAsync.progress * 0.5f;
+                    request.progress = 0.5f + _loadAssetAsync.progress * 0.5f;
                     if (!_loadAssetAsync.isDone) return;
                     SetResult(request);
                     break;
