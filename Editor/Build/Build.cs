@@ -49,6 +49,11 @@ namespace xasset.editor
         public string filter;
 
         /// <summary>
+        ///     资产标签
+        /// </summary>
+        public ulong tag;
+        
+        /// <summary>
         ///     根据打包模式生成的 bundle 名字
         /// </summary>
         [HideInInspector] public string bundle;

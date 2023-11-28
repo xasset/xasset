@@ -1,16 +1,20 @@
 {
-  "name": "xasset.editor",
-  "references": [
-    "xasset"
-  ],
-  "optionalUnityReferences": [],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [
-    "UNITY_EDITOR"
-  ]
+    "name": "xasset.editor",
+    "rootNamespace": "",
+    "references": [
+        "xasset",
+        "Regina.fUnityTools.Editor",
+        "Unity.EditorCoroutines.Editor"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_EDITOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
