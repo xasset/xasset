@@ -91,8 +91,13 @@ namespace xasset
 
         private static void Complete(DownloadRequest request)
         {
-            Cache.Remove(request.content.url);
+            Remove(request);
             request.Complete();
+        }
+
+        public static void Remove(DownloadRequest request)
+        {
+            Cache.Remove(request.content.url);
         }
 
         private static void CancelAll()

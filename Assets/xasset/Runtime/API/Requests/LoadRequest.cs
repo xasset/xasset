@@ -8,6 +8,7 @@ namespace xasset
         protected override void OnCompleted()
         {
             Logger.D($"Load {GetType().Name} {path} {result}."); 
+            waitForCompletion = false;
         }
 
         public void Retain()
@@ -44,25 +45,17 @@ namespace xasset
         {
         }
 
-        // private ActionRequest _completeRequest;
+        bool waitForCompletion;
 
         protected void LoadAsync()
         {
             if (refCount > 0)
             {
-                if (isDone) ActionRequest.CallAsync(Complete);
-                // {
-                //     if (_completeRequest == null)
-                //     {
-                //         _completeRequest = ActionRequest.Create();
-                //         _completeRequest.reuse = false;
-                //         
-                //     }
-                //
-                //     _completeRequest.Reset();
-                //     _completeRequest.action = Complete;
-                //     _completeRequest.SendRequest();
-                // }
+                if (isDone && !waitForCompletion)
+                {
+                    waitForCompletion = true;
+                    ActionRequest.CallAsync(Complete);
+                } 
             }
             else
             {

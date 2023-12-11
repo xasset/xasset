@@ -42,6 +42,7 @@ namespace xasset
         protected override void OnCancel()
         {
             handler.OnCancel();
+            Downloader.Remove(this);
         }
 
         public void SendRequest()
