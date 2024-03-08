@@ -8,7 +8,7 @@ namespace xasset.editor
         {
             if (request.isAll)
             {
-                request.assets = AssetDatabase.LoadAllAssetRepresentationsAtPath(request.path);
+                request.assets = AssetDatabase.LoadAllAssetsAtPath(request.path);
                 if (request.assets == null)
                 {
                     request.SetResult(Request.Result.Failed, "subAssets == null");
