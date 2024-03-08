@@ -12,7 +12,6 @@ namespace xasset.editor
             base.OnInspectorGUI();
             var settings = target as Settings;
             if (settings == null) return;
-            Assets.Updatable = settings.player.updatable;
             Assets.MaxRetryTimes = settings.player.maxRetryTimes;
             Assets.MaxDownloads = settings.player.maxDownloads;
             Scheduler.MaxRequests = settings.player.maxRequests;
